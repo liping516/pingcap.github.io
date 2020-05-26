@@ -6,24 +6,28 @@
             <div class="navigation">
                 <ul>
                     <li><a href="https://university.pingcap.com/" target="_blank" class="nav-blinking"
-                        onclick="trackViews('navbar-university', 'pingcap-university_view')">PingCAP
-                        University</a></li>
+                            onclick="trackViews('navbar-university', 'pingcap-university_view')">PingCAP
+                            University</a></li>
                     <li class="docs-type-selector {{ if eq $nav_active "docs"}}sel{{end}}" id="docsTypeSelector">
                         <a class="header-doc-nav" href="#">文档</a>
                         <div class="header-dropdown-menu" id="docsTypeSelectorItem">
-                            <a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
-                            <a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
-                            <a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+                            <a class="header-dropdown-item" href="/docs-cn/stable/"
+                                onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+                            <a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/"
+                                onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+                            <a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/"
+                                onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
                         </div>
                     </li>
-                    <li {{ if eq $nav_active "cases"}}class="sel"{{end}}><a href="/cases-cn">案例</a></li>
-                    <li {{ if eq $nav_active "community"}}class="sel"{{end}}><a href="/community-cn">社区</a></li>
-                    <li {{ if eq $nav_active "blog"}}class="sel"{{end}}><a href="/blog-cn">博客</a></li>
-                    <li {{ if eq $nav_active "about"}}class="sel"{{end}}><a href="/about-cn">关于</a></li>
+                    <li {{ if eq $nav_active "cases"}}class="sel" {{end}}><a href="/cases-cn">案例</a></li>
+                    <li {{ if eq $nav_active "community"}}class="sel" {{end}}><a href="/community-cn">社区</a></li>
+                    <li {{ if eq $nav_active "blog"}}class="sel" {{end}}><a href="/blog-cn">博客</a></li>
+                    <li {{ if eq $nav_active "about"}}class="sel" {{end}}><a href="/about-cn">关于</a></li>
                     <li><a href="https://asktug.com" target="_blank"
-                        onclick="trackViews('navbar-asktug', 'asktug_view')">问答</a></li>
+                            onclick="trackViews('navbar-asktug', 'asktug_view')">问答</a></li>
+                    <li {{ if eq $nav_active "download"}}class="sel" {{end}}><a href="/download-cn">下载试用</a></li>
                     <li><a class="link-download" href="mailto:info@pingcap.com" target="_blank"
-                        onclick="trackViews('navbar-contact-us', 'mail_to_info_view')">联系我们</a></li>
+                            onclick="trackViews('navbar-contact-us', 'mail_to_info_view')">联系我们</a></li>
                 </ul>
             </div>
             <div class="global-search">
