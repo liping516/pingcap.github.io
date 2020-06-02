@@ -1,9 +1,13 @@
+{{- define "title" -}}
+{{ $.Scratch.Set "metaTitle" "下载试用" }}
+下载试用
+{{- end -}}
+
 {{- define "headTpl" -}}
 {{$.Scratch.Set "nav_active" "download"}}
 {{$.Scratch.Set "data_i18_link" "/download"}}
 {{$.Scratch.Set "data_i18_cn" true }}
 {{- partial "head/preload-css" (dict "href" "/css/download-cn.css") -}}
-{{ $.Scratch.Set "metaTitle" "下载试用" }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" />
 {{- end -}}
 
