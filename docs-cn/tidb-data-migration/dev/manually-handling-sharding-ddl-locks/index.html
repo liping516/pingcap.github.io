@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>手动处理 Sharding DDL Lock | TiDB 官方用户文档</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="手动处理 Sharding DDL Lock | TiDB 官方用户文档" property="og:title"/>
+<meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" property="og:description"/>
+<meta content="https://pingcap.com/docs-cn/tidb-data-migration/dev/manually-handling-sharding-ddl-locks/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" name="twitter:description"/>
+<meta content="手动处理 Sharding DDL Lock | TiDB 官方用户文档" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="cn"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/index.html"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP
+                            University</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">文档</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs-cn/tidb-data-migration/dev/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="cn" data-type="/tidb-data-migration/" id="search-input" name="q" placeholder="搜索 TiDB 文档" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">文档</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP University</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social social-cn ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+<li id="wechat-mobile"><a class="wechat" href="javascript:void(0)"><svg height="18" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg></a><div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-mobile"></div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs/" id="lang">English</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB Data Migration 文档 </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">dev</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item unclickable-btn" href="
+                #">v1.0 (stable)<span class="tooltiptext">This doc does not exist in stable</span></a>
+<a class="dropdown-item " href="
+                /docs-cn/tidb-data-migration/dev/manually-handling-sharding-ddl-locks/">dev</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>关于 DM</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/benchmark-v1.0-ga/">
+<span>性能数据</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>主要特性</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/key-features/#table-routing">
+<span>Table routing</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/key-features/#black--white-table-lists">
+<span>Black &amp; White Lists</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/key-features/#binlog-event-filter">
+<span>Binlog Event Filter</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/key-features/#%e5%90%8c%e6%ad%a5%e5%bb%b6%e8%bf%9f%e7%9b%91%e6%8e%a7">
+<span>同步延迟监控</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/feature-online-ddl-scheme/">
+<span>Online-ddl-scheme</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/feature-shard-merge/">
+<span>分库分表合并同步</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/scenarios/">
+<span>应用场景</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>快速上手</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/quick-start-with-dm/">
+<span>部署集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/replicate-data-using-dm/">
+<span>同步任务</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>部署文档</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/hardware-and-software-requirements/">
+<span>软硬件要求</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>部署 DM 集群</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/deploy-a-dm-cluster-using-ansible/">
+<span>使用 DM-Ansible</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/deploy-a-dm-cluster-using-binary/">
+<span>使用 Binary</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/monitor-a-dm-cluster/">
+<span>监控与告警设置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/create-task-and-verify/">
+<span>测试验证</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/performance-test/">
+<span>性能测试</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>运维操作</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/dm-upgrade/">
+<span>版本升级</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/cluster-operations/">
+<span>集群操作</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>任务管理</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/dmctl-introduction/">
+<span>dmctl 简介</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/manage-source/">
+<span>管理上游数据源</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/precheck/">
+<span>任务前置检查</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/create-task/">
+<span>创建任务</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/query-status/">
+<span>查询状态</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/query-error/">
+<span>查询错误</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/pause-task/">
+<span>暂停任务</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/resume-task/">
+<span>恢复任务</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/stop-task/">
+<span>停止任务</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/skip-or-replace-abnormal-sql-statements/">
+<span>跳过或替代执行异常的 SQL 语句</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/manually-handling-sharding-ddl-locks/">
+<span>手动处理 Sharding DDL Lock</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/handle-alerts/">
+<span>告警处理</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/daily-check/">
+<span>日常巡检</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/dm-portal/">
+<span>DM Portal</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>故障处理</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/error-handling/">
+<span>故障及处理方法</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/handle-performance-issues/">
+<span>性能问题及处理方法</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>教程</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/usage-scenario-simple-replication/">
+<span>简单的从库同步场景</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/usage-scenario-shard-merge/">
+<span>分库分表合并场景</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/migrate-from-mysql-aurora/">
+<span>从 Aurora 迁移到 TiDB</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/shard-merge-best-practices/">
+<span>分表合并数据迁移最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/usage-scenario-master-slave-switch/">
+<span>DM-worker 在上游 MySQL 主从间切换</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>性能调优</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/tune-configuration/">
+<span>配置调优</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>参考指南</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>架构</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/overview/">
+<span>DM 简介</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/dm-worker-intro/">
+<span>DM-worker 简介</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/relay-log/">
+<span>DM Relay Log</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/command-line-flags/">
+<span>DM 命令行参数</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>配置</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/config-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/dm-master-configuration-file/">
+<span>DM-master 配置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/dm-worker-configuration-file/">
+<span>DM-worker 配置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/source-configuration-file/">
+<span>上游数据库配置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/task-configuration-file/">
+<span>任务配置</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/monitor-a-dm-cluster/">
+<span>监控指标</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/alert-rules/">
+<span>告警信息</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/error-handling/#%e5%b8%b8%e8%a7%81%e6%95%85%e9%9a%9c%e5%a4%84%e7%90%86%e6%96%b9%e6%b3%95">
+<span>错误码</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/faq/">
+<span>常见问题</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/glossary/">
+<span>术语表</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>版本发布历史</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>v1.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/1.0.5/">
+<span>1.0.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/1.0.4/">
+<span>1.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/1.0.3/">
+<span>1.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/dev/1.0.2/">
+<span>1.0.2</span>
+</a>
+</li></ul>
+</li></ul>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="-sharding-ddl-lock">手动处理 Sharding DDL Lock</h1>
+<p>DM (Data Migration) 使用 sharding DDL lock 来确保分库分表的 DDL 操作可以正确执行。绝大多数情况下，该锁定机制可自动完成；但在部分异常情况发生时，需要使用 <code>unlock-ddl-lock</code>/<code>break-ddl-lock</code> 手动处理异常的 DDL lock。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<ul>
+<li>不要轻易使用 <code>unlock-ddl-lock</code>/<code>break-ddl-lock</code> 命令，除非完全明确当前场景下使用这些命令可能会造成的影响，并能接受这些影响。</li>
+<li>在手动处理异常的 DDL lock 前，请确保已经了解 DM 的<a href="/docs-cn/tidb-data-migration/dev/usage-scenario-shard-merge#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">分库分表合并同步原理</a>。</li>
+</ul>
+</blockquote>
+<h2 id="heading">命令介绍</h2>
+<h3 id="show-ddl-locks"><code>show-ddl-locks</code></h3>
+<p>该命令用于查询当前 DM-master 上存在的 DDL lock 信息。</p>
+<h4 id="heading-1">命令示例</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">show-ddl-locks <span style="color:#f92672">[</span>--worker<span style="color:#f92672">=</span>127.0.0.1:8262<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>task-name<span style="color:#f92672">]</span>
+</code></pre></div><h4 id="heading-2">参数解释</h4>
+<ul>
+<li>
+<p><code>worker</code>：</p>
+<ul>
+<li>flag 参数，string，<code>--worker</code>，可选</li>
+<li>不指定时，查询所有 DM-worker 相关的 lock 信息；指定时，仅查询与这组 DM-worker 相关的 lock 信息，可重复多次指定</li>
+</ul>
+</li>
+<li>
+<p><code>task-name</code>：</p>
+<ul>
+<li>非 flag 参数，string，可选</li>
+<li>不指定时，查询与所有任务相关的 lock 信息；指定时，仅查询特定任务相关的 lock 信息</li>
+</ul>
+</li>
+</ul>
+<h4 id="heading-3">返回结果示例</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">show-ddl-locks test
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,                                        # 查询 lock 操作本身是否成功
+    "msg": "",                                             # 查询 lock 操作失败时的原因或其它描述信息（如不存在任务 lock）
+    "locks": [                                             # DM-master 上存在的 lock 信息列表
+        {
+            "ID": "test-`shard_db`.`shard_table`",         # lock 的 ID 标识，当前由任务名与 DDL 对应的 schema/table 信息组成
+            "task": "test",                                # lock 所属的任务名
+            "owner": "127.0.0.1:8262",                     # lock 的 owner（第一个遇到该 DDL 的 DM-worker）
+            "DDLs": [                                      # lock 对应的 DDL 列表
+                "USE `shard_db`; ALTER TABLE `shard_db`.`shard_table` DROP COLUMN `c2`;"
+            ],
+            "synced": [                                    # 已经收到对应 MySQL 实例内所有分表 DDL 的 DM-worker 列表
+                "127.0.0.1:8262"
+            ],
+            "unsynced": [                                  # 尚未收到对应 MySQL 实例内所有分表 DDL 的 DM-worker 列表
+                "127.0.0.1:8263"
+            ]
+        }
+    ]
+}
+</code></pre></div><h3 id="unlock-ddl-lock"><code>unlock-ddl-lock</code></h3>
+<p>该命令用于主动请求 DM-master 解除指定的 DDL lock，包括的操作：请求 owner 执行 DDL 操作，请求其他非 owner 的 DM-worker 跳过 DDL 操作，移除 DM-master 上的 lock 信息。</p>
+<h4 id="heading-4">命令示例</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">unlock-ddl-lock <span style="color:#f92672">[</span>--worker<span style="color:#f92672">=</span>127.0.0.1:8262<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--owner<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--force-remove<span style="color:#f92672">]</span> &lt;lock-ID&gt;
+</code></pre></div><h4 id="heading-5">参数解释</h4>
+<ul>
+<li>
+<p><code>worker</code>：</p>
+<ul>
+<li>flag 参数，string，<code>--worker</code>，可选</li>
+<li>不指定时，对所有已经在等待该 lock 的 DM-worker 发起跳过 DDL 操作请求；指定时，仅对这组 DM-worker 发起跳过 DDL 操作请求，可重复多次指定</li>
+</ul>
+</li>
+<li>
+<p><code>owner</code>：</p>
+<ul>
+<li>flag 参数，string，<code>--owner</code>，可选</li>
+<li>不指定时，请求默认的 owner（<code>show-ddl-locks</code> 返回结果中的 <code>owner</code>）执行 DDL 操作；指定时，请求该 DM-worker（替代默认的 owner）执行 DDL 操作</li>
+</ul>
+</li>
+<li>
+<p><code>force-remove</code>：</p>
+<ul>
+<li>flag 参数，boolean，<code>--force-remove</code>，可选</li>
+<li>不指定时，仅在 owner 执行 DDL 成功时移除 lock 信息；指定时，即使 owner 执行 DDL 失败也强制移除 lock 信息（此后将无法再次查询或操作该 lock）</li>
+</ul>
+</li>
+<li>
+<p><code>lock-ID</code>：</p>
+<ul>
+<li>非 flag 参数，string，必选</li>
+<li>指定需要执行 unlock 操作的 DDL lock ID（即 <code>show-ddl-locks</code> 返回结果中的 <code>ID</code>）</li>
+</ul>
+</li>
+</ul>
+<h4 id="heading-6">返回结果示例</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">unlock-ddl-lock test-<span style="color:#e6db74">`</span>shard_db<span style="color:#e6db74">`</span>.<span style="color:#e6db74">`</span>shard_table<span style="color:#e6db74">`</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,                                        # unlock lock 操作是否成功
+    "msg": "",                                             # unlock lock 操作失败时的原因
+    "workers": [                                           # 各 DM-worker 执行/跳过 DDL 操作结果信息列表
+        {
+            "result": true,                                # 该 DM-worker 执行/跳过 DDL 操作是否成功
+            "worker": "127.0.0.1:8262",                    # DM-worker 地址 (DM-worker ID)
+            "msg": ""                                      # DM-worker 执行/跳过 DDL 失败时的原因
+        }
+    ]
+}
+</code></pre></div><h3 id="break-ddl-lock">break-ddl-lock</h3>
+<p>该命令用于主动请求 DM-worker 强制打破当前正在等待 unlock 的 DDL lock，包括请求 DM-worker 执行或跳过 DDL 操作、移除该 DM-worker 上的 DDL lock 信息。</p>
+<h4 id="heading-7">命令示例</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">break-ddl-lock &lt;--worker<span style="color:#f92672">=</span>127.0.0.1:8262&gt; <span style="color:#f92672">[</span>--remove-id<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--exec<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--skip<span style="color:#f92672">]</span> &lt;task-name&gt;
+</code></pre></div><h4 id="heading-8">参数解释</h4>
+<ul>
+<li>
+<p><code>worker</code>：</p>
+<ul>
+<li>flag 参数，string，<code>--worker</code>，必选</li>
+<li>指定需要执行 break 操作的 DM-worker</li>
+</ul>
+</li>
+<li>
+<p><code>remove-id</code>：已废弃</p>
+</li>
+<li>
+<p><code>exec</code>：</p>
+<ul>
+<li>flag 参数，boolean，<code>--exec</code>，可选</li>
+<li>不可与 <code>--skip</code> 参数同时指定</li>
+<li>指定时，请求该 DM-worker 执行（execute）当前 lock 对应的 DDL</li>
+</ul>
+</li>
+<li>
+<p><code>skip</code>：</p>
+<ul>
+<li>flag 参数，boolean，<code>--skip</code>，可选</li>
+<li>不可与 <code>--exec</code> 参数同时指定</li>
+<li>指定时，请求该 DM-worker 跳过（skip）当前 lock 对应的 DDL</li>
+</ul>
+</li>
+<li>
+<p><code>task-name</code>：</p>
+<ul>
+<li>非 flag 参数，string，必选</li>
+<li>指定要执行 break 操作的 lock 所在的 task 名称（要查看各 task 上是否存在 lock，可通过 <a href="/docs-cn/tidb-data-migration/dev/query-status">query-status</a> 获得）</li>
+</ul>
+</li>
+</ul>
+<h4 id="heading-9">返回结果示例</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">break-ddl-lock -w 127.0.0.1:8262 --exec test
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,                                        # break lock 操作是否成功
+    "msg": "",                                             # break lock 操作失败时的原因
+    "workers": [                                           # 执行 break lock 操作的 DM-worker 列表（当前单次操作仅支持对一个 DM-worker 执行 break lock）
+        {
+            "result": false,                               # 该 DM-worker break lock 操作是否成功
+            "worker": "127.0.0.1:8262",                    # 该 DM-worker 地址 (DM-worker ID)
+            "msg": ""                                      # DM-worker break lock 失败时的原因
+        }
+    ]
+}
+</code></pre></div><h2 id="heading-10">支持场景</h2>
+<p>目前，使用 <code>unlock-ddl-lock</code>/<code>break-ddl-lock</code> 命令仅支持处理以下三种 sharding DDL lock 异常情况。</p>
+<h3 id="-dm-worker-">场景一：部分 DM-worker 下线</h3>
+<h4 id="lock-">Lock 异常原因</h4>
+<p>在 DM-master 尝试自动 unlock sharding DDL lock 之前，需要等待所有 DM-worker 的 sharding DDL events 全部到达（详见<a href="/docs-cn/tidb-data-migration/dev/usage-scenario-shard-merge#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">分库分表合并同步原理</a>）。如果 sharding DDL 已经在同步过程中，且有部分 DM-worker 下线，并且不再计划重启它们（按业务需求移除了这部分 DM-worker），则会由于永远无法等齐所有的 DDL 而造成 lock 无法自动 unlock。</p>
+<h4 id="heading-11">手动处理示例</h4>
+<p>假设上游有 MySQL-1 和 MySQL-2 两个实例，其中 MySQL-1 中有 <code>shard_db_1</code>.<code>shard_table_1</code> 和 <code>shard_db_1</code>.<code>shard_table_2</code> 两个表，MySQL-2 中有 <code>shard_db_2</code>.<code>shard_table_1</code> 和 <code>shard_db_2</code>.<code>shard_table_2</code> 两个表。现在需要将这 4 个表合并后同步到下游 TiDB 的 <code>shard_db</code>.<code>shard_table</code> 表中。</p>
+<p>初始表结构如下：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SHOW</span> <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> shard_db_1.shard_table_1;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+---------------+------------------------------------------+
+| Table         | Create Table                             |
++---------------+------------------------------------------+
+| shard_table_1 | CREATE TABLE `shard_table_1` (
+  `c1` int(11) NOT NULL,
+  PRIMARY KEY (`c1`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 |
++---------------+------------------------------------------+
+</code></pre></div><p>上游分表将执行以下 DDL 语句变更表结构：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">TABLE</span> shard_db_<span style="color:#f92672">*</span>.shard_table_<span style="color:#f92672">*</span> <span style="color:#66d9ef">ADD</span> <span style="color:#66d9ef">COLUMN</span> c2 INT;
+</code></pre></div><p>MySQL 及 DM 操作与处理流程如下：</p>
+<ol>
+<li>
+<p>MySQL-1 对应的 DM-worker-1 的两个分表执行了对应的 DDL 操作进行表结构变更。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">TABLE</span> shard_db_1.shard_table_1 <span style="color:#66d9ef">ADD</span> <span style="color:#66d9ef">COLUMN</span> c2 INT;
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">TABLE</span> shard_db_1.shard_table_2 <span style="color:#66d9ef">ADD</span> <span style="color:#66d9ef">COLUMN</span> c2 INT;
+</code></pre></div></li>
+<li>
+<p>DM-worker-1 接受到两个分表的 DDL 之后，将对应 MySQL-1 相关的 DDL 信息发送给 DM-master，DM-master 创建相应的 DDL lock。</p>
+</li>
+<li>
+<p>使用 <code>show-ddl-lock</code> 查看当前的 DDL lock 信息。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">show-ddl-locks test
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,
+    "msg": "",
+    "locks": [
+        {
+            "ID": "test-`shard_db`.`shard_table`",
+            "task": "test",
+            "owner": "127.0.0.1:8262",
+            "DDLs": [
+                "USE `shard_db`; ALTER TABLE `shard_db`.`shard_table` ADD COLUMN `c2` int(11);"
+            ],
+            "synced": [
+                "127.0.0.1:8262"
+            ],
+            "unsynced": [
+                "127.0.0.1:8263"
+            ]
+        }
+    ]
+}
+</code></pre></div></li>
+<li>
+<p>由于业务需要，DM-worker-2 对应的 MySQL-2 的数据不再需要同步到下游 TiDB，对 DM-worker-2 执行了下线处理。</p>
+</li>
+<li>
+<p>DM-master 上 ID 为 <code>test-`shard_db`.`shard_table` </code> 的 lock 无法等到 DM-worker-2 的 DDL 操作信息。</p>
+<p><code>show-ddl-locks</code> 返回的 <code>unsynced</code> 中一直包含 DM-worker-2 的信息（<code>127.0.0.1:8263</code>）。</p>
+</li>
+<li>
+<p>使用 <code>unlock-dll-lock</code> 来请求 DM-master 主动 unlock 该 DDL lock。</p>
+<ul>
+<li>
+<p>如果 DDL lock 的 owner 也已经下线，可以使用 <code>--owner</code> 参数指定其他 DM-worker 作为新 owner 来执行 DDL。</p>
+</li>
+<li>
+<p>当存在任意 DM-worker 报错时，<code>result</code> 将为 <code>false</code>，此时请仔细检查各 DM-worker 的错误是否是预期可接受的。</p>
+<ul>
+<li>已下线的 DM-worker 会返回 <code>rpc error: code = Unavailable</code> 错误属于预期行为，可以忽略。</li>
+<li>如果其它未下线的 DM-worker 返回错误，则需要根据情况额外处理。</li>
+</ul>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">unlock-ddl-lock test-<span style="color:#e6db74">`</span>shard_db<span style="color:#e6db74">`</span>.<span style="color:#e6db74">`</span>shard_table<span style="color:#e6db74">`</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": false,
+   "msg": "github.com/pingcap/tidb-enterprise-tools/dm/master/server.go:1472: DDL lock test-`shard_db`.`shard_table` owner ExecuteDDL successfully, so DDL lock removed. but some dm-workers ExecuteDDL fail, you should to handle dm-worker directly",
+    "workers": [
+        {
+            "result": true,
+            "worker": "127.0.0.1:8262",
+            "msg": ""
+        },
+        {
+            "result": false,
+            "worker": "127.0.0.1:8263",
+            "msg": "rpc error: code = Unavailable desc = all SubConns are in TransientFailure, latest connection error: connection error: desc = \"transport: Error while dialing dial tcp 127.0.0.1:8263: connect: connection refused\""
+        }
+    ]
+}
+</code></pre></div></li>
+</ul>
+</li>
+<li>
+<p>使用 <code>show-dd-locks</code> 确认 DDL lock 是否被成功 unlock。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">show-ddl-locks test
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,
+    "msg": "no DDL lock exists",
+    "locks": [
+    ]
+}
+</code></pre></div></li>
+<li>
+<p>查看下游 TiDB 中的表结构是否变更成功。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SHOW</span> <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> shard_db.shard_table;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+-------------+--------------------------------------------------+
+| Table       | Create Table                                     |
++-------------+--------------------------------------------------+
+| shard_table | CREATE TABLE `shard_table` (
+  `c1` int(11) NOT NULL,
+  `c2` int(11) DEFAULT NULL,
+  PRIMARY KEY (`c1`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin |
++-------------+--------------------------------------------------+
+</code></pre></div></li>
+<li>
+<p>使用 <code>query-status</code> 确认同步任务是否正常。</p>
+</li>
+</ol>
+<h4 id="heading-12">手动处理后的影响</h4>
+<p>使用 <code>unlock-ddl-lock</code> 手动执行 unlock 操作后，由于该任务的配置信息中仍然包含了已下线的 DM-worker，如果不进行处理，则当下次 sharding DDL 到达时，仍会出现 lock 无法自动完成同步的情况。</p>
+<p>因此，在手动解锁 DDL lock 后，需要再执行以下操作：</p>
+<ol>
+<li>使用 <code>stop-task</code> 停止运行中的任务。</li>
+<li>更新任务配置文件，将已下线 DM-worker 对应的信息从配置文件中移除。</li>
+<li>使用 <code>start-task</code> 及新任务配置文件重新启动任务。</li>
+</ol>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>在 <code>unlock-ddl-lock</code> 之后，如果已下线的 DM-worker 重新上线并尝试对其中的分表进行数据同步，则会由于数据与下游的表结构不匹配而发生错误。</p>
+</blockquote>
+<h3 id="unlock--dm-worker-">场景二：unlock 过程中部分 DM-worker 重启</h3>
+<h4 id="lock--1">Lock 异常原因</h4>
+<p>在 DM-master 收到所有 DM-worker 的 DDL 信息后，执行自动 unlock DDL lock 的操作主要包括以下步骤：</p>
+<ol>
+<li>请求 lock owner 执行 DDL 操作，并更新对应分表的 checkpoint。</li>
+<li>在 owner 执行 DDL 操作成功后，移除 DM-master 上保存的 DDL lock 信息。</li>
+<li>在 owner 执行 DDL 操作成功后，请求其他所有 DM-worker 跳过 DDL 操作并更新对应分表的 checkpoint。</li>
+</ol>
+<p>上述 unlock DDL lock 的操作不是原子的，当 owner 执行 DDL 操作成功后，请求其他 DM-worker 跳过 DDL 操作时，如果该 DM-worker 发生了重启，则会造成该 DM-worker 跳过 DDL 操作失败。</p>
+<p>此时 DM-master 上的 lock 信息被移除，但该 DM-worker 重启后将尝试继续重新同步该 DDL 操作。但是，由于其他 DM-worker（包括原 owner）已经同步完该 DDL 操作，并已经在继续后续的同步，该 DM-worker 将永远无法等待该 DDL 操作对应 lock 的自动 unlock。</p>
+<h4 id="heading-13">手动处理示例</h4>
+<p>仍然假设是 <a href="#%E5%9C%BA%E6%99%AF%E4%B8%80%E9%83%A8%E5%88%86-dm-worker-%E4%B8%8B%E7%BA%BF">部分 DM-worker 下线</a> 示例中的上下游表结构及合表同步需求。</p>
+<p>当在 DM-master 自动执行 unlock 操作的过程中，owner (DM-worker-1) 成功执行了 DDL 操作且开始继续进行后续同步，并移除了 DM-master 上的 DDL lock 信息；但在请求 DM-worker-2 跳过 DDL 操作的过程中，由于 DM-worker-2 发生了重启而跳过 DDL 操作失败。</p>
+<p>DM-worker-2 重启后，将尝试重新同步重启前已经在等待的 DDL lock。此时将在 DM-master 上创建一个新的 lock，并且该 DM-worker 将成为 lock 的 owner（其他 DM-worker 此时已经执行或跳过 DDL 操作并在进行后续同步）。</p>
+<p>处理流程如下：</p>
+<ol>
+<li>
+<p>使用 <code>show-ddl-locks</code> 确认 DM-master 上存在该 DDL 操作对应的 lock。</p>
+<p>应该仅有该重启的 DM-worker（<code>127.0.0.1:8263</code>）处于 <code>syned</code> 状态：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">show-ddl-locks
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,
+    "msg": "",
+    "locks": [
+        {
+            "ID": "test-`shard_db`.`shard_table`",
+            "task": "test",
+            "owner": "127.0.0.1:8263",
+            "DDLs": [
+                "USE `shard_db`; ALTER TABLE `shard_db`.`shard_table` ADD COLUMN `c2` int(11);"
+            ],
+            "synced": [
+                "127.0.0.1:8263"
+            ],
+            "unsynced": [
+                "127.0.0.1:8262"
+            ]
+        }
+    ]
+}
+</code></pre></div></li>
+<li>
+<p>使用 <code>unlock-ddl-lock</code> 请求 DM-master unlock 该 lock。</p>
+<ul>
+<li>
+<p>使用 <code>--worker</code> 参数限定操作仅针对该重启的 DM-worker（<code>127.0.0.1:8263</code>）。</p>
+</li>
+<li>
+<p>Lock 过程中该 DM-worker 会尝试再次向下游执行该 DDL 操作（重启前的原 owner 已向下游执行过该 DDL 操作），需要确保该 DDL 操作可被多次执行。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">unlock-ddl-lock --worker<span style="color:#f92672">=</span>127.0.0.1:8263 test-<span style="color:#e6db74">`</span>shard_db<span style="color:#e6db74">`</span>.<span style="color:#e6db74">`</span>shard_table<span style="color:#e6db74">`</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,
+    "msg": "",
+    "workers": [
+        {
+            "result": true,
+            "worker": "127.0.0.1:8263",
+            "msg": ""
+        }
+    ]
+}
+</code></pre></div></li>
+</ul>
+</li>
+<li>
+<p>使用 <code>show-ddl-locks</code> 确认 DDL lock 是否被成功 unlock。</p>
+</li>
+<li>
+<p>使用 <code>query-status</code> 确认同步任务是否正常。</p>
+</li>
+</ol>
+<h4 id="heading-14">手动处理后的影响</h4>
+<p>手动 unlock sharding DDL lock 后，后续的 sharding DDL 将可以自动正常同步。</p>
+<h3 id="unlock--dm-worker--1">场景三：unlock 过程中部分 DM-worker 临时不可达</h3>
+<h4 id="lock--2">Lock 异常原因</h4>
+<p>与 <a href="#%E5%9C%BA%E6%99%AF%E4%BA%8Cunlock-%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%83%A8%E5%88%86-dm-worker-%E9%87%8D%E5%90%AF">unlock 过程中部分 DM-worker 重启</a> 造成 lock 异常的原因类似。当请求 DM-worker 跳过 DDL 操作时，如果该 DM-worker 临时不可达，则会造成该 DM-worker 跳过 DDL 操作失败。此时 DM-master 上的 lock 信息被移除，但该 DM-worker 将处于等待一个不再存在的 DDL lock 的状态。</p>
+<p>场景三与<a href="#%E5%9C%BA%E6%99%AF%E4%BA%8Cunlock-%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%83%A8%E5%88%86-dm-worker-%E9%87%8D%E5%90%AF">场景二</a>的区别在于，场景三中 DM-master 没有 lock，而场景二中 DM-master 有一个新的 lock。</p>
+<h4 id="heading-15">手动处理示例</h4>
+<p>仍然假设是 <a href="#%E5%9C%BA%E6%99%AF%E4%B8%80%E9%83%A8%E5%88%86-dm-worker-%E4%B8%8B%E7%BA%BF">部分 DM-worker 下线</a> 示例中的上下游表结构及合表同步需求。</p>
+<p>在 DM-master 自动执行 unlock 操作的过程中，owner (DM-worker-1) 成功执行了 DDL 操作且开始继续进行后续同步，并移除了 DM-master 上的 DDL lock 信息，但在请求 DM-worker-2 跳过 DDL 操作的过程中，由于网络原因等临时不可达而跳过 DDL 操作失败。</p>
+<p>处理流程如下：</p>
+<ol>
+<li>
+<p>使用 <code>show-ddl-locks</code> 确认 DM-master 上不再存在该 DDL 操作对应的 lock。</p>
+</li>
+<li>
+<p>使用 <code>query-status</code> 确认 DM-worker 仍在等待 lock 同步。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">query-status test
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,
+    "msg": "",
+    "workers": [
+        ...
+        {
+            ...
+            "worker": "127.0.0.1:8263",
+            "subTaskStatus": [
+                {
+                    ...
+                    "unresolvedDDLLockID": "test-`shard_db`.`shard_table`",
+                    "sync": {
+                        ...
+                        "blockingDDLs": [
+                            "USE `shard_db`; ALTER TABLE `shard_db`.`shard_table` ADD COLUMN `c2` int(11);"
+                        ],
+                        "unresolvedGroups": [
+                            {
+                                "target": "`shard_db`.`shard_table`",
+                                "DDLs": [
+                                    "USE `shard_db`; ALTER TABLE `shard_db`.`shard_table` ADD COLUMN `c2` int(11);"
+                                ],
+                                "firstPos": "(mysql-bin|000001.000003, 1752)",
+                                "synced": [
+                                    "`shard_db_2`.`shard_table_1`",
+                                    "`shard_db_2`.`shard_table_2`"
+                                ],
+                                "unsynced": [
+                                ]
+                            }
+                        ],
+                        "synced": false
+                    }
+                }
+            ]
+            ...
+        }
+    ]
+}
+</code></pre></div></li>
+<li>
+<p>使用 <code>break-ddl-lock</code> 请求强制 break 该 DM-worker 当前正在等待的 DDL lock。</p>
+<p>由于 owner 已经向下游执行了 DDL 操作，因此在 break 时使用 <code>--skip</code> 参数。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">break-ddl-lock --worker<span style="color:#f92672">=</span>127.0.0.1:8263 --skip test
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{
+    "result": true,
+    "msg": "",
+    "workers": [
+        {
+            "result": true,
+            "worker": "127.0.0.1:8263",
+            "msg": ""
+        }
+    ]
+}
+</code></pre></div></li>
+<li>
+<p>使用 <code>query-status</code> 确认同步任务是否正常且不再处于等待 lock 的状态。</p>
+</li>
+</ol>
+<h4 id="heading-16">手动处理后的影响</h4>
+<p>手动强制 break lock 后，后续 sharding DDL 将可以自动正常同步。</p>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-dm/blob/master/zh/manually-handling-sharding-ddl-locks.md">"手动处理 Sharding DDL Lock"</a>
+    更新于
+    <span>May 27 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-dm/commit/43eddbf917a1a075b85bec3b73bbe5209f63ac27">
+        Merge docs-special-week branch to master (#97) <span class="hash">(43eddbf)</span>
+</a>
+</div></div>
+<div class="sidebar-page sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-dm/edit/master/zh/manually-handling-sharding-ddl-locks.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    修改本文
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-dm/issues/new?body=File:%20[%2fzh%2fmanually-handling-sharding-ddl-locks.md](https%3a%2f%2fpingcap.com%2fdocs-cn%2ftidb-data-migration%2fdev%2fmanually-handling-sharding-ddl-locks%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    反馈文档问题
+</a>
+<p class="toc-title">本页导航</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>产品</strong></h4>
+<ul>
+<li><a href="/docs-cn/v3.0/" onclick="trackViews('footer-product-tidb', 'docs-cn_view')">TiDB</a></li>
+<li><a href="/docs-cn/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs-cn/v3.0/roadmap/">TiDB 路线图</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>文档</strong></h4>
+<ul>
+<li><a href="/docs-cn/stable/how-to/get-started/deploy-tidb-from-docker-compose/">快速入门</a></li>
+<li><a href="/blog-cn/tidb-best-practice/">最佳实践</a></li>
+<li><a href="/docs-cn/stable/faq/tidb/">常见问题解答</a></li>
+<li><a href="/docs-cn/stable/reference/tools/user-guide/">TiDB 周边工具</a></li>
+<li><a href="/docs-cn/dev/releases/rn/">版本发布说明</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>资源</strong></h4>
+<ul>
+<li><a href="/blog-cn/">博客</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="https://book.tidb.io" target="_blank">TiDB in Action</a></li>
+<li><a href="https://university.pingcap.com/" onclick="trackViews('footer-source-university', 'pingcap-university_view')" target="_blank">PingCAP
+                    University</a></li>
+<li><a href="/solutions/intel/" onclick="trackViews('footer-resource-solutions', 'solutions_view')">联合解决方案</a></li>
+<li><a href="https://asktug.com/" onclick="trackViews('footer-resource-asktug', 'asktug_view')" target="_blank">Ask TUG</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>公司</strong></h4>
+<ul>
+<li><a href="/about-cn/">关于我们</a></li>
+<li><a href="/about-cn/recruit/join/" onclick="trackViews('footer-recruit-join', 'recruit-join_view')">招贤纳士</a>
+</li>
+<li><a href="/about-cn/news/">新闻报道</a></li>
+<li><a href="/privacy-policy/">隐私申明</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>联系我们</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg> Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg> Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg> Stack Overflow</a></li>
+<li id="wechat"><a class="wechat" href="javascript:void(0)"><svg height="17" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg> 微信公众号</a> <div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-pc"></div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 北京平凯星辰科技发展有限公司</p>
+<a class="copyright-btn-lang copyright-btn-en" href="/docs/tidb-data-migration/dev" id="lang">English</a>
+<a class="prepared-num" href="http://www.beian.miit.gov.cn/">京 ICP 备 16046278 号 - 2</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

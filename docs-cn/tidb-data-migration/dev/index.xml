@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TiDB Data Migration 用户文档 on SQL at Scale</title>
+    <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/</link>
+    <description>Recent content in TiDB Data Migration 用户文档 on SQL at Scale</description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	<atom:link href="https://pingcap.com/docs-cn/tidb-data-migration/dev/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/TOC/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/TOC/</guid>
+      <description>TiDB Data Migration (DM) 文档 文档目录  关于 DM  性能数据 主要特性  Table routing Black &amp;amp; White Lists Binlog Event Filter 同步延迟监控 Online-ddl-scheme 分库分表合并同步     应用场景 快速上手  部署集群 同步任务   部署文档  软硬件要求   部署 DM 集群  使用 DM-Ansible 使用 Binary   监控与告警设置 测试验证 性能测试   运维操作  版本升级 集群操作   任务管理  dmctl 简介 管理上游数据源 任务前置检查 创建任务 查询状态 查询错误 暂停任务 恢复任务 停止任务 跳过或替代执行异常的 SQL 语句     手动处理 Sharding DDL Lock 告警处理 日常巡检   DM Portal 故障处理  故障及处理方法 性能问题及处理方法   教程  简单的从库同步场景 分库分表合并场景 从 Aurora 迁移到 TiDB 分表合并数据迁移最佳实践 DM-worker 在上游 MySQL 主从间切换   性能调优  配置调优   参考指南  架构  DM 简介 DM-worker 简介 DM Relay Log     DM 命令行参数   配置  概述 DM-master 配置 DM-worker 配置 上游数据库配置 任务配置     监控指标 告警信息 错误码   常见问题 术语表 版本发布历史  v1.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration 常见问题</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/faq/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/faq/</guid>
+      <description>Data Migration 常见问题 DM 是否支持同步阿里 RDS 以及其他云数据库的数据？ DM 仅支持解析标准版本的 MySQL/MariaDB 的 binlog，对于阿里云 RDS 以及其他云数据库没有进行过测试，如果确认其 binlog 为标准格式，则可以支持。
+task 配置中的黑白名单的正则表达式是否支持非获取匹配（?!）？ 目前不支持，DM 仅支持 golang 标准库的正则，可以通过 re2-syntax 了解 golang 支持的正则表达式。
+如果在上游执行的一个 statement 包含多个 DDL 操作，DM 是否支持同步？ DM 会尝试将包含多个 DDL 变更操作的单条语句拆分成只包含一个 DDL 操作的多条语句，但是可能没有覆盖所有的场景。建议在上游执行的一条 statement 中只包含一个 DDL 操作，或者在测试环境中验证一下，如果不支持，可以给 DM 提 issue。
+如何处理不兼容的 DDL 语句？ 你需要使用 dmctl 手动处理 TiDB 不兼容的 DDL 语句（包括手动跳过该 DDL 语句或使用用户指定的 DDL 语句替换原 DDL 语句，详见跳过或替代执行异常的 SQL 语句）。
+ 注意：
+TiDB 目前并不兼容 MySQL 支持的所有 DDL 语句。</description>
+    </item>
+    
+    <item>
+      <title>Data Migration 简介</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/overview/</guid>
+      <description>Data Migration 简介 TiDB Data Migration (DM) 是一体化的数据同步任务管理平台，支持从 MySQL 或 MariaDB 到 TiDB 的全量数据迁移和增量数据同步。使用 DM 工具有利于简化错误处理流程，降低运维成本。
+ 注意：
+DM 以 SQL 语句的形式将数据同步到 TiDB 中，因此各个版本的 DM 都分别兼容所有版本的 TiDB。在生产环境中，推荐使用 DM 的最新已发布版本。已发布版本的下载方式参见 DM 下载链接。
+ DM 架构 DM 主要包括三个组件：DM-master，DM-worker 和 dmctl。
+DM-master DM-master 负责管理和调度数据同步任务的各项操作。
+ 保存 DM 集群的拓扑信息 监控 DM-worker 进程的运行状态 监控数据同步任务的运行状态 提供数据同步任务管理的统一入口 协调分库分表场景下各个实例分表的 DDL 同步  DM-worker DM-worker 负责执行具体的数据同步任务。
+ 将 binlog 数据持久化保存在本地 保存数据同步子任务的配置信息 编排数据同步子任务的运行 监控数据同步子任务的运行状态  DM-worker 启动后，会自动同步上游 binlog 至本地配置目录（如果使用 DM-Ansible 部署 DM 集群，默认的同步目录为 &amp;lt;deploy_dir&amp;gt;/relay_log）。关于 DM-worker，详见 DM-worker 简介。关于 relay log，详见 DM Relay Log。</description>
+    </item>
+    
+    <item>
+      <title>Data Migration 简单使用场景</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/usage-scenario-simple-replication/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/usage-scenario-simple-replication/</guid>
+      <description>Data Migration 简单使用场景 本文介绍了 DM 工具的一个简单使用场景（非分库分表合并场景）：将三个上游 MySQL 实例的数据同步到一个下游 TiDB 集群中。
+上游实例 假设上游结构为：
+  实例 1
+   Schema Tables     user information, log   store store_bj, store_tj   log messages      实例 2
+   Schema Tables     user information, log   store store_sh, store_sz   log messages      实例 3</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0-GA 性能测试报告</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/benchmark-v1.0-ga/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/benchmark-v1.0-ga/</guid>
+      <description>DM 1.0-GA 性能测试报告 本报告记录了对 1.0-GA 版本的 DM 进行性能测试的目的、环境、场景和结果。
+测试目的 该性能测试用于评估使用 DM 进行全量数据导入和增量数据同步的性能上限，并根据测试结果提供 DM 同步任务的参考配置。
+测试环境 测试机器信息 系统信息：
+   机器 IP 操作系统 内核版本 文件系统类型     172.16.4.39 CentOS Linux release 7.6.1810 3.10.0-957.1.3.el7.x86_64 ext4   172.16.4.40 CentOS Linux release 7.6.1810 3.10.0-957.1.3.el7.x86_64 ext4   172.16.4.41 CentOS Linux release 7.6.1810 3.10.0-957.1.3.el7.x86_64 ext4   172.16.4.42 CentOS Linux release 7.6.1810 3.10.0-957.1.3.el7.x86_64 ext4   172.16.4.43 CentOS Linux release 7.6.1810 3.</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0.2 Release Notes</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/1.0.2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/1.0.2/</guid>
+      <description>DM 1.0.2 Release Notes 发版日期：2019 年 10 月 30 日
+DM 版本：1.0.2
+DM-Ansible 版本：1.0.2
+改进提升  支持自动为 DM-worker 生成部分配置项 支持自动为数据迁移任务生成部分配置项 简化 query-status 在无参数时的默认输出 DM 直接管理到下游数据库的连接  问题修复  修复在进程启动过程中以及执行 SQL 失败时可能 panic 的问题 修复 DDL 执行超时后可能造成 sharding DDL 协调异常的问题 修复由于前置检查超时或部分 DM-worker 不可访问而不能启动数据迁移任务的问题 修复 SQL 执行失败后可能错误重试的问题  详细变更及问题修复  支持自动为 DM-worker 生成随机的 server-id 配置项 #337 支持自动为 DM-worker 生成 flavor 配置项 #328 支持自动为 DM-worker 生成 relay-binlog-name 与 relay-binlog-gtid 配置项 #318 支持根据黑白名单生成 mydumper 需要导出的表名配置项 #326 为数据迁移任务增加并发度配置项 (mydumper-thread、loader-thread 与 syncer-thread) #314 简化 query-status 在无参数时的默认输出 #340 修复 DDL 执行超时后可能造成 sharding DDL 协调异常的问题 #338 修复 DM-worker 从本地 meta 数据恢复数据迁移任务时可能 panic 的问题 #311 修复提交事务失败时可能造成 DM-worker panic 的问题 #313 修复监听端口被占用时 DM-worker 或 DM-master 启动过程中可能 panic 的问题 #301 修复对 1105 错误码的部分重试问题 #321, #332 修复对 Duplicate entry 与 Data too long for column 错误的重试问题 #313 修复在上游存在大量需要迁移的表时可能造成启动任务前置检查超时中断的问题 #327 修复部分 DM-worker 不可访问时无法启动数据迁移任务的问题 #319 修复从损坏的 relay log 恢复时可能错误更新 GTID sets 信息的问题 #339 修复 sync 处理单元计算 TPS 错误的问题 #294 DM 直接管理到下游数据库的连接 #325 提升组件内错误信息的传递方式 #320  </description>
+    </item>
+    
+    <item>
+      <title>DM 1.0.3 Release Notes</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/1.0.3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/1.0.3/</guid>
+      <description>DM 1.0.3 Release Notes 发版日期：2019 年 12 月 13 日
+DM 版本：1.0.3
+DM-Ansible 版本：1.0.3
+改进提升  dmctl 支持命令式使用 支持同步 ALTER DATABASE DDL 语句 优化 DM 错误提示信息  问题修复  修复全量导入模块在暂停或退出时 data race 导致 panic 的问题 修复对下游进行重试操作时，stop-task 和 pause-task 可能不生效的问题  详细变更及问题修复  dmctl 支持命令式使用 #364 优化 DM 错误提示信息 #351 优化 query-status 命令输出内容 #357 优化 DM 不同任务类型的权限检查 #374 支持对重复引用的路由配置和过滤配置进行检查 #385 支持同步 ALTER DATABASE DDL 语句 #389 优化 DM 异常重试机制 #391 修复全量导入模块在暂停或退出时 data race 导致 panic 的问题 #353 修复对下游进行重试操作时，stop-task 和 pause-task 可能不生效的问题 #400 更新 Golang 版本至 1.</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0.4 Release Notes</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/1.0.4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/1.0.4/</guid>
+      <description>DM 1.0.4 Release Notes 发版日期：2020 年 03 月 13 日
+DM 版本：1.0.4
+DM-Ansible 版本：1.0.4
+改进提升  DM-portal 新增英文 UI 的支持 query-status 命令增加 --more 参数用于显示完整的同步状态信息  问题修复  修复到下游 TiDB 连接异常导致同步暂停后，resume-task 可能无法正常恢复同步的问题 修复 online DDL 执行失败后错误清理了 online DDL meta 信息而导致重启任务后无法继续正确处理 online DDL 同步的问题 修复 start-task 异常后 query-error 可能导致 DM-worker panic 的问题 修复 relay.meta 写入成功前 DM-worker 进程异常停止后，重启 DM-worker 时可能无法正确 recover relay log 文件与 relay.meta 的问题  详细变更及问题修复  DM-portal 增加支持英文 UI #480 query-status 命令增加 --more 参数用于显示完整的同步状态信息 #533 修复到下游 TiDB 连接异常导致同步暂停后，resume-task 可能无法正常恢复同步的问题 #436 修复 online DDL 执行失败后错误清理了 online DDL meta 信息而导致重启任务后无法继续正确处理 online DDL 同步的问题 #465 修复 start-task 异常后 query-error 可能导致 DM-worker panic 的问题 #519 修复 relay.</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0.5 Release Notes</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/1.0.5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/1.0.5/</guid>
+      <description>DM 1.0.5 Release Notes 发版日期：2020 年 4 月 27 日
+DM 版本：1.0.5
+DM-Ansible 版本：1.0.5
+改进提升  优化了 UNIQUE KEY 对应列含 NULL 值时的增量同步速度 增加对 TiDB 返回的 Write conflict（9007 与 8005）错误的重试  问题修复  修复了全量数据导入过程中有概率触发 Duplicate entry 错误的问题 修复了全量导入完成后上游无数据写入时可能无法 stop-task/pause-task 的问题 修复 stop-task 后监控 metrics 仍有数据显示的问题  详细变更及问题修复  优化了 UNIQUE KEY 对应列含 NULL 值时的增量同步速度 #588 #597 增加对 TiDB 返回的 Write conflict（9007 与 8005）错误的重试 #632 修复了全量数据导入过程中有概率触发 Duplicate entry 错误的问题 #554 修复了全量导入完成后上游无数据写入时可能无法 stop-task/pause-task 的问题 #622 修复 stop-task 后监控 metrics 仍有数据显示的问题 #616 修复同步过程中有概率出现 Column count doesn&#39;t match value count 的问题 #624 修复了全量导入阶段从 paused 状态 resume-task 后 data file size 等部分 metrics 显示错误的问题 #570 添加与修复了多个 metrics 监控项 #590 #594  </description>
+    </item>
+    
+    <item>
+      <title>DM Portal 简介</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-portal/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-portal/</guid>
+      <description>DM Portal 简介 当前版本的 DM 提供了丰富多样的功能特性，包括 Table routing，Black &amp;amp; white table lists，Binlog event filter 等。但这些功能特性同时也增加了用户使用 DM 的复杂度，尤其在进行 DM 任务配置的过程中。
+针对这个问题，DM 提供了一个精简的网页程序 DM Portal，用于帮助用户以可视化的方式来配置所需的同步任务，并且生成可以让 DM 直接执行的 task.yaml 文件。
+功能描述 本节简要介绍 DM Portal 的各项功能。
+同步模式配置 支持 DM 的三种同步模式：
+ 全量同步 增量同步 All（全量+增量）  实例信息配置 支持配置库表同步路由方式，并支持 DM 中分库分表合并的配置方式。
+binlog 过滤配置 支持对数据库、数据表配置 binlog event filter 过滤规则。
+配置文件生成 支持配置文件的创建，即能够将配置文件下载到本地并同时在 DM Portal 服务器的 /tmp/ 目录下自动创建配置文件。
+使用限制 目前，DM Portal 提供的可视化页面能够覆盖绝大部分的 DM 配置场景，但也有一定的使用限制：
+ 不支持 Binlog event filter 的 SQL pattern 方式 编辑功能不支持解析用户之前写的 task.</description>
+    </item>
+    
+    <item>
+      <title>DM Relay Log</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/relay-log/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/relay-log/</guid>
+      <description>了解目录结构、初始同步规则和 DM relay log 的数据清理。</description>
+    </item>
+    
+    <item>
+      <title>DM 任务完整配置文件介绍</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/task-configuration-file-full/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/task-configuration-file-full/</guid>
+      <description>DM 任务完整配置文件介绍 本文档主要介绍 Data Migration (DM) 的任务完整的配置文件，包含全局配置 和实例配置 两部分。
+关于各配置项的功能和配置，请参阅数据同步功能。
+关键概念 关于包括 source-id 和 DM-worker ID 在内的关键概念的介绍，请参阅关键概念。
+完整配置文件示例 下面是一个完整的配置文件示例，通过该示例可以完成复杂的数据同步功能。
+--- # ----------- 全局配置 ----------- ## ********* 基本信息配置 ********* name: test # 任务名称，需要全局唯一 task-mode: all # 任务模式，可设为 &amp;#34;full&amp;#34;、&amp;#34;incremental&amp;#34;、&amp;#34;all&amp;#34; is-sharding: true # 是否为分库分表合并任务 shard-mode: &amp;#34;optimistic&amp;#34; # shard DDL 同步模式，可设为 &amp;#34;&amp;#34;、&amp;#34;pessimistic&amp;#34;、&amp;#34;optimistic&amp;#34; ignore-checking-items: [] # 忽略的检测项，可包含 &amp;#34;all&amp;#34;、&amp;#34;dump_privilege&amp;#34;、&amp;#34;replication_privilege&amp;#34;、&amp;#34;version&amp;#34;、&amp;#34;binlog_enable&amp;#34;、&amp;#34;binlog_format&amp;#34;、&amp;#34;binlog_row_image&amp;#34;、&amp;#34;table_schema&amp;#34;、&amp;#34;schema_of_shard_tables&amp;#34;、&amp;#34;auto_increment_ID&amp;#34; meta-schema: &amp;#34;dm_meta&amp;#34; # 下游储存 `meta` 信息的数据库 remove-meta: false # 是否在任务同步开始前移除该任务名对应的 `meta`（`checkpoint` 和 `onlineddl` 等）。 enable-heartbeat: false # 若开启 `heartbeat` 功能，DM 会定时更新上游 MySQL heartbeat table，用于估算同步延迟 heartbeat-update-interval: 1 # DM 更新上游 MySQL heartbeat table 的间隔 heartbeat-report-interval: 10 # DM 估算延迟 lag 的间隔 timezone: &amp;#34;Asia/Shanghai&amp;#34; # 时区 case-sensitive: false # schema/table 是否大小写敏感 online-ddl-scheme: &amp;#34;gh-ost&amp;#34; # 目前仅支持 &amp;#34;gh-ost&amp;#34; 、&amp;#34;pt&amp;#34; target-database: # 下游数据库实例配置 host: &amp;#34;192.</description>
+    </item>
+    
+    <item>
+      <title>DM 任务配置文件介绍</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/task-configuration-file/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/task-configuration-file/</guid>
+      <description>DM 任务配置文件介绍 本文档主要介绍 Data Migration (DM) 的任务基础配置文件，包含全局配置和实例配置两部分。
+完整的任务配置参见 DM 任务完整配置文件介绍。关于各配置项的功能和配置，请参阅数据同步功能。
+关键概念 关于包括 source-id 和 DM-worker ID 在内的关键概念的介绍，请参阅关键概念。
+基础配置文件示例 下面是一个基础的配置文件示例，通过该示例可以完成简单的数据同步功能。
+--- # ----------- 全局配置 ----------- ## ********* 基本信息配置 ********* name: test # 任务名称，需要全局唯一 task-mode: all # 任务模式，可设为 &amp;#34;full&amp;#34;、&amp;#34;incremental&amp;#34;、&amp;#34;all&amp;#34; target-database: # 下游数据库实例配置 host: &amp;#34;127.0.0.1&amp;#34; port: 4000 user: &amp;#34;root&amp;#34; password: &amp;#34;&amp;#34; # 如果不为空则需经过 dmctl 加密 ## ******** 功能配置集 ********** black-white-list: # 上游数据库实例匹配的表的 black &amp;amp; white list 过滤规则集 bw-rule-1: # 黑白名单配置的名称 do-dbs: [&amp;#34;all_mode&amp;#34;] # 同步哪些库 # ----------- 实例配置 ----------- mysql-instances: - source-id: &amp;#34;mysql-replica-01&amp;#34; # 上游实例或者复制组 ID，参考 `dm-master.</description>
+    </item>
+    
+    <item>
+      <title>DM 分库分表合并场景</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/usage-scenario-shard-merge/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/usage-scenario-shard-merge/</guid>
+      <description>DM 分库分表合并场景 本文介绍如何在分库分表合并场景中使用 Data Migration (DM)。使用场景中，三个上游 MySQL 实例的分库和分表数据需要同步至下游 TiDB 集群。
+上游实例 假设上游库结构如下：
+  实例 1
+   Schema Tables     user information, log_north, log_bak   store_01 sale_01, sale_02   store_02 sale_01, sale_02      实例 2
+   Schema Tables     user information, log_east, log_bak   store_01 sale_01, sale_02   store_02 sale_01, sale_02      实例 3</description>
+    </item>
+    
+    <item>
+      <title>DM 告警信息</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/alert-rules/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/alert-rules/</guid>
+      <description>介绍 DM 的告警信息。</description>
+    </item>
+    
+    <item>
+      <title>DM 命令行参数</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/command-line-flags/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/command-line-flags/</guid>
+      <description>介绍 DM 各组件的主要命令行参数。</description>
+    </item>
+    
+    <item>
+      <title>DM 监控指标</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/monitor-a-dm-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/monitor-a-dm-cluster/</guid>
+      <description>介绍 DM 的监控指标</description>
+    </item>
+    
+    <item>
+      <title>DM 配置优化</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/tune-configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/tune-configuration/</guid>
+      <description>介绍如何通过优化配置来提高数据同步性能。</description>
+    </item>
+    
+    <item>
+      <title>DM 配置简介</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/config-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/config-overview/</guid>
+      <description>DM 配置简介 本文档简要介绍 DM (Data Migration) 的配置文件和数据同步任务的配置。
+配置文件  dm-master.toml：DM-master 进程的配置文件，包括 DM-master 的拓扑信息、日志等各项配置。配置说明详见 DM-master 配置文件介绍。 dm-worker.toml：DM-worker 进程的配置文件，包括 DM-worker 的拓扑信息、日志等各项配置。配置说明详见 DM-worker 配置文件介绍。 source.toml：上游数据库 MySQL/MariaDB 相关配置。配置说明详见上游数据库配置文件介绍。  同步任务配置 任务配置文件 每一个数据同步任务对应一个 task.yaml 文件。关于该配置文件的详细介绍，参见任务配置文件。
+创建数据同步任务 具体步骤如下：
+ 使用 dmctl 将数据源配置加载到 DM 集群 参考任务配置文件来创建 your_task.yaml 文件。 使用 dmctl 创建数据同步任务。  关键概念 DM 配置的关键概念如下：
+   概念 解释 配置文件     source-id 唯一确定一个 MySQL 或 MariaDB 实例，或者一个具有主从结构的复制组，字符串长度不大于 32 source.toml 的 source-id； task.yaml 的 source-id   DM-master ID 唯一确定一个 DM-master（取值于 dm-master.</description>
+    </item>
+    
+    <item>
+      <title>DM 集群性能测试</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/performance-test/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/performance-test/</guid>
+      <description>了解如何测试 DM 集群的性能。</description>
+    </item>
+    
+    <item>
+      <title>DM 集群操作</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/cluster-operations/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/cluster-operations/</guid>
+      <description>DM 集群操作 本文介绍 DM 集群操作以及使用 DM-Ansible 管理 DM 集群时需要注意的事项。
+启动集群 运行以下命令以启动整个集群的所有组件（包括 DM-master、DM-worker 和监控组件）：
+ ansible-playbook start.yml 下线集群 运行以下命令以下线整个集群的所有组件（包括 DM-master、DM-worker 和监控组件）：
+ ansible-playbook stop.yml 重启集群组件 在以下情况下，需要更新 DM 集群组件：
+ 您想要更新组件版本。 发生了严重的错误，您需要重启组件完成临时恢复。 DM 集群所在的机器由于某种原因重启。  重启注意事项 该部分描述重启 DM 各组件时需要了解的事项。
+DM-worker 重启事项 全量数据导入过程中：
+对于全量数据导入时的 SQL 文件，DM 使用下游数据库记录断点信息，DM-worker 会在本地 meta 文件记录子任务信息。DM-worker 重启时会检查断点信息和本地记录的子任务信息，重启前处于运行中状态的任务会自动恢复数据同步。
+增量数据同步过程中：
+对于增量数据导入过程中的 binlog，DM 使用下游数据库记录断点信息，并会在同步任务开始或恢复后的第一个五分钟之内开启安全模式。
+  未启用 sharding DDL 同步
+如果 DM-worker 上运行的任务未启用 sharding DDL 同步功能，DM-worker 重启时会检查断点信息和本地记录的子任务信息，重启前处于运行中状态的任务会自动恢复数据同步。
+  已启用 sharding DDL 同步</description>
+    </item>
+    
+    <item>
+      <title>DM 集群软硬件环境需求</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/hardware-and-software-requirements/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/hardware-and-software-requirements/</guid>
+      <description>了解部署 DM 集群的软件和硬件要求。</description>
+    </item>
+    
+    <item>
+      <title>DM-master 配置文件介绍</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-master-configuration-file/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-master-configuration-file/</guid>
+      <description>DM-master 配置文件介绍 本文介绍 DM-master 的配置文件，包括配置文件示例与配置项说明。
+配置文件示例 DM-master 的示例配置文件如下所示：
+name = &amp;#34;dm-master&amp;#34; # log configuration log-level = &amp;#34;info&amp;#34; log-file = &amp;#34;dm-master.log&amp;#34; # DM-master listening address master-addr = &amp;#34;:8261&amp;#34; advertise-addr = &amp;#34;127.0.0.1:8261&amp;#34; # URLs for peer traffic peer-urls = &amp;#34;http://127.0.0.1:8291&amp;#34; advertise-peer-urls = &amp;#34;http://127.0.0.1:8291&amp;#34; # cluster configuration initial-cluster = &amp;#34;master1=http://127.0.0.1:8291,master2=http://127.0.0.1:8292,master3=http://127.0.0.1:8293&amp;#34; join = &amp;#34;&amp;#34; 配置项说明 Global 配置    配置项 说明     name 标识一个 DM-master。   log-level 日志级别：debug、info、warn、error、fatal。默认为 info。   log-file 日志文件，如果不配置，日志会输出到标准输出中。   master-addr DM-master 服务的地址，可以省略 IP 信息，例如：&amp;quot;:8261&amp;rdquo;。   advertise-addr DM-master 向外界宣告的地址。   peer-urls DM-master 节点的对等 URL。   advertise-peer-urls DM-master 向外界宣告的对等 URL。默认为 peer-urls 的值。   initial-cluster 初始集群中所有 DM-master 的 advertise-peer-urls 的值。   join 集群里已有的 DM-master 的 advertise-peer-urls 的值。如果是新加入的 DM-master 节点，使用 join 替代 initial-cluster。    </description>
+    </item>
+    
+    <item>
+      <title>DM-worker 简介</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-worker-intro/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-worker-intro/</guid>
+      <description>DM-worker 简介 DM-worker 是 DM (Data Migration) 的一个组件，负责执行具体的数据同步任务。
+其主要功能如下：
+ 注册为一台 MySQL 或 MariaDB 服务器的 slave。 读取 MySQL 或 MariaDB 的 binlog event，并将这些 event 持久化保存在本地 (relay log)。 单个 DM-worker 支持同步一个 MySQL 或 MariaDB 实例的数据到下游的多个 TiDB 实例。 多个 DM-Worker 支持同步多个 MySQL 或 MariaDB 实例的数据到下游的一个 TiDB 实例。  DM-worker 处理单元 DM-worker 任务包含如下多个逻辑处理单元。
+Relay log Relay log 持久化保存从上游 MySQL 或 MariaDB 读取的 binlog，并对 binlog replication 处理单元提供读取 binlog event 的功能。
+其原理和功能与 MySQL slave relay log 类似，详见 Slave Relay Log。</description>
+    </item>
+    
+    <item>
+      <title>DM-worker 配置文件介绍</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-worker-configuration-file/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-worker-configuration-file/</guid>
+      <description>DM-worker 配置文件介绍 本文介绍 DM-worker 的配置文件，包括配置文件示例与配置项说明。
+配置文件示例 # Worker Configuration. name = &amp;#34;worker1&amp;#34; # Log configuration. log-level = &amp;#34;info&amp;#34; log-file = &amp;#34;dm-worker.log&amp;#34; # DM-worker listen address. worker-addr = &amp;#34;:8262&amp;#34; advertise-addr = &amp;#34;127.0.0.1:8262&amp;#34; join = &amp;#34;127.0.0.1:8261,127.0.0.1:8361,127.0.0.1:8461&amp;#34; 配置项说明 Global 配置    配置项 说明     name 标识一个 DM-worker。   log-level 日志级别：debug、info、warn、error、fatal。默认为 info。   log-file 日志文件，如果不配置日志会输出到标准输出中。   worker-addr DM-worker 服务的地址，可以省略 IP 信息，例如：&amp;quot;:8262&amp;rdquo;。   advertise-addr DM-worker 向外界宣告的地址。   join 对应一个或多个 DM-master 配置中的 master-addr。    </description>
+    </item>
+    
+    <item>
+      <title>dmctl 简介</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/dmctl-introduction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/dmctl-introduction/</guid>
+      <description>了解如何使用 dmctl 管理数据同步任务。</description>
+    </item>
+    
+    <item>
+      <title>online-ddl-scheme 功能介绍</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/feature-online-ddl-scheme/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/feature-online-ddl-scheme/</guid>
+      <description>DM online-ddl-scheme 概述 DDL 是数据库应用中必然会使用的一类 SQL。MySQL 虽然在 5.6 的版本以后支持了 online-ddl，但是也有或多或少的限制。比如 MDL 锁的获取，某些 DDL 还是需要以 Copy 的方式来进行，在生产业务使用中，DDL 执行过程中的锁表会一定程度上阻塞数据库的读取或者写入。
+因此，gh-ost 以及 pt-osc 可以更优雅地在 MySQL 上面执行 DDL，把对读写的影响降到最低。
+TiDB 根据 Google F1 的在线异步 schema 变更算法实现，在 DDL 过程中并不会阻塞读写。因此，在 online-schema-change 过程中，gh-ost 和 pt-osc 所产生的大量中间表数据以及 binlog event，在 MySQL 与 TiDB 的数据同步过程中并不需要。
+DM 是 MySQL 到 TiDB 的数据同步工具，online-ddl-scheme 功能就是对上述两个 online-schema-change 的工具进行特殊的处理，以便更快完成所需的 DDL 同步。
+如果想从源码方面了解 DM online-ddl-scheme，可以参考 DM 源码阅读系列文章（八）Online Schema Change 同步支持
+配置 online-ddl-scheme 在 task 配置文件里面与 name 同级，例子详见下面配置 Example。完整的配置及意义，可以参考 DM 完整配置文件示例：</description>
+    </item>
+    
+    <item>
+      <title>Table Selector</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/table-selector/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/table-selector/</guid>
+      <description>介绍 DM 的 Table Selector</description>
+    </item>
+    
+    <item>
+      <title>TiDB Data Migration 快速上手指南</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/quick-start-with-dm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/quick-start-with-dm/</guid>
+      <description>了解如何快速上手部署试用 TiDB Data Migration 工具。</description>
+    </item>
+    
+    <item>
+      <title>TiDB Data Migration 日常巡检</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/daily-check/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/daily-check/</guid>
+      <description>了解 DM 工具的日常巡检。</description>
+    </item>
+    
+    <item>
+      <title>TiDB Data Migration 术语表</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/glossary/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/glossary/</guid>
+      <description>学习 TiDB Data Migration 相关术语</description>
+    </item>
+    
+    <item>
+      <title>TiDB Data Migration 查询状态</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/query-status/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/query-status/</guid>
+      <description>深入了解 TiDB Data Migration 如何查询数据同步任务状态</description>
+    </item>
+    
+    <item>
+      <title>TiDB Data Migration 查询运行错误</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/query-error/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/query-error/</guid>
+      <description>深入了解 TiDB Data Migration 如何查询数据同步任务运行错误。</description>
+    </item>
+    
+    <item>
+      <title>TiDB Data Migration 版本升级</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-upgrade/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/dm-upgrade/</guid>
+      <description>了解 TiDB Data Migration 工具的版本变更和升级操作。</description>
+    </item>
+    
+    <item>
+      <title>上游 MySQL 实例配置前置检查</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/precheck/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/precheck/</guid>
+      <description>了解上游 MySQL 实例配置前置检查。</description>
+    </item>
+    
+    <item>
+      <title>上游数据库配置文件介绍</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/source-configuration-file/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/source-configuration-file/</guid>
+      <description>上游数据库配置文件介绍 本文介绍上游数据库的配置文件，包括配置文件示例与配置项说明。
+配置文件示例 上游数据库的示例配置文件如下所示：
+source-id = &amp;#34;mysql-replica-01&amp;#34; # 开启 GTID enable-gtid = false [from] host = &amp;#34;127.0.0.1&amp;#34; port = 3306 user = &amp;#34;root&amp;#34; password = &amp;#34;ZqMLjZ2j5khNelDEfDoUhkD5aV5fIJOe0fiog9w=&amp;#34; # 使用 dmctl 对上游数据库的用户密码加密之后的密码 配置项说明 Global 配置    配置项 说明     source-id 标识一个 MySQL 实例。   enable-gtid 是否使用 GTID 方式从上游拉取 binlog，默认值为 false。一般情况下不需要手动配置，如果上游数据库启用了 GTID 支持，且需要做主从切换，则将该配置项设置为 true。   host 上游数据库的 host。   port 上游数据库的端口。   user 上游数据库使用的用户名。   password 上游数据库的用户密码。注意：需要使用 dmctl 加密后的密码。    </description>
+    </item>
+    
+    <item>
+      <title>主要特性</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/key-features/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/key-features/</guid>
+      <description>了解 DM 的各主要功能特性或相关的配置选项。</description>
+    </item>
+    
+    <item>
+      <title>从 MySQL 迁移数据 —— 以 Amazon Aurora MySQL 为例</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/migrate-from-mysql-aurora/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/migrate-from-mysql-aurora/</guid>
+      <description>使用 DM 从 MySQL/Amazon Aurora MySQL 迁移数据。</description>
+    </item>
+    
+    <item>
+      <title>使用 DM binary 部署 DM 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/deploy-a-dm-cluster-using-binary/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/deploy-a-dm-cluster-using-binary/</guid>
+      <description>使用 DM binary 部署 DM 集群 本文将介绍如何使用 DM binary 快速部署 DM 集群。
+准备工作 下载官方 binary，链接地址：DM 下载。
+下载的文件中包括子目录 bin 和 conf。bin 目录下包含 dm-master、dm-worker 以及 dmctl 的二进制文件。conf 目录下有相关的示例配置文件。
+使用样例 假设在五台服务器上部署两个 DM-worker 实例和三个 DM-master 实例。各个节点的信息如下：
+   实例 服务器地址 端口     DM-master1 192.168.0.4 8261   DM-master2 192.168.0.5 8261   DM-master3 192.168.0.6 8261   DM-worker1 192.168.0.7 8262   DM-worker2 192.168.0.8 8262    下面以此为例，说明如何部署 DM。</description>
+    </item>
+    
+    <item>
+      <title>使用 DM 同步数据</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/replicate-data-using-dm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/replicate-data-using-dm/</guid>
+      <description>使用 DM 同步数据 本文介绍如何使用 DM (Data Migration) 同步数据。
+第 1 步：部署 DM 集群 目前推荐使用 DM-Ansible 部署 DM 集群，具体部署方法参照 使用 DM-Ansible 部署 DM 集群；也可以使用 binary 部署 DM 集群用于体验或者测试，具体部署方法参照使用 DM binary 部署 DM 集群。
+ 注意：
+ 在 DM 所有的配置文件中，数据库的密码要使用 dmctl 加密后的密文。如果数据库密码为空，则不需要加密。关于如何使用 dmctl 加密明文密码，参考使用 dmctl 加密上游 MySQL 用户密码。 上下游数据库用户必须拥有相应的读写权限。   第 2 步：检查集群信息 使用 DM-Ansible 部署 DM 集群后，相关配置信息如下：
+  DM 集群相关组件配置信息
+   组件 主机 端口     dm_worker1 172.</description>
+    </item>
+    
+    <item>
+      <title>使用 DM-Ansible 部署 DM 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/deploy-a-dm-cluster-using-ansible/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/deploy-a-dm-cluster-using-ansible/</guid>
+      <description>使用 DM-Ansible 部署 DM 集群 DM-Ansible 是 PingCAP 基于 Ansible 的 Playbooks 研发的 DM (Data Migration) 集群部署工具。本文将介绍如何使用 DM-Ansible 快速部署 DM 集群。
+准备工作 在开始之前，先确保您准备好了以下配置的机器：
+  部署目标机器若干，配置如下：
+ CentOS 7.3 (64-bit) 或更高版本，x86_64 架构（AMD64） 机器之间内网互通 关闭防火墙，或开放服务端口    一台中控机，配置如下：
+ 包含 Python 2.7 的 CentOS 7.3（64-bit）或更高版本 Ansible 2.5 或更高版本 互联网访问    第 1 步：在中控机上安装依赖包  注意：
+请确保使用 root 账户登录中控机。
+ 根据中控机的操作系统版本，运行相应命令如下：
+  CentOS 7：
+ yum -y install epel-release git curl sshpass &amp;amp;&amp;amp; yum -y install python-pip   Ubuntu：</description>
+    </item>
+    
+    <item>
+      <title>停止数据同步任务</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/stop-task/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/stop-task/</guid>
+      <description>了解 TiDB Data Migration 如何停止数据同步任务。</description>
+    </item>
+    
+    <item>
+      <title>分库分表合并同步</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/feature-shard-merge/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/feature-shard-merge/</guid>
+      <description>分库分表合并同步 本文介绍了 DM 提供的分库分表合并同步功能。此功能用于将上游 MySQL/MariaDB 实例中结构相同的表同步到下游 TiDB 的同一个表中。DM 不仅支持同步上游的 DML 数据，也支持协调同步多个上游分表的 DDL 表结构变更。
+ 注意：
+要执行分库分表合并同步任务，必须在任务配置文件中设置 is-sharding: true。
+ 使用限制 DM 进行分表 DDL 的同步有以下几点使用限制：
+  在一个逻辑 sharding group（需要合并同步到下游同一个表的所有分表组成的 group）内，所有上游分表必须以相同的顺序执行相同的 DDL 语句（库名和表名可以不同），并且只有在所有分表执行完当前一条 DDL 语句后，下一条 DDL 语句才能执行。
+ 比如，如果在 table_1 表中先增加列 a 后再增加列 b，则在 table_2 表中就不能先增加列 b 后再增加列 a，因为 DM 不支持以不同的顺序来执行相同的 DDL 语句。    对于每个逻辑 sharding group，推荐使用一个独立的任务进行同步。
+ 如果一个任务内存在多个 sharding group，则必须等待一个 sharding group 的 DDL 语句同步完成后，才能开始对其他 sharding group 执行 DDL 语句。    在一个逻辑 sharding group 内，所有上游分表都应该执行对应的 DDL 语句。</description>
+    </item>
+    
+    <item>
+      <title>分表合并数据迁移最佳实践</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/shard-merge-best-practices/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/shard-merge-best-practices/</guid>
+      <description>使用 DM 对分库分表进行合并迁移时的最佳实践。</description>
+    </item>
+    
+    <item>
+      <title>切换 DM-worker 与上游 MySQL 实例的连接</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/usage-scenario-master-slave-switch/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/usage-scenario-master-slave-switch/</guid>
+      <description>了解如何切换 DM-worker 与上游 MySQL 实例的连接。</description>
+    </item>
+    
+    <item>
+      <title>创建数据同步任务</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/create-task/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/create-task/</guid>
+      <description>了解 TiDB Data Migration 如何创建数据同步任务。</description>
+    </item>
+    
+    <item>
+      <title>创建数据同步任务及测试验证</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/create-task-and-verify/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/create-task-and-verify/</guid>
+      <description>部署 DM 集群后，创建数据同步任务验证集群是否可以正常工作。</description>
+    </item>
+    
+    <item>
+      <title>告警处理</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/handle-alerts/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/handle-alerts/</guid>
+      <description>了解 DM 中各主要告警信息的处理方法。</description>
+    </item>
+    
+    <item>
+      <title>应用场景</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/scenarios/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/scenarios/</guid>
+      <description>了解 TiDB Data Migration 支持的主要应用场景。</description>
+    </item>
+    
+    <item>
+      <title>性能问题及处理方法</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/handle-performance-issues/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/handle-performance-issues/</guid>
+      <description>了解 DM 可能存在的常见性能问题及其处理方法。</description>
+    </item>
+    
+    <item>
+      <title>恢复数据同步任务</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/resume-task/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/resume-task/</guid>
+      <description>了解 TiDB Data Migration 如何恢复数据同步任务。</description>
+    </item>
+    
+    <item>
+      <title>手动处理 Sharding DDL Lock</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/manually-handling-sharding-ddl-locks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/manually-handling-sharding-ddl-locks/</guid>
+      <description>手动处理 Sharding DDL Lock DM (Data Migration) 使用 sharding DDL lock 来确保分库分表的 DDL 操作可以正确执行。绝大多数情况下，该锁定机制可自动完成；但在部分异常情况发生时，需要使用 unlock-ddl-lock/break-ddl-lock 手动处理异常的 DDL lock。
+ 注意：
+ 不要轻易使用 unlock-ddl-lock/break-ddl-lock 命令，除非完全明确当前场景下使用这些命令可能会造成的影响，并能接受这些影响。 在手动处理异常的 DDL lock 前，请确保已经了解 DM 的分库分表合并同步原理。   命令介绍 show-ddl-locks 该命令用于查询当前 DM-master 上存在的 DDL lock 信息。
+命令示例  show-ddl-locks [--worker=127.0.0.1:8262] [task-name] 参数解释   worker：
+ flag 参数，string，--worker，可选 不指定时，查询所有 DM-worker 相关的 lock 信息；指定时，仅查询与这组 DM-worker 相关的 lock 信息，可重复多次指定    task-name：
+ 非 flag 参数，string，可选 不指定时，查询与所有任务相关的 lock 信息；指定时，仅查询特定任务相关的 lock 信息    返回结果示例  show-ddl-locks test { &amp;#34;result&amp;#34;: true, # 查询 lock 操作本身是否成功 &amp;#34;msg&amp;#34;: &amp;#34;&amp;#34;, # 查询 lock 操作失败时的原因或其它描述信息（如不存在任务 lock） &amp;#34;locks&amp;#34;: [ # DM-master 上存在的 lock 信息列表 { &amp;#34;ID&amp;#34;: &amp;#34;test-`shard_db`.</description>
+    </item>
+    
+    <item>
+      <title>故障及处理方法</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/error-handling/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/error-handling/</guid>
+      <description>了解 DM 的错误系统及常见故障的处理方法。</description>
+    </item>
+    
+    <item>
+      <title>暂停数据同步任务</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/pause-task/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/pause-task/</guid>
+      <description>了解 TiDB Data Migration 如何暂停数据同步任务。</description>
+    </item>
+    
+    <item>
+      <title>管理上游 MySQL 实例</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/manage-source/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/manage-source/</guid>
+      <description>了解如何管理上游 MySQL 实例。</description>
+    </item>
+    
+    <item>
+      <title>跳过或替代执行异常的 SQL 语句</title>
+      <link>https://pingcap.com/docs-cn/tidb-data-migration/dev/skip-or-replace-abnormal-sql-statements/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-data-migration/dev/skip-or-replace-abnormal-sql-statements/</guid>
+      <description>了解 TiDB Data Migration 如何跳过或替代执行异常的 SQL 语句。</description>
+    </item>
+    
+  </channel>
+</rss>

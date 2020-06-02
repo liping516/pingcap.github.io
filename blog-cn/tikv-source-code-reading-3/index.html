@@ -1,0 +1,665 @@
+<!doctype html><html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async src="https://download.pingcap.com/js/ga-analytics.js"></script>
+
+
+
+<link rel="stylesheet" href="https://download.pingcap.com/style/github-markdown.css">
+
+
+<link rel="stylesheet" href="/css/doc.css">
+
+        <title>TiKV 源码解析系列文章（三）Prometheus（上） |&nbsp;PingCAP</title><link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<meta name="description" content="本篇将为大家介绍 rust-prometheus 的基础知识以及最基本的几个指标的内部工作机制。">
+<meta name="robots" content="noodp">
+<meta name="keywords" content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="website">
+<meta property="og:title" content="TiKV 源码解析系列文章（三）Prometheus（上） | PingCAP">
+<meta property="og:description" content="本篇将为大家介绍 rust-prometheus 的基础知识以及最基本的几个指标的内部工作机制。">
+<meta property="og:url" content="https://pingcap.com/blog-cn/tikv-source-code-reading-3/">
+<meta property="og:site_name" content="MySQL at Scale. No more manual sharding">
+<meta property="og:image" content="/images/pingcap-opengraph.jpg">
+<meta property="og:image:secure_url" content="/images/pingcap-opengraph.jpg"><meta name="twitter:card" content="summary"><meta name="twitter:description" content="本篇将为大家介绍 rust-prometheus 的基础知识以及最基本的几个指标的内部工作机制。">
+<meta name="twitter:title" content="TiKV 源码解析系列文章（三）Prometheus（上） | PingCAP">
+<meta name="twitter:site" content="@pingcap">
+<meta name="twitter:image" content="https://download.pingcap.com/images/pingcap-opengraph.jpg"><meta name="twitter:creator" content="@pingcap">
+
+
+
+
+
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+<script type="text/javascript" async src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js"></script>
+    
+<link rel="preload" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" as="font" type="font/woff" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" as="font" type="font/woff" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+<link rel="preload" href="https://download.pingcap.com/js/jquery.min.js" as="script">
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="https://download.pingcap.com/style/docsearch.min.css">
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head>       <body data-lang="cn" ><div id="page-content">
+<header role="navigation" class="fixed-top">
+    <div class="container">
+        <a class="nav-brand" href="/index.html"><img src="/images/pingcap-logo.png" alt="PingCAP"></a>
+        <div class="nav-wrapper">
+            <div class="navigation">
+                <ul>
+                    <li><a href="https://university.pingcap.com/" target="_blank" class="nav-blinking"
+                            onclick="trackViews('navbar-university', 'pingcap-university_view')">PingCAP
+                            University</a></li>
+                    <li class="docs-type-selector " id="docsTypeSelector">
+                        <a class="header-doc-nav" href="#">文档</a>
+                        <div class="header-dropdown-menu" id="docsTypeSelectorItem">
+                            <a class="header-dropdown-item" href="/docs-cn/stable/"
+                                onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+                            <a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/"
+                                onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+                            <a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/"
+                                onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+                        </div>
+                    </li>
+                    <li ><a href="/cases-cn">案例</a></li>
+                    <li ><a href="/community-cn">社区</a></li>
+                    <li class="sel" ><a href="/blog-cn">博客</a></li>
+                    <li ><a href="/about-cn">关于</a></li>
+                    <li><a href="https://asktug.com" target="_blank"
+                            onclick="trackViews('navbar-asktug', 'asktug_view')">问答</a></li>
+                    <li ><a href="/download-cn">下载试用</a></li>
+                    <li><a class="link-download" href="mailto:info@pingcap.com" target="_blank"
+                            onclick="trackViews('navbar-contact-us', 'mail_to_info_view')">联系我们</a></li>
+                </ul>
+            </div>
+            <div class="global-search">
+                
+                
+                
+                <form class="search-wrapper"  action="/search/docs-cn/stable/">
+    <span class="icon-search"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff" viewBox="0 0 67.125 67.125"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"/><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"/></svg></span>
+    <input data-lang="cn" data-type="" type="search" id="search-input" name="q" 
+    placeholder="搜索 TiDB 文档">
+</form>
+
+            </div>
+        </div>
+        <div class="nav-btn nav-slider">
+            <i class="material-icons"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 459 459"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"/></svg></i>
+        </div>
+    </div>
+</header>
+
+
+
+<nav class="mobile-sidebar">
+    <div class="nav-header">
+        <div class="logo-wrap">
+        <a class="nav-brand" href="/en"><img src="/images/pingcap-logo.png" alt="PingCAP"></a>
+        </div>
+    </div>
+    <ul class="ul-base">
+        <li class="docs-type-selector " id="docsTypeSelector">
+            <p class="header-doc-nav">文档</p>
+            <div class="header-dropdown-menu" id="docsTypeSelectorItem">
+                <a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+                <a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+                <a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+            </div>
+        </li>
+        <li ><a href="/cases-cn">案例</a></li>
+        <li ><a href="/community-cn">社区</a></li>
+        <li class="sel"><a href="/blog-cn">博客</a></li>
+        <li ><a href="/about-cn">关于</a></li>
+        <li><a href="https://asktug.com" target="_blank"
+            onclick="trackViews('navbar-asktug', 'asktug_view')">问答</a></li>
+        <li ><a href="/download-cn">下载试用</a></li>
+        <li><a class="link-download" href="mailto:info@pingcap.com" target="_blank"
+            onclick="trackViews('navbar-contact-us', 'mail_to_info_view')">联系我们</a></li>
+        <li><a href="https://university.pingcap.com/"
+            onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank"
+            class="nav-blinking">PingCAP University</a></li>
+    </ul>
+    <div class="nav-footer">
+        <div class="contact-list-wrap">
+        <div class="flex-list">
+            <h4 class="list-title"><strong>Contact</strong></h4>
+            <ul class="social social-cn ul-base">
+            <li><a href="https://twitter.com/PingCAP" class="twitter" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 612" width="18" height="18"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"/></svg></a></li>
+            <li><a href="https://www.linkedin.com/company/pingcap/" class="linkedin" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 438.536 438.535"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"/></svg></a></li>
+            <li><a href="https://www.reddit.com/r/TiDB/" class="reddit" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 279.748 279.748" width="18" height="18"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"/></svg></a></li>
+            <li><a href="https://groups.google.com/forum/#!forum/tidb-user" class="google-plus" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 491.858 491.858" width="18" height="18"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"/></svg></a></li>
+            <li><a href="https://stackoverflow.com/questions/tagged/tidb" class="stack-overflow" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 547.597 547.597"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"/><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"/><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"/></svg></a></li>
+            <li id="wechat-mobile"><a class="wechat" href="javascript:void(0)"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 31.403 31.404"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"/><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"/></svg></a><div class="qr_code_outer f-hide f-tc">
+    <div class="qr_code">
+        <i id="close_qrcode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 224.512 224.512"><path fill="#010002" d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z"/></svg></i>
+        <img id="js_qr_code_img" class="qr_code_img" src="/images/wechat-qrcode.jpg" alt="Wechat qrCode" />
+        <p>微信扫一扫<br> 微信ID：pingcap2015</p>
+    </div>
+</div>
+</li>
+            </ul>
+        </div>
+        <div class="subscribe" id="subscribe-mobile"></div>
+        </div>
+        <div class="container">
+        <a href="/blog" class="btn-lang" id="lang">English</a>
+        </div>
+    </div>
+</nav>
+
+<div class="blog">
+        <div class="container">
+<div class="sidebar nav-tags" data-type="single"><div class="title">热门标签<a class="rss" href="/blog-cn/index.xml" title="RSS Feed"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="17" viewBox="0 0 402.041 402.04"><g fill="#3A59F0"><path d="M54.816 292.382c-15.229 0-28.169 5.331-38.831 15.988C5.33 319.026 0 331.969 0 347.197c0 15.232 5.325 28.172 15.985 38.828 10.662 10.657 23.606 15.988 38.831 15.988 15.227 0 28.168-5.331 38.828-15.988 10.656-10.656 15.986-23.596 15.986-38.828 0-15.229-5.33-28.171-15.986-38.827-10.657-10.657-23.598-15.988-38.828-15.988zM181.01 221.002c-21.51-21.698-46.158-38.97-73.948-51.816-27.79-12.85-56.914-20.511-87.366-22.985h-1.425c-4.949 0-9.042 1.619-12.275 4.854C1.997 154.477 0 158.953 0 164.472v38.543c0 4.757 1.569 8.85 4.708 12.279 3.14 3.429 7.089 5.332 11.848 5.708 43.586 4.189 80.845 21.752 111.773 52.678 30.93 30.926 48.49 68.187 52.677 111.771.382 4.764 2.284 8.712 5.712 11.847 3.427 3.148 7.517 4.72 12.275 4.72h38.545c5.517 0 9.989-1.995 13.415-5.996 3.621-3.812 5.236-8.381 4.863-13.709-2.478-30.447-10.14-59.573-22.987-87.361-12.846-27.792-30.121-52.438-51.819-73.95z"/><path d="M367.728 239.701c-20.365-45.585-48.345-86.078-83.936-121.482-35.405-35.594-75.896-63.572-121.485-83.939C116.723 13.917 68.996 2.494 19.126.02h-.855c-4.949 0-9.136 1.713-12.563 5.14C1.903 8.583 0 12.964 0 18.294v40.825c0 4.76 1.667 8.897 4.996 12.419 3.33 3.523 7.373 5.376 12.132 5.57 40.924 2.478 79.799 12.188 116.63 29.127 36.83 16.94 68.806 38.972 95.93 66.09 27.118 27.123 49.149 59.101 66.089 95.931 16.94 36.836 26.557 75.705 28.839 116.627.195 4.764 2.046 8.809 5.564 12.139 3.524 3.329 7.762 4.999 12.71 4.999h40.823c5.331 0 9.701-1.902 13.134-5.715 3.809-3.806 5.517-8.274 5.144-13.415-2.471-49.874-13.898-97.6-34.263-143.19z"/></g></svg></a></div><a href="#" class="tag all">ALL (218)</a>
+    <div class="tag-list"><a href="#Contributor" class="tag " data-tag="Contributor">Contributor&nbsp;(9)
+                </a><a href="#DM-%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb" class="tag " data-tag="DM-源码阅读">DM 源码阅读&nbsp;(10)
+                </a><a href="#Go" class="tag " data-tag="Go">Go&nbsp;(3)
+                </a><a href="#HTAP" class="tag " data-tag="HTAP">HTAP&nbsp;(2)
+                </a><a href="#Hackathon" class="tag " data-tag="Hackathon">Hackathon&nbsp;(4)
+                </a><a href="#K8s" class="tag " data-tag="K8s">K8s&nbsp;(2)
+                </a><a href="#Key-Visualizer" class="tag " data-tag="Key-Visualizer">Key Visualizer&nbsp;(2)
+                </a><a href="#Kubernetes" class="tag " data-tag="Kubernetes">Kubernetes&nbsp;(2)
+                </a><a href="#MVCC" class="tag " data-tag="MVCC">MVCC&nbsp;(2)
+                </a><a href="#MySQL" class="tag " data-tag="MySQL">MySQL&nbsp;(2)
+                </a><a href="#PD" class="tag " data-tag="PD">PD&nbsp;(5)
+                </a><a href="#Percolator" class="tag " data-tag="Percolator">Percolator&nbsp;(2)
+                </a><a href="#Prometheus" class="tag sel" data-tag="Prometheus">Prometheus&nbsp;(3)
+                </a><a href="#Raft" class="tag " data-tag="Raft">Raft&nbsp;(11)
+                </a><a href="#RocksDB" class="tag " data-tag="RocksDB">RocksDB&nbsp;(3)
+                </a><a href="#Rust" class="tag " data-tag="Rust">Rust&nbsp;(5)
+                </a><a href="#SQL" class="tag " data-tag="SQL">SQL&nbsp;(6)
+                </a><a href="#Spanner" class="tag " data-tag="Spanner">Spanner&nbsp;(2)
+                </a><a href="#TiDB" class="tag " data-tag="TiDB">TiDB&nbsp;(61)
+                </a><a href="#TiDB-4.0-%e6%96%b0%e7%89%b9%e6%80%a7" class="tag " data-tag="TiDB-4.0-新特性">TiDB 4.0 新特性&nbsp;(9)
+                </a><a href="#TiDB-Binlog" class="tag " data-tag="TiDB-Binlog">TiDB Binlog&nbsp;(5)
+                </a><a href="#TiDB-Binlog-%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb" class="tag " data-tag="TiDB-Binlog-源码阅读">TiDB Binlog 源码阅读&nbsp;(9)
+                </a><a href="#TiDB-Ecosystem-Tools" class="tag " data-tag="TiDB-Ecosystem-Tools">TiDB Ecosystem Tools&nbsp;(3)
+                </a><a href="#TiDB-Operator" class="tag " data-tag="TiDB-Operator">TiDB Operator&nbsp;(5)
+                </a><a href="#TiDB-%e6%80%a7%e8%83%bd%e6%8c%91%e6%88%98%e8%b5%9b" class="tag " data-tag="TiDB-性能挑战赛">TiDB 性能挑战赛&nbsp;(2)
+                </a><a href="#TiDB-%e6%98%93%e7%94%a8%e6%80%a7%e6%8c%91%e6%88%98%e8%b5%9b" class="tag " data-tag="TiDB-易用性挑战赛">TiDB 易用性挑战赛&nbsp;(3)
+                </a><a href="#TiDB-%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb" class="tag " data-tag="TiDB-源码阅读">TiDB 源码阅读&nbsp;(24)
+                </a><a href="#TiFlash" class="tag " data-tag="TiFlash">TiFlash&nbsp;(5)
+                </a><a href="#TiKV" class="tag " data-tag="TiKV">TiKV&nbsp;(27)
+                </a><a href="#TiKV-%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90" class="tag sel" data-tag="TiKV-源码解析">TiKV 源码解析&nbsp;(18)
+                </a><a href="#TiSpark" class="tag " data-tag="TiSpark">TiSpark&nbsp;(3)
+                </a><a href="#WebAssembly" class="tag " data-tag="WebAssembly">WebAssembly&nbsp;(2)
+                </a><a href="#gRPC" class="tag " data-tag="gRPC">gRPC&nbsp;(2)
+                </a><a href="#%e4%ba%8b%e5%8a%a1" class="tag " data-tag="事务">事务&nbsp;(4)
+                </a><a href="#%e4%bc%98%e5%8c%96%e5%99%a8" class="tag " data-tag="优化器">优化器&nbsp;(2)
+                </a><a href="#%e5%88%86%e5%b8%83%e5%bc%8f%e7%b3%bb%e7%bb%9f%e5%89%8d%e6%b2%bf%e6%8a%80%e6%9c%af" class="tag " data-tag="分布式系统前沿技术">分布式系统前沿技术&nbsp;(4)
+                </a><a href="#%e5%88%86%e5%b8%83%e5%bc%8f%e7%b3%bb%e7%bb%9f%e6%b5%8b%e8%af%95" class="tag " data-tag="分布式系统测试">分布式系统测试&nbsp;(3)
+                </a><a href="#%e5%b7%a5%e5%85%b7" class="tag " data-tag="工具">工具&nbsp;(4)
+                </a><a href="#%e6%80%a7%e8%83%bd" class="tag " data-tag="性能">性能&nbsp;(4)
+                </a><a href="#%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5" class="tag " data-tag="数据同步">数据同步&nbsp;(2)
+                </a><a href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5" class="tag " data-tag="最佳实践">最佳实践&nbsp;(6)
+                </a><a href="#%e6%9e%b6%e6%9e%84" class="tag " data-tag="架构">架构&nbsp;(6)
+                </a><a href="#%e7%a4%be%e5%8c%ba" class="tag sel" data-tag="社区">社区&nbsp;(99)
+                </a><a href="#%e7%a4%be%e5%8c%ba%e5%8a%a8%e6%80%81" class="tag " data-tag="社区动态">社区动态&nbsp;(27)
+                </a><a href="#%e9%9b%86%e7%be%a4%e8%b0%83%e5%ba%a6" class="tag " data-tag="集群调度">集群调度&nbsp;(2)
+                </a>
+    </div>
+</div>
+<div class="archive">
+                <div class="content markdown-body">
+                    <h1 class="title">TiKV 源码解析系列文章（三）Prometheus（上）</h1>
+                    <ul class="blog-post-meta">
+                        <li class="meta-item">
+                            <img src="/images/svgs/icon-date.svg" alt="Date icon">Fri, Mar 8, 2019</li>
+                        <li class="meta-item">
+                            <img src="/images/svgs/icon-writer.svg" alt="Pen icon">Breezewish</li>
+                    </ul>
+                    <div class="blog-text"><blockquote>
+<p>本文为 TiKV 源码解析系列的第三篇，继续为大家介绍 TiKV 依赖的周边库 <a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a>，本篇主要介绍基础知识以及最基本的几个指标的内部工作机制，下篇会介绍一些高级功能的实现原理。</p>
+<p><a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 是监控系统 <a href="https://prometheus.io">Prometheus</a> 的 Rust 客户端库，由 TiKV 团队实现。TiKV 使用 <a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 收集各种指标（metric）到 Prometheus 中，从而后续能再利用 <a href="https://grafana.com/">Grafana</a> 等可视化工具将其展示出来作为仪表盘监控面板。这些监控指标对于了解 TiKV 当前或历史的状态具有非常关键的作用。TiKV 提供了丰富的监控指标数据，并且代码中也到处穿插了监控指标的收集片段，因此了解 <a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 很有必要。</p>
+<p>感兴趣的小伙伴还可以观看我司同学在 <a href="https://fosdem.org/2019/">FOSDEM 2019</a> 会议上关于 rust-prometheus 的<a href="https://fosdem.org/2019/schedule/event/rust_prometheus/">技术分享</a>。</p>
+</blockquote>
+<h2 id="heading">基础知识</h2>
+<h3 id="heading-1">指标类别</h3>
+<p><a href="https://prometheus.io">Prometheus</a> 支持四种指标：Counter、Gauge、Histogram、Summary。<a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 库目前还只实现了前三种。TiKV 大部分指标都是 Counter 和 Histogram，少部分是 Gauge。</p>
+<h4 id="counter">Counter</h4>
+<p><a href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a> 是最简单、常用的指标，适用于各种计数、累计的指标，要求单调递增。Counter 指标提供基本的 <a href="https://docs.rs/prometheus/0.5.0/prometheus/core/struct.GenericCounter.html#method.inc"><code>inc()</code></a> 或 <a href="https://docs.rs/prometheus/0.5.0/prometheus/core/struct.GenericCounter.html#method.inc_by"><code>inc_by(x)</code></a> 接口，代表增加计数值。</p>
+<p>在可视化的时候，此类指标一般会展示为各个时间内增加了多少，而不是各个时间计数器值是多少。例如 TiKV 收到的请求数量就是一种 Counter 指标，在监控上展示为 TiKV 每时每刻收到的请求数量图表（QPS）。</p>
+<h4 id="gauge">Gauge</h4>
+<p><a href="https://prometheus.io/docs/concepts/metric_types/#gauge">Gauge</a> 适用于上下波动的指标。Gauge 指标提供 <a href="https://docs.rs/prometheus/0.5.0/prometheus/core/struct.GenericGauge.html#method.inc"><code>inc()</code></a>、<a href="https://docs.rs/prometheus/0.5.0/prometheus/core/struct.GenericGauge.html#method.dec"><code>dec()</code></a>、<a href="https://docs.rs/prometheus/0.5.0/prometheus/core/struct.GenericGauge.html#method.add"><code>add(x)</code></a>、<a href="https://docs.rs/prometheus/0.5.0/prometheus/core/struct.GenericGauge.html#method.sub"><code>sub(x)</code></a> 和 <a href="https://docs.rs/prometheus/0.5.0/prometheus/core/struct.GenericGauge.html#method.set"><code>set(x)</code></a> 接口，都是用于更新指标值。</p>
+<p>这类指标可视化的时候，一般就是直接按照时间展示它的值，从而展示出这个指标按时间是如何变化的。例如 TiKV 占用的 CPU 率是一种 Gauge 指标，在监控上所展示的直接就是 CPU 率的上下波动图表。</p>
+<h4 id="histogram">Histogram</h4>
+<p><a href="https://prometheus.io/docs/concepts/metric_types/#histogram">Histogram</a> 即直方图，是一种相对复杂但同时也很强大的指标。Histogram 除了基本的计数以外，还能计算分位数。Histogram 指标提供 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html#method.observe"><code>observe(x)</code></a> 接口，代表观测到了某个值。</p>
+<p>举例来说，TiKV 收到请求后处理的耗时就是一种 Histogram 指标，通过 Histogram 类型指标，监控上可以观察 99%、99.9%、平均请求耗时等。这里显然不能用一个 Counter 存储耗时指标，否则展示出来的只是每时每刻中 TiKV 一共花了多久处理，而非单个请求处理的耗时情况。当然，机智的你可能想到了可以另外开一个 Counter 存储请求数量指标，这样累计请求处理时间除以请求数量就是各个时刻平均请求耗时了。</p>
+<p>实际上，这也正是 Prometheus 中 Histogram 的内部工作原理。Histogram 指标实际上最终会提供一系列时序数据：</p>
+<ul>
+<li>观测值落在各个桶（bucket）上的累计数量，如落在 <code>(-∞, 0.1]</code>、<code>(-∞, 0.2]</code>、<code>(-∞, 0.4]</code>、<code>(-∞, 0.8]</code>、<code>(-∞, 1.6]</code>、<code>(-∞, +∞)</code> 各个区间上的数量。</li>
+<li>观测值的累积和。</li>
+<li>观测值的个数。</li>
+</ul>
+<p>bucket 是 Prometheus 对于 Histogram 观测值的一种简化处理方式。Prometheus 并不会具体记录下每个观测值，而是只记录落在配置的各个 bucket 区间上的观测值的数量，这样以牺牲一部分精度的代价大大提高了效率。</p>
+<h4 id="summary">Summary</h4>
+<p><a href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a> 与 <a href="https://prometheus.io/docs/concepts/metric_types/#histogram">Histogram</a> 类似，针对观测值进行采样，但分位数是在客户端进行计算。该类型的指标目前在 <a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 中没有实现，因此这里不作进一步详细介绍。大家可以阅读 Prometheus 官方文档中的<a href="https://prometheus.io/docs/concepts/metric_types/#summary">介绍</a>了解详细情况。感兴趣的同学也可以参考其他语言 Client Library 的实现为 <a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 贡献代码。</p>
+<h3 id="heading-2">标签</h3>
+<p>Prometheus 的每个指标支持定义和指定若干组标签（<a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Label</a>），指标的每个标签值独立计数，表现了指标的不同维度。例如，对于一个统计 HTTP 服务请求耗时的 Histogram 指标来说，可以定义并指定诸如 HTTP Method（GET / POST / PUT / &hellip;）、服务 URL、客户端 IP 等标签。这样可以轻易满足以下类型的查询：</p>
+<ul>
+<li>查询 Method 分别为 POST、PUT、GET 的 99.9% 耗时（利用单一 Label）</li>
+<li>查询 POST /api 的平均耗时（利用多个 Label 组合）</li>
+</ul>
+<p>普通的查询诸如所有请求 99.9% 耗时也能正常工作。</p>
+<p>需要注意的是，不同标签值都是一个独立计数的时间序列，因此应当避免标签值或标签数量过多，否则实际上客户端会向 Prometheus 服务端传递大量指标，影响效率。</p>
+<p>与 Prometheus <a href="https://github.com/prometheus/client_golang">Golang client</a> 类似，在 <a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 中，具有标签的指标被称为 Metric Vector。例如 Histogram 指标对应的数据类型是 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html"><code>Histogram</code></a>，而具有标签的 Histogram 指标对应的数据类型是 <a href="https://docs.rs/prometheus/0.5.0/prometheus/type.HistogramVec.html"><code>HistogramVec</code></a>。对于一个 <a href="https://docs.rs/prometheus/0.5.0/prometheus/type.HistogramVec.html"><code>HistogramVec</code></a>，提供它的各个标签取值后，可获得一个 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html"><code>Histogram</code></a> 实例。不同标签取值会获得不同的 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html"><code>Histogram</code></a> 实例，各个 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html"><code>Histogram</code></a> 实例独立计数。</p>
+<h2 id="heading-3">基本用法</h2>
+<p>本节主要介绍如何在项目中使用 <a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 进行各种指标收集。使用基本分为三步：</p>
+<ol>
+<li>
+<p>定义想要收集的指标。</p>
+</li>
+<li>
+<p>在代码特定位置调用指标提供的接口收集记录指标值。</p>
+</li>
+<li>
+<p>实现 HTTP Pull Service 使得 Prometheus 可以定期访问收集到的指标，或使用 rust-prometheus 提供的 Push 功能定期将收集到的指标上传到 <a href="https://github.com/prometheus/pushgateway">Pushgateway</a>。</p>
+</li>
+</ol>
+<blockquote>
+<p>注意，以下样例代码都是基于本文发布时最新的 rust-prometheus 0.5 版本 API。我们目前正在设计并实现 1.0 版本，使用上会进一步简化，但以下样例代码可能在 1.0 版本发布后过时、不再工作，届时请读者参考最新的文档。</p>
+</blockquote>
+<h3 id="heading-4">定义指标</h3>
+<p>为了简化使用，一般将指标声明为一个全局可访问的变量，从而能在代码各处自由地操纵它。rust-prometheus 提供的各个指标（包括 Metric Vector）都满足 <code>Send + Sync</code>，可以被安全地全局共享。</p>
+<p>以下样例代码借助 <a href="https://docs.rs/lazy_static">lazy_static</a> 库定义了一个全局的 Histogram 指标，该指标代表 HTTP 请求耗时，并且具有一个标签名为 <code>method</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">#[</span><span style="color:#75715e">macro_use</span><span style="color:#75715e">]</span>
+<span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">crate</span> prometheus;
+
+lazy_static<span style="color:#f92672">!</span> {
+   <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">ref</span> REQUEST_DURATION: <span style="color:#a6e22e">HistogramVec</span> <span style="color:#f92672">=</span> register_histogram_vec<span style="color:#f92672">!</span>(
+       <span style="color:#e6db74">&#34;http_requests_duration&#34;</span>,
+       <span style="color:#e6db74">&#34;Histogram of HTTP request duration in seconds&#34;</span>,
+       <span style="color:#f92672">&amp;</span>[<span style="color:#e6db74">&#34;method&#34;</span>],
+       exponential_buckets(<span style="color:#ae81ff">0.005</span>, <span style="color:#ae81ff">2.0</span>, <span style="color:#ae81ff">20</span>).unwrap()
+   ).unwrap();
+}
+</code></pre></div><h3 id="heading-5">记录指标值</h3>
+<p>有了一个全局可访问的指标变量后，就可以在代码中通过它提供的接口记录指标值了。在“基础知识”中介绍过，<a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html"><code>Histogram</code></a> 最主要的接口是 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html#method.observe"><code>observe(x)</code></a>，可以记录一个观测值。若想了解 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html"><code>Histogram</code></a> 其他接口或其他类型指标提供的接口，可以参阅 <a href="https://docs.rs/prometheus">rust-prometheus 文档</a>。</p>
+<p>以下样例在上段代码基础上展示了如何记录指标值。代码模拟了一些随机值用作指标，装作是用户产生的。在实际程序中，这些当然得改成真实数据 :)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">thread_simulate_requests</span>() {
+   <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> rng <span style="color:#f92672">=</span> rand::thread_rng();
+   <span style="color:#66d9ef">loop</span> {
+       <span style="color:#75715e">// Simulate duration 0s ~ 2s
+</span><span style="color:#75715e"></span>       <span style="color:#66d9ef">let</span> duration <span style="color:#f92672">=</span> rng.gen_range(<span style="color:#ae81ff">0</span><span style="color:#66d9ef">f64</span>, <span style="color:#ae81ff">2</span><span style="color:#66d9ef">f64</span>);
+       <span style="color:#75715e">// Simulate HTTP method
+</span><span style="color:#75715e"></span>       <span style="color:#66d9ef">let</span> method <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;GET&#34;</span>, <span style="color:#e6db74">&#34;POST&#34;</span>, <span style="color:#e6db74">&#34;PUT&#34;</span>, <span style="color:#e6db74">&#34;DELETE&#34;</span>].choose(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> rng).unwrap();
+       <span style="color:#75715e">// Record metrics
+</span><span style="color:#75715e"></span>       REQUEST_DURATION.with_label_values(<span style="color:#f92672">&amp;</span>[method]).observe(duration);
+       <span style="color:#75715e">// One request per second
+</span><span style="color:#75715e"></span>       std:<span style="color:#960050;background-color:#1e0010">🧵</span>:<span style="color:#a6e22e">sleep</span>(std::time::Duration::from_secs(<span style="color:#ae81ff">1</span>));
+   }
+}
+</code></pre></div><h3 id="push--pull">Push / Pull</h3>
+<p>到目前为止，代码还仅仅是将指标记录了下来。最后还需要让 Prometheus 服务端能获取到记录下来的指标数据。这里一般有两种方式，分别是 Push 和 Pull。</p>
+<ul>
+<li>Pull 是 Prometheus 标准的获取指标方式，Prometheus Server 通过定期访问应用程序提供的 HTTP 接口获取指标数据。</li>
+<li>Push 是基于 Prometheus <a href="https://github.com/prometheus/pushgateway">Pushgateway</a> 服务提供的另一种获取指标方式，指标数据由应用程序主动定期推送给 <a href="https://github.com/prometheus/pushgateway">Pushgateway</a>，然后 Prometheus 再定期从 Pushgateway 获取。这种方式主要适用于应用程序不方便开端口或应用程序生命周期比较短的场景。</li>
+</ul>
+<p>以下样例代码基于 <a href="https://docs.rs/hyper/0.12.23/hyper/">hyper</a> HTTP 库实现了一个可以供 Prometheus Server pull 指标数据的接口，核心是使用 <a href="https://github.com/pingcap/rust-prometheus">rust-prometheus</a> 提供的 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.TextEncoder.html"><code>TextEncoder</code></a> 将所有指标数据序列化供 Prometheus 解析：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">metric_service</span>(_req: <span style="color:#a6e22e">Request</span><span style="color:#f92672">&lt;</span>Body<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">Response</span><span style="color:#f92672">&lt;</span>Body<span style="color:#f92672">&gt;</span> {
+   <span style="color:#66d9ef">let</span> encoder <span style="color:#f92672">=</span> TextEncoder::new();
+   <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buffer <span style="color:#f92672">=</span> vec<span style="color:#f92672">!</span>[];
+   <span style="color:#66d9ef">let</span> mf <span style="color:#f92672">=</span> prometheus::gather();
+   encoder.encode(<span style="color:#f92672">&amp;</span>mf, <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> buffer).unwrap();
+   Response::builder()
+       .header(hyper::header::CONTENT_TYPE, encoder.format_type())
+       .body(Body::from(buffer))
+       .unwrap()
+}
+</code></pre></div><p>对于如何使用 Push 感兴趣的同学可以自行参考 rust-prometheus 代码内提供的 <a href="https://github.com/pingcap/rust-prometheus/blob/89ca69913691d9d1609c78cc043fca9c3faa1a78/examples/example_push.rs#L1">Push 示例</a>，这里限于篇幅就不详细介绍了。</p>
+<p>可以查看上述三段样例的 <a href="https://gist.github.com/breeswish/bb10bccd13a7fe332ef534ff0306ceb5">完整代码</a> 了解更多内容。</p>
+<h2 id="heading-6">内部实现</h2>
+<p>以下内部实现都基于本文发布时最新的 rust-prometheus 0.5 版本代码，该版本主干 API 的设计和实现 port 自 Prometheus <a href="https://github.com/prometheus/client_golang">Golang client</a>，但为 Rust 的使用习惯进行了一些修改，因此接口上与 Golang client 比较接近。</p>
+<p>目前我们正在开发 1.0 版本，API 设计上不再主要参考 Golang client，而是力求提供对 Rust 使用者最友好、简洁的 API。实现上为了效率考虑也会和这里讲解的略微有一些出入，且会去除一些目前已被抛弃的特性支持，简化实现，因此请读者注意甄别。</p>
+<h3 id="counter--gauge">Counter / Gauge</h3>
+<p>Counter 与 Gauge 是非常简单的指标，只要支持线程安全的数值更新即可。读者可以简单地认为 Counter 和 Gauge 的核心实现都是 <code>Arc&lt;Atomic&gt;</code>。但由于 Prometheus 官方规定指标数值需要支持浮点数，因此我们基于 <a href="https://doc.rust-lang.org/std/sync/atomic/struct.AtomicU64.html"><code>std::sync::atomic::AtomicU64</code></a> 和 CAS 操作实现了 <a href="https://docs.rs/prometheus/0.5.0/prometheus/core/type.AtomicF64.html"><code>AtomicF64</code></a>，其具体实现位于 <a href="https://github.com/pingcap/rust-prometheus/blob/89ca69913691d9d1609c78cc043fca9c3faa1a78/src/atomic64/nightly.rs">src/atomic64/nightly.rs</a>。核心片段如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">impl</span> Atomic <span style="color:#66d9ef">for</span> AtomicF64 {
+   <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">T</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">f64</span>;
+
+   <span style="color:#75715e">// Some functions are omitted.
+</span><span style="color:#75715e"></span>
+   <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">inc_by</span>(<span style="color:#f92672">&amp;</span>self, delta: <span style="color:#a6e22e">Self</span>::T) {
+       <span style="color:#66d9ef">loop</span> {
+           <span style="color:#66d9ef">let</span> current <span style="color:#f92672">=</span> self.inner.load(Ordering::Acquire);
+           <span style="color:#66d9ef">let</span> new <span style="color:#f92672">=</span> u64_to_f64(current) <span style="color:#f92672">+</span> delta;
+           <span style="color:#66d9ef">let</span> swapped <span style="color:#f92672">=</span> self
+               .inner
+               .compare_and_swap(current, f64_to_u64(new), Ordering::Release);
+           <span style="color:#66d9ef">if</span> swapped <span style="color:#f92672">=</span><span style="color:#f92672">=</span> current {
+               <span style="color:#66d9ef">return</span>;
+           }
+       }
+   }
+}
+</code></pre></div><p>另外由于 0.5 版本发布时 <a href="https://doc.rust-lang.org/std/sync/atomic/struct.AtomicU64.html"><code>AtomicU64</code></a> 仍然是一个 nightly 特性，因此为了支持 Stable Rust，我们还基于自旋锁提供了 <a href="https://docs.rs/prometheus/0.5.0/prometheus/core/type.AtomicF64.html"><code>AtomicF64</code></a> 的 fallback，位于 <a href="https://github.com/pingcap/rust-prometheus/blob/89ca69913691d9d1609c78cc043fca9c3faa1a78/src/atomic64/fallback.rs">src/atomic64/fallback.rs</a>。</p>
+<blockquote>
+<p>注：<a href="https://doc.rust-lang.org/std/sync/atomic/struct.AtomicU64.html"><code>AtomicU64</code></a> 所需的 <a href="https://github.com/rust-lang/rust/issues/32976">integer_atomics</a> 特性最近已在 rustc 1.34.0 stabilize。我们将在 rustc 1.34.0 发布后为 Stable Rust 也使用上原生的原子操作从而提高效率。</p>
+</blockquote>
+<h3 id="histogram-1">Histogram</h3>
+<p>根据 Prometheus 的要求，Histogram 需要进行的操作是在获得一个观测值以后，为观测值处在的桶增加计数值。另外还有总观测值、观测值数量需要累加。</p>
+<p>注意，Prometheus 中的 Histogram 是<a href="https://en.wikipedia.org/wiki/Histogram#Cumulative_histogram">累积直方图</a>，其每个桶的含义是 <code>(-∞, x]</code>，因此对于每个观测值都可能要更新多个连续的桶。例如，假设用户定义了 5 个桶边界，分别是 0.1、0.2、0.4、0.8、1.6，则每个桶对应的数值范围是 <code>(-∞, 0.1]</code>、<code>(-∞, 0.2]</code>、<code>(-∞, 0.4]</code>、<code>(-∞, 0.8]</code>、<code>(-∞, 1.6]</code>、<code>(-∞, +∞)</code>，对于观测值 0.4 来说需要更新<code>(-∞, 0.4]</code>、<code>(-∞, 0.8]</code>、<code>(-∞, 1.6]</code>、<code>(-∞, +∞)</code> 四个桶。</p>
+<p>一般来说 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html#method.observe"><code>observe(x)</code></a> 会被频繁地调用，而将收集到的数据反馈给 Prometheus 则是个相对很低频率的操作，因此用数组实现“桶”的时候，我们并不将各个桶与数组元素直接对应，而将数组元素定义为非累积的桶，如 <code>(-∞, 0.1)</code>、<code>[0.1, 0.2)</code>、<code>[0.2, 0.4)</code>、<code>[0.4, 0.8)</code>、<code>[0.8, 1.6)</code>、<code>[1.6, +∞)</code>，这样就大大减少了需要频繁更新的数据量；最后在上报数据给 Prometheus 的时候将数组元素累积，得到累积直方图，这样就得到了 Prometheus 所需要的桶的数据。</p>
+<p>当然，由此可见，如果给定的观测值超出了桶的范围，则最终记录下的最大值只有桶的上界了，然而这并不是实际的最大值，因此使用的时候需要多加注意。</p>
+<p><a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html"><code>Histogram</code></a> 的核心实现见 <a href="https://github.com/pingcap/rust-prometheus/blob/89ca69913691d9d1609c78cc043fca9c3faa1a78/src/histogram.rs">src/histogram.rs</a>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">HistogramCore</span> {
+   <span style="color:#75715e">// Some fields are omitted.
+</span><span style="color:#75715e"></span>   sum: <span style="color:#a6e22e">AtomicF64</span>,
+   count: <span style="color:#a6e22e">AtomicU64</span>,
+   upper_bounds: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">f64</span><span style="color:#f92672">&gt;</span>,
+   counts: Vec<span style="color:#f92672">&lt;</span>AtomicU64<span style="color:#f92672">&gt;</span>,
+}
+
+<span style="color:#66d9ef">impl</span> HistogramCore {
+   <span style="color:#75715e">// Some functions are omitted.
+</span><span style="color:#75715e"></span>
+   <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">observe</span>(<span style="color:#f92672">&amp;</span>self, v: <span style="color:#66d9ef">f64</span>) {
+       <span style="color:#75715e">// Try find the bucket.
+</span><span style="color:#75715e"></span>       <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> iter <span style="color:#f92672">=</span> self
+           .upper_bounds
+           .iter()
+           .enumerate()
+           .filter(<span style="color:#f92672">|</span><span style="color:#f92672">&amp;</span>(_, f)<span style="color:#f92672">|</span> v <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#f92672">*</span>f);
+       <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some((i, _)) <span style="color:#f92672">=</span> iter.next() {
+           self.counts[i].inc_by(<span style="color:#ae81ff">1</span>);
+       }
+
+       self.count.inc_by(<span style="color:#ae81ff">1</span>);
+       self.sum.inc_by(v);
+   }
+}
+
+<span style="color:#75715e">#[</span><span style="color:#75715e">derive(Clone)</span><span style="color:#75715e">]</span>
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Histogram</span> {
+   core: <span style="color:#a6e22e">Arc</span><span style="color:#f92672">&lt;</span>HistogramCore<span style="color:#f92672">&gt;</span>,
+}
+</code></pre></div><p><a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html"><code>Histogram</code></a> 还提供了一个辅助结构 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.HistogramTimer.html"><code>HistogramTimer</code></a>，它会记录从它创建直到被 Drop 的时候的耗时，将这个耗时作为 <a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.Histogram.html#method.observe"><code>Histogram::observe()</code></a> 接口的观测值记录下来，这样很多时候在想要记录 Duration / Elapsed Time 的场景中，就可以使用这个简便的结构来记录时间：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">#[</span><span style="color:#75715e">must_use</span><span style="color:#75715e">]</span>
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">HistogramTimer</span> {
+   histogram: <span style="color:#a6e22e">Histogram</span>,
+   start: <span style="color:#a6e22e">Instant</span>,
+}
+
+<span style="color:#66d9ef">impl</span> HistogramTimer {
+   <span style="color:#75715e">// Some functions are omitted.
+</span><span style="color:#75715e"></span>
+   <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">observe_duration</span>(self) {
+       drop(self);
+   }
+
+   <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">observe</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self) {
+       <span style="color:#66d9ef">let</span> v <span style="color:#f92672">=</span> duration_to_seconds(self.start.elapsed());
+       self.histogram.observe(v)
+   }
+}
+
+<span style="color:#66d9ef">impl</span> Drop <span style="color:#66d9ef">for</span> HistogramTimer {
+   <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">drop</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self) {
+       self.observe();
+   }
+}
+</code></pre></div><p><a href="https://docs.rs/prometheus/0.5.0/prometheus/struct.HistogramTimer.html"><code>HistogramTimer</code></a> 被标记为了 <a href="https://doc.rust-lang.org/reference/attributes.html#must_use"><code>must_use</code></a>，原因很简单，作为一个记录流逝时间的结构，它应该被存在某个变量里，从而记录这个变量所处作用域的耗时（或稍后直接调用相关函数提前记录耗时），而不应该作为一个未使用的临时变量被立即 Drop。标记为 <code>must_use</code> 可以在编译期杜绝这种明显的使用错误。</p>
+</div>
+                </div><div class="ssba-wrap">
+    <div class="ssba">
+        <a class="ssba_mail_share" href="mailto:info@pingcap.com" target="_blank"
+        onclick="trackViews('blog-contact-us', 'mail_to_info_view')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="18" height="18"><path d="M7 9L5.268 7.484.316 11.729c.18.167.423.271.691.271h11.986c.267 0 .509-.104.688-.271L8.732 7.484 7 9z"/><path d="M13.684 2.271A1.007 1.007 0 0 0 12.993 2H1.007c-.267 0-.509.104-.689.273L7 8l6.684-5.729zM0 2.878v8.308l4.833-4.107zM9.167 7.079L14 11.186V2.875z"/></svg>
+        </a>
+        <a id="wechat_share_btn" data-site="wechat" data-url="https://pingcap.com/blog-cn/tikv-source-code-reading-3/" class="ssba_wechat_share" href="javascript:void(0)" onclick="toggleBlogQRCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 31.403 31.404"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"/><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"/></svg>
+        </a>
+    </div>
+</div>
+
+<style type="text/css">
+    .fixed-qrcode {
+        position: fixed;
+        top: 120px;
+        right: 105px;
+        padding: 10px 15px;
+        width: 200px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.9);
+        text-align: center;
+    }
+
+    .fixed-qrcode p {
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.6;
+        margin: 8px 0;
+        color: #333;
+    }
+
+    .fixed-qrcode #close_share_qrcode {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 30px;
+        height: 30px;
+        padding: 10px;
+    }
+
+    .fixed-qrcode #close_share_qrcode svg {
+        display: block;
+    }
+
+    .f-hide #share_qrcode {
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .fixed-qrcode #share_qrcode {
+        visibility: visible;
+        opacity: 1;
+        height: 128px;
+        transition: visibility 0s linear 0s, opacity .3s 0s;
+        -webkit-transition: visibility 0s linear 0s, opacity .3s 0s;
+    }
+
+    #share_qrcode img {
+        margin: 0 auto;
+    }
+</style>
+<div id="share_qrcode_outer" class="f-hide">
+    <i id="close_share_qrcode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 224.512 224.512"><path fill="#010002" d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z"/></svg></i>
+    <p>分享到微信</p>
+    <div id="share_qrcode"></div>
+    <p>打开微信，使用 “扫一扫” 即可将网页分享至朋友圈。</p>
+</div>
+
+<script type="text/javascript" src="/js/vendor/qrcode.min.js"></script>
+<script type="text/javascript">
+    window.onload = function() {
+        var close_share_qrcode_btn = document.getElementById('close_share_qrcode')
+        var wechat_share_btn = document.getElementById('wechat_share_btn')
+        var blog_url = wechat_share_btn.getAttribute('data-url')
+
+        window.pingcap_blog_qrcode = new QRCode(
+            document.getElementById('share_qrcode'),
+            {
+            text: blog_url,
+            width: 128,
+            height: 128,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+            }
+        )
+
+        close_share_qrcode_btn.addEventListener('click', function(event) {
+            document
+            .getElementById('share_qrcode_outer')
+            .setAttribute('class', 'f-hide')
+        })
+    }
+
+    function toggleBlogQRCode() {
+        var qrcode_wrapper = document.getElementById('share_qrcode_outer')
+
+        if (qrcode_wrapper.getAttribute('class') == 'f-hide') {
+            qrcode_wrapper.setAttribute('class', 'fixed-qrcode')
+        } else {
+            qrcode_wrapper.setAttribute('class', 'f-hide')
+        }
+    }
+</script>
+</div>
+        </div>
+    </div>
+<footer>
+    <div class="container">
+        <div class="flex-list-wrap">
+            <div class="flex-list">
+                <h4 class="list-title"><strong>产品</strong></h4>
+                <ul>
+                <li><a href="/docs-cn/v3.0/" onclick="trackViews('footer-product-tidb', 'docs-cn_view')">TiDB</a></li>
+                <li><a href="/docs-cn/v3.0/reference/tispark/">TiSpark</a></li>
+                <li><a href="/docs-cn/v3.0/roadmap/">TiDB 路线图</a></li>
+                </ul>
+            </div>
+            <div class="flex-list">
+                <h4 class="list-title"><strong>文档</strong></h4>
+                <ul>
+                <li><a href="/docs-cn/stable/how-to/get-started/deploy-tidb-from-docker-compose/">快速入门</a></li>
+                <li><a href="/blog-cn/tidb-best-practice/">最佳实践</a></li>
+                <li><a href="/docs-cn/stable/faq/tidb/">常见问题解答</a></li>
+                <li><a href="/docs-cn/stable/reference/tools/user-guide/">TiDB 周边工具</a></li>
+                <li><a href="/docs-cn/dev/releases/rn/">版本发布说明</a></li>
+                </ul>
+            </div>
+            <div class="flex-list">
+                <h4 class="list-title"><strong>资源</strong></h4>
+                <ul>
+                <li><a href="/blog-cn/">博客</a></li>
+                <li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+                <li><a href="https://book.tidb.io" target="_blank">TiDB in Action</a></li>
+                <li><a href="https://university.pingcap.com/"
+                    onclick="trackViews('footer-source-university', 'pingcap-university_view')" target="_blank">PingCAP
+                    University</a></li>
+                <li><a href="/solutions/intel/" 
+                    onclick="trackViews('footer-resource-solutions', 'solutions_view')" >联合解决方案</a></li>
+                <li><a href="https://asktug.com/" 
+                    onclick="trackViews('footer-resource-asktug', 'asktug_view')" target="_blank">Ask TUG</a></li>
+                
+                </ul>
+            </div>
+            <div class="flex-list">
+                <h4 class="list-title"><strong>公司</strong></h4>
+                <ul>
+                <li><a href="/about-cn/">关于我们</a></li>
+                <li><a href="/about-cn/recruit/join/" onclick="trackViews('footer-recruit-join', 'recruit-join_view')">招贤纳士</a>
+                </li>
+                <li><a href="/about-cn/news/">新闻报道</a></li>
+                <li><a href="/privacy-policy/">隐私申明</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="contact-list-wrap">
+            <div class="flex-list">
+                <h4 class="list-title"><strong>联系我们</strong></h4>
+                <ul>
+                <li><a href="https://twitter.com/PingCAP" class="twitter"  target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 612" width="18" height="19"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"/></svg> Twitter</a></li>
+                <li><a href="https://www.linkedin.com/company/pingcap/" class="linkedin" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" viewBox="0 0 438.536 438.535"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"/></svg> LinkedIn</a></li>
+                <li><a href="https://www.reddit.com/r/TiDB/" class="reddit" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 279.748 279.748" width="18" height="18"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"/></svg> Reddit</a></li>
+                <li><a href="https://groups.google.com/forum/#!forum/tidb-user" class="google-plus" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 491.858 491.858" width="18" height="20"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"/></svg> Google Group</a></li>
+                <li><a href="https://stackoverflow.com/questions/tagged/tidb" class="stack-overflow" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 547.597 547.597"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"/><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"/><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"/></svg> Stack Overflow</a></li>
+                <li id="wechat"><a class="wechat" href="javascript:void(0)"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 31.403 31.404"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"/><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"/></svg> 微信公众号</a> <div class="qr_code_outer f-hide f-tc">
+    <div class="qr_code">
+        <i id="close_qrcode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 224.512 224.512"><path fill="#010002" d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z"/></svg></i>
+        <img id="js_qr_code_img" class="qr_code_img" src="/images/wechat-qrcode.jpg" alt="Wechat qrCode" />
+        <p>微信扫一扫<br> 微信ID：pingcap2015</p>
+    </div>
+</div>
+</li>
+                </ul>
+            </div>
+            <div class="subscribe" id="subscribe-pc"></div>
+        </div>
+    </div>
+    <div class="container copyright-container">
+        <p class="copyright">&copy; 2020 北京平凯星辰科技发展有限公司</p>
+        <a href="/blog" class="copyright-btn-lang copyright-btn-en" id="lang">English</a>
+        <a href="http://www.beian.miit.gov.cn/" class="prepared-num">京 ICP 备 16046278 号 - 2</a>
+    </div>
+</footer>
+<button class="back-to-top" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 284.929 284.929"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"/></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script type="text/javascript" src="/js/vendor/lazyload.min.js"></script>
+    <script type="text/javascript" src="/js/doc.js"></script>
+    <script type="text/javascript" src="/js/anchor.js"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" crossorigin="anonymous"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

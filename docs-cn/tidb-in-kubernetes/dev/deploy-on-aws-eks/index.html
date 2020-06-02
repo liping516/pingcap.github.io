@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>在 AWS EKS 上部署 TiDB | TiDB 官方用户文档</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="介绍如何在 AWS EKS (Elastic Kubernetes Service) 上部署 TiDB 集群。" name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="在 AWS EKS 上部署 TiDB | TiDB 官方用户文档" property="og:title"/>
+<meta content="介绍如何在 AWS EKS (Elastic Kubernetes Service) 上部署 TiDB 集群。" property="og:description"/>
+<meta content="https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-aws-eks/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="介绍如何在 AWS EKS (Elastic Kubernetes Service) 上部署 TiDB 集群。" name="twitter:description"/>
+<meta content="在 AWS EKS 上部署 TiDB | TiDB 官方用户文档" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="cn"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/index.html"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP
+                            University</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">文档</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs-cn/tidb-in-kubernetes/dev/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="cn" data-type="/tidb-in-kubernetes/" id="search-input" name="q" placeholder="搜索 TiDB 文档" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">文档</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP University</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social social-cn ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+<li id="wechat-mobile"><a class="wechat" href="javascript:void(0)"><svg height="18" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg></a><div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-mobile"></div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs/" id="lang">English</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB in Kubernetes 文档 </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">dev</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs-cn/tidb-in-kubernetes/stable/deploy-on-aws-eks/">v1.1 (stable)</a>
+<a class="dropdown-item " href="
+                /docs-cn/tidb-in-kubernetes/v1.0/deploy-on-aws-eks/">v1.0</a>
+<a class="dropdown-item " href="
+                /docs-cn/tidb-in-kubernetes/dev/deploy-on-aws-eks/">dev</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>关于 TiDB Operator</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/tidb-operator-overview/">
+<span>简介</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/whats-new-in-v1.1/">
+<span>What's New in v1.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/notes-tidb-operator-v1.1/">
+<span>TiDB Operator v1.1 重要注意事项</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>快速上手</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-kind/">
+<span>kind</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-gke/">
+<span>GKE</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-minikube/">
+<span>Minikube</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>部署</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>部署 TiDB 集群</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-on-aws-eks/">
+<span>部署到 AWS EKS</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-on-gcp-gke/">
+<span>部署到 GCP GKE</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-on-alibaba-cloud/">
+<span>部署到阿里云 ACK</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>部署到自托管的 Kubernetes</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/prerequisites/">
+<span>集群环境要求</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/configure-storage-class/">
+<span>配置 Storage Class</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-operator/">
+<span>部署 TiDB Operator</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/configure-a-tidb-cluster/">
+<span>资源及容灾配置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/configure-cluster-using-tidbcluster/">
+<span>通过 TidbCluster 配置集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-on-general-kubernetes/">
+<span>部署 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/initialize-a-cluster/">
+<span>初始化 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/access-tidb/">
+<span>访问 TiDB 集群</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-tiflash/">
+<span>部署 TiFlash</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-ticdc/">
+<span>部署 TiCDC</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-binlog/">
+<span>部署 TiDB Binlog</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>部署 TiDB 集群监控</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/monitor-a-tidb-cluster/">
+<span>监控 Kubernetes 和 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/monitor-using-tidbmonitor/">
+<span>使用 TidbMonitor 监控 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/access-dashboard/">
+<span>访问 TiDB Dashboard</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>安全</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/enable-tls-for-mysql-client/">
+<span>为 MySQL 客户端开启 TLS</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/enable-tls-between-components/">
+<span>为 TiDB 组件间开启 TLS</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>运维</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/upgrade-a-tidb-cluster/">
+<span>升级 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/upgrade-tidb-operator/">
+<span>升级 TiDB Operator</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>TiDB 集群伸缩</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/scale-a-tidb-cluster/">
+<span>手动扩缩容</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/enable-tidb-cluster-auto-scaling/">
+<span>自动弹性伸缩</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>备份与恢复</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/backup-and-restore-using-helm-charts/">
+<span>基于 Helm Charts 的备份恢复</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>基于 CRD 的备份恢复</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/backup-to-gcs/">
+<span>使用 Mydumper 备份 TiDB 集群数据到 GCS</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/restore-from-gcs/">
+<span>使用 TiDB Lightning 恢复 GCS 上的备份数据</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/backup-to-s3/">
+<span>使用 Mydumper 备份 TiDB 集群数据到兼容 S3 的存储</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/restore-from-s3/">
+<span>使用 TiDB Lightning 恢复 S3 兼容存储上的备份数据</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/backup-to-aws-s3-using-br/">
+<span>使用 BR 备份 TiDB 集群数据到兼容 S3 的存储</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/restore-from-aws-s3-using-br/">
+<span>使用 BR 恢复 S3 兼容存储上的备份数据</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/restart-a-tidb-cluster/">
+<span>重启 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/maintain-a-kubernetes-node/">
+<span>维护 TiDB 集群所在节点</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/view-logs/">
+<span>查看日志</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/use-auto-failover/">
+<span>集群故障自动转移</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/pd-recover/">
+<span>恢复 PD 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/destroy-a-tidb-cluster/">
+<span>销毁 TiDB 集群</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/restore-data-using-tidb-lightning/">
+<span>导入集群数据</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/troubleshoot/">
+<span>故障诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/faq/">
+<span>常见问题</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>参考</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>架构</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/tidb-scheduler/">
+<span>TiDB Scheduler 扩展调度器</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/advanced-statefulset/">
+<span>增强型 StatefulSet 控制器</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/enable-admission-webhook/">
+<span>准入控制器</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/benchmark-sysbench/">
+<span>Sysbench 性能测试</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://github.com/pingcap/docs-tidb-operator/blob/master/zh/api-references.md">
+<span>API 参考文档</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/cheat-sheet/">
+<span>Cheat Sheet</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>工具</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/use-tkctl/">
+<span>tkctl</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/tidb-toolkit/">
+<span>TiDB Toolkit</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>配置</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/configure-tidb-binlog-drainer/">
+<span>tidb-drainer chart 配置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/tidb-cluster-chart-config/">
+<span>tidb-cluster chart 配置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/configure-backup/">
+<span>tidb-backup chart 配置</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/dev/logs-collection/">
+<span>日志收集</span>
+</a>
+</li></ul>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="-aws-eks--tidb-">在 AWS EKS 上部署 TiDB 集群</h1>
+<p>本文介绍了如何使用个人电脑（Linux 或 macOS 系统）在 AWS EKS (Elastic Kubernetes Service) 上部署 TiDB 集群。</p>
+<h2 id="heading">环境配置准备</h2>
+<p>部署前，请确认已安装以下软件并完成配置：</p>
+<ul>
+<li>
+<p><a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html">awscli</a> &gt;= 1.16.73，控制 AWS 资源</p>
+<p>要与 AWS 交互，必须<a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html">配置 <code>awscli</code></a>。最快的方式是使用 <code>aws configure</code> 命令:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws configure
+</code></pre></div><p>替换下面的 AWS Access Key ID 和 AWS Secret Access Key：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name [None]: us-west-2
+Default output format [None]: json
+</code></pre></div><blockquote>
+<p><strong>注意：</strong></p>
+<p>Access key 必须至少具有以下权限：创建 VPC、创建 EBS、创建 EC2 和创建 Role。</p>
+</blockquote>
+</li>
+<li>
+<p><a href="https://learn.hashicorp.com/terraform/getting-started/install.html">terraform</a> &gt;= 0.12</p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl">kubectl</a> &gt;= 1.12</p>
+</li>
+<li>
+<p><a href="https://helm.sh/docs/using_helm/#installing-the-helm-client">helm</a> &gt;= 2.11.0 &amp;&amp; &lt; 3.0.0 &amp;&amp; != <a href="https://github.com/helm/helm/issues/7797">2.16.4</a></p>
+</li>
+<li>
+<p><a href="https://stedolan.github.io/jq/download/">jq</a></p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html">aws-iam-authenticator</a>，AWS 权限鉴定工具，确保安装在 <code>PATH</code> 路径下。</p>
+<p>最简单的安装方法是下载编译好的二进制文件 <code>aws-iam-authenticator</code>，如下所示。</p>
+<p>Linux 用户下载二进制文件：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/linux/amd64/aws-iam-authenticator
+</code></pre></div><p>macOS 用户下载二进制文件：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/darwin/amd64/aws-iam-authenticator
+</code></pre></div><p>二进制文件下载完成后，执行以下操作：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">chmod +x ./aws-iam-authenticator <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+</code></pre></div></li>
+</ul>
+<h2 id="heading-1">部署集群</h2>
+<h3 id="-ekstidb-operator--tidb-">部署 EKS、TiDB Operator 和 TiDB 集群节点池</h3>
+<p>使用如下步骤部署 EKS、TiDB Operator 和 TiDB 集群节点池。</p>
+<p>从 Github 克隆代码并进入指定路径：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">git clone --depth<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> https://github.com/pingcap/tidb-operator <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>cd tidb-operator/deploy/aws
+</code></pre></div><p>默认部署会创建一个新的 VPC、一个 t2.micro 实例作为堡垒机，并包含以下 ec2 实例作为工作节点的 EKS 集群：</p>
+<ul>
+<li>3 台 m5.xlarge 实例，部署 PD</li>
+<li>3 台 c5d.4xlarge 实例，部署 TiKV</li>
+<li>2 台 c5.4xlarge 实例，部署 TiDB</li>
+<li>1 台 c5.2xlarge 实例，部署监控组件</li>
+</ul>
+<p>可以新建或者编辑 <code>terraform.tfvars</code>，在其中设置变量的值，按需配置集群，可以通过 <code>variables.tf</code> 查看有哪些变量可以设置以及各变量的详细描述。例如，下面示例配置 EKS 集群名称，TiDB 集群名称，TiDB Operator 版本及 PD、TiKV 和 TiDB 节点的数量：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">default_cluster_pd_count   = 3
+default_cluster_tikv_count = 3
+default_cluster_tidb_count = 2
+default_cluster_name = "tidb"
+eks_name = "my-cluster"
+operator_version = "v1.1.0-rc.1"
+</code></pre></div><p>如果需要在集群中部署 TiFlash，需要在 <code>terraform.tfvars</code> 中设置 <code>create_tiflash_node_pool = true</code>，也可以设置 <code>cluster_tiflash_count</code> 和 <code>cluster_tiflash_instance_type</code> 来配置 TiFlash 节点池的节点数量和实例类型，<code>cluster_tiflash_count</code> 默认为 <code>2</code>，<code>cluster_tiflash_instance_type</code> 默认为 <code>i3.4xlarge</code>。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>请通过 <code>variables.tf</code> 文件中的 <code>operator_version</code> 确认当前版本脚本中默认的 TiDB Operator 版本，如果默认版本不是想要使用的版本，请在 <code>terraform.tfvars</code> 中配置 <code>operator_version</code>。</p>
+</blockquote>
+<p>配置完成后，使用 <code>terraform</code> 命令初始化并部署集群：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">terraform init
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">terraform apply
+</code></pre></div><blockquote>
+<p><strong>注意：</strong></p>
+<p><code>terraform apply</code> 过程中必须输入 “yes” 才能继续。</p>
+</blockquote>
+<p>整个过程可能至少需要 10 分钟。<code>terraform apply</code> 执行成功后，控制台会输出类似如下的信息：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Apply complete! Resources: 67 added，0 changed，0 destroyed.
+
+Outputs:
+
+bastion_ip = [
+  "34.219.204.217",
+]
+default-cluster_monitor-dns = not_created
+default-cluster_tidb-dns = not_created
+eks_endpoint = https://9A9A5ABB8303DDD35C0C2835A1801723.yl4.us-west-2.eks.amazonaws.com
+eks_version = 1.12
+kubeconfig_filename = credentials/kubeconfig_my-cluster
+region = us-west-21
+</code></pre></div><p>你可以通过 <code>terraform output</code> 命令再次获取上面的输出信息。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>1.14 版本以前的 EKS 不支持自动开启 NLB 跨可用区负载均衡，因此默认配置下 会出现各台 TiDB 实例压力不均衡额状况。生产环境下，强烈建议参考 <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-disable-crosszone-lb.html#enable-cross-zone">AWS 官方文档</a>手动开启 NLB 的跨可用区负载均衡。</p>
+</blockquote>
+<h3 id="-tidb-">部署 TiDB 集群和监控</h3>
+<ol>
+<li>
+<p>准备 TidbCluster 和 TidbMonitor CR 文件：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cp manifests/db.yaml.example db.yaml <span style="color:#f92672">&amp;&amp;</span> cp manifests/db-monitor.yaml.example db-monitor.yaml
+</code></pre></div><p>参考 <a href="/docs-cn/tidb-in-kubernetes/dev/api-references">API 文档</a>和<a href="/docs-cn/tidb-in-kubernetes/dev/configure-cluster-using-tidbcluster">集群配置文档</a>完成 CR 文件配置。</p>
+<p>如果要部署 TiFlash，可以在 db.yaml 中配置 <code>spec.tiflash</code>，例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">spec:
+  ...
+  tiflash:
+    baseImage: pingcap/tiflash
+    maxFailoverCount: <span style="color:#ae81ff">3</span>
+    nodeSelector:
+      dedicated: CLUSTER_NAME-tiflash
+    replicas: <span style="color:#ae81ff">1</span>
+    storageClaims:
+    - resources:
+        requests:
+          storage: 100Gi
+      storageClassName: local-storage
+    tolerations:
+    - effect: NoSchedule
+      key: dedicated
+      operator: Equal
+      value: CLUSTER_NAME-tiflash
+</code></pre></div><p>根据实际情况修改 <code>replicas</code>、<code>storageClaims[].resources.requests.storage</code>、<code>storageClassName</code>。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<ul>
+<li>请使用 EKS 部署过程中配置的 <code>default_cluster_name</code> 替换 <code>db.yaml</code> 和 <code>db-monitor.yaml</code> 文件中所有的 <code>CLUSTER_NAME</code>。</li>
+<li>请确保 EKS 部署过程中 PD、TiKV、TiFlash 或者 TiDB 节点的数量的值大于等于 <code>db.yaml</code> 中对应组件的 <code>replicas</code>。</li>
+<li>请确保 <code>db-monitor.yaml</code> 中 <code>spec.initializer.version</code> 和 <code>db.yaml</code> 中 <code>spec.version</code> 一致，以保证监控显示正常。</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>创建 <code>Namespace</code>：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> create namespace <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div><blockquote>
+<p><strong>注意：</strong></p>
+<p><code>namespace</code> 是<a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">命名空间</a>，可以起一个方便记忆的名字，比如和 <code>default_cluster_name</code> 相同的名称。</p>
+</blockquote>
+</li>
+<li>
+<p>部署 TiDB 集群：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> create -f db.yaml -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span> <span style="color:#f92672">&amp;&amp;</span>
+kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> create -f db-monitor.yaml -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div></li>
+</ol>
+<h3 id="-tidb--loadbalancer--cross-zone-load-balancing">为 TiDB 服务 LoadBalancer 开启 Cross-Zone Load Balancing</h3>
+<p>由于 AWS Network Load Balancer (NLB) <a href="https://github.com/kubernetes/kubernetes/issues/82595">问题</a>，为 TiDB 服务创建的 NLB 无法自动开启 Cross-Zone Load Balancing，请参考以下步骤手动开启：</p>
+<ol>
+<li>
+<p>获取 TiDB 服务 NLB 名字：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> get svc <span style="color:#e6db74">${</span>default_cluster_name<span style="color:#e6db74">}</span>-tidb -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div><p>示例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kubectl --kubeconfig credentials/kubeconfig_test get svc test-tidb -n test
+NAME        TYPE           CLUSTER-IP      EXTERNAL-IP                                                                     PORT(S)                          AGE
+tidb-tidb   LoadBalancer   172.20.39.180   a7aa544c49f914930b3b0532022e7d3c-83c0c97d8b659075.elb.us-west-2.amazonaws.com   4000:32387/TCP,10080:31486/TCP   3m46s
+</code></pre></div><p><code>EXTERNAL-IP</code> 字段值中以 <code>-</code> 分隔的第一个字段即为 NLB 名字，上述示例中 <code>a7aa544c49f914930b3b0532022e7d3c</code> 即为 NLB 名字。</p>
+</li>
+<li>
+<p>获取 NLB LoadBalancerArn：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws elbv2 describe-load-balancers | grep <span style="color:#e6db74">${</span>LoadBalancerName<span style="color:#e6db74">}</span>
+</code></pre></div><p><code>${LoadBalancerName}</code> 为第一步获取的 NLB 名字。</p>
+<p>示例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">aws elbv2 describe-load-balancers | grep a7aa544c49f914930b3b0532022e7d3c
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:687123456789:loadbalancer/net/a7aa544c49f914930b3b0532022e7d3c/83c0c97d8b659075",
+          "DNSName": "a7aa544c49f914930b3b0532022e7d3c-83c0c97d8b659075.elb.us-west-2.amazonaws.com",
+          "LoadBalancerName": "a7aa544c49f914930b3b0532022e7d3c",
+</code></pre></div><p><code>LoadBalancerArn</code> 字段值即为 NLB LoadBalancerArn。</p>
+</li>
+<li>
+<p>查看 NLB 属性：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws elbv2 describe-load-balancer-attributes --load-balancer-arn <span style="color:#e6db74">${</span>LoadBalancerArn<span style="color:#e6db74">}</span>
+</code></pre></div><p><code>${LoadBalancerArn}</code> 为第二步获取的 NLB LoadBalancerArn。</p>
+<p>示例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">aws elbv2 describe-load-balancer-attributes --load-balancer-arn "arn:aws:elasticloadbalancing:us-west-2:687123456789:loadbalancer/net/a7aa544c49f914930b3b0532022e7d3c/83c0c97d8b659075"
+{
+  "Attributes": [
+      {
+          "Key": "access_logs.s3.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "load_balancing.cross_zone.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.prefix",
+          "Value": ""
+      },
+      {
+          "Key": "deletion_protection.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.bucket",
+          "Value": ""
+      }
+  ]
+}
+</code></pre></div><p>如果 <code>load_balancing.cross_zone.enabled</code> 的值为 <code>false</code>，继续下一步，为 NLB 开启 Cross-Zone Load Balancing。</p>
+</li>
+<li>
+<p>为 NLB 开启 Cross-Zone Load Balancing：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws elbv2 modify-load-balancer-attributes --load-balancer-arn <span style="color:#e6db74">${</span>LoadBalancerArn<span style="color:#e6db74">}</span> --attributes Key<span style="color:#f92672">=</span>load_balancing.cross_zone.enabled,Value<span style="color:#f92672">=</span>true
+</code></pre></div><p><code>${LoadBalancerArn}</code> 为第二步获取的 NLB LoadBalancerArn。</p>
+<p>示例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">aws elbv2 modify-load-balancer-attributes --load-balancer-arn "arn:aws:elasticloadbalancing:us-west-2:687123456789:loadbalancer/net/a7aa544c49f914930b3b0532022e7d3c/83c0c97d8b659075" --attributes Key=load_balancing.cross_zone.enabled,Value=true
+{
+  "Attributes": [
+      {
+          "Key": "load_balancing.cross_zone.enabled",
+          "Value": "true"
+      },
+      {
+          "Key": "access_logs.s3.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.prefix",
+          "Value": ""
+      },
+      {
+          "Key": "deletion_protection.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.bucket",
+          "Value": ""
+      }
+  ]
+}
+</code></pre></div></li>
+<li>
+<p>确认 NLB Cross-Zone Load Balancing 属性已经开启：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws elbv2 describe-load-balancer-attributes --load-balancer-arn <span style="color:#e6db74">${</span>LoadBalancerArn<span style="color:#e6db74">}</span>
+</code></pre></div><p><code>${LoadBalancerArn}</code> 为第二步获取的 NLB LoadBalancerArn。</p>
+<p>示例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">aws elbv2 describe-load-balancer-attributes --load-balancer-arn "arn:aws:elasticloadbalancing:us-west-2:687123456789:loadbalancer/net/a7aa544c49f914930b3b0532022e7d3c/83c0c97d8b659075"
+{
+  "Attributes": [
+      {
+          "Key": "access_logs.s3.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "load_balancing.cross_zone.enabled",
+          "Value": "true"
+      },
+      {
+          "Key": "access_logs.s3.prefix",
+          "Value": ""
+      },
+      {
+          "Key": "deletion_protection.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.bucket",
+          "Value": ""
+      }
+  ]
+}
+</code></pre></div><p>确认 <code>load_balancing.cross_zone.enabled</code> 的值为 <code>true</code>。</p>
+</li>
+</ol>
+<h2 id="heading-2">访问数据库</h2>
+<p>集群部署完成后，可先通过 <code>ssh</code> 远程连接到堡垒机，再通过 MySQL client 来访问 TiDB 集群。</p>
+<p>所需命令如下（用上面的输出信息替换 <code>${}</code> 部分内容)：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">ssh -i credentials/<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span>.pem centos@<span style="color:#e6db74">${</span>bastion_ip<span style="color:#e6db74">}</span>
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">mysql -h <span style="color:#e6db74">${</span>tidb_lb<span style="color:#e6db74">}</span> -P <span style="color:#ae81ff">4000</span> -u root
+</code></pre></div><p><code>eks_name</code> 默认为 <code>my-cluster</code>。如果 DNS 名字无法解析，请耐心等待几分钟。</p>
+<p><code>tidb_lb</code> 为 TiDB Service 的 LoadBalancer，可以通过 <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} get svc ${default_cluster_name}-tidb -n ${namespace}</code> 输出中的 <code>EXTERNAL-IP</code> 字段查看。</p>
+<p>你还可以通过 <code>kubectl</code> 和 <code>helm</code> 命令使用 kubeconfig 文件 <code>credentials/kubeconfig_${eks_name}</code> 和 EKS 集群交互，主要有两种方式，如下所示。</p>
+<ul>
+<li>
+<p>指定 –kubeconfig 参数：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> get po -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">helm --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> ls
+</code></pre></div></li>
+<li>
+<p>或者，设置 KUBECONFIG 环境变量：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">export KUBECONFIG<span style="color:#f92672">=</span>$PWD/credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span>
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl get po -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">helm ls
+</code></pre></div></li>
+</ul>
+<h2 id="grafana-">Grafana 监控</h2>
+<p>你可以通过浏览器访问 <code>&lt;monitor-lb&gt;:3000</code> 地址查看 Grafana 监控指标。</p>
+<p><code>monitor-lb</code> 是集群 Monitor Service 的 LoadBalancer，可以通过 <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} get svc ${default_cluster_name}-grafana -n ${namespace}</code> 输出中的 <code>EXTERNAL-IP</code> 字段查看。</p>
+<p>Grafana 默认登录信息：</p>
+<ul>
+<li>用户名：admin</li>
+<li>密码：admin</li>
+</ul>
+<h2 id="-tidb--1">升级 TiDB 集群</h2>
+<p>要升级 TiDB 集群，可以通过 <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} edit tc ${default_cluster_name} -n ${namespace}</code> 修改 <code>spec.version</code>。</p>
+<p>升级过程会持续一段时间，你可以通过 <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} get po -n ${namespace} --watch</code> 命令持续观察升级进度。</p>
+<h2 id="-tidb--2">扩容 TiDB 集群</h2>
+<p>若要扩容 TiDB 集群，可以在文件 <code>terraform.tfvars</code> 文件中设置 <code>default_cluster_tikv_count</code>、<code>cluster_tiflash_count</code> 或者 <code>default_cluster_tidb_count</code> 变量，然后运行 <code>terraform apply</code>，扩容对应组件节点数量，节点扩容完成后，通过 <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} edit tc ${default_cluster_name} -n ${namespace}</code> 修改对应组件的 <code>replicas</code>。</p>
+<p>例如，可以将 <code>default_cluster_tidb_count</code> 从 2 改为 4 以扩容 TiDB 节点：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hcl" data-lang="hcl">default_cluster_tidb_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>
+</code></pre></div><p>节点扩容完成后，修改 <code>TidbCluster</code> 中 <code>spec.tidb.replicas</code> 扩容 Pod。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<ul>
+<li>由于缩容过程中无法确定会缩掉哪个节点，目前还不支持 TiDB 集群的缩容。</li>
+<li>扩容过程会持续几分钟，你可以通过 <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} get po -n ${namespace} --watch</code> 命令持续观察进度。</li>
+</ul>
+</blockquote>
+<h2 id="heading-3">自定义</h2>
+<h3 id="-aws-">自定义 AWS 相关的资源</h3>
+<p>由于 TiDB 服务通过 <a href="https://aws.amazon.com/blogs/aws/internal-elastic-load-balancers/">Internal Elastic Load Balancer</a> 暴露，默认情况下，会创建一个 Amazon EC2 实例作为堡垒机，访问创建的 TiDB 集群。堡垒机上预装了 MySQL 和 Sysbench，所以你可以通过 SSH 方式登陆到堡垒机后通过 ELB 访问 TiDB。如果你的 VPC 中已经有了类似的 EC2 实例，你可以通过设置 <code>create_bastion</code> 为 <code>false</code> 禁掉堡垒机的创建。</p>
+<h3 id="-tidb-operator">自定义 TiDB Operator</h3>
+<p>你可以在 <code>terraform.tfvars</code> 中设置 <code>operator_values</code> 参数传入自定义的 <code>values.yaml</code> 内容来配置 TiDB Operator。示例如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hcl" data-lang="hcl">operator_values <span style="color:#f92672">=</span> <span style="color:#e6db74">"./operator_values.yaml"</span>
+</code></pre></div><h2 id="-tidb--3">管理多个 TiDB 集群</h2>
+<p>一个 <code>tidb-cluster</code> 模块的实例对应一个 TiDB 集群，你可以通过编辑 <code>clusters.tf</code> 添加新的 <code>tidb-cluster</code> 模块实例来为新的 TiDB 集群创建节点池，示例如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hcl" data-lang="hcl"><span style="color:#66d9ef">module</span> <span style="color:#66d9ef">example</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">cluster</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/tidb-cluster"</span>
+  eks <span style="color:#f92672">=</span> <span style="color:#66d9ef">local</span>.<span style="color:#66d9ef">eks</span>
+  subnets <span style="color:#f92672">=</span> <span style="color:#66d9ef">local</span>.<span style="color:#66d9ef">subnets</span>
+  region  <span style="color:#f92672">=</span> <span style="color:#66d9ef">var</span>.<span style="color:#66d9ef">region</span>
+  cluster_name    <span style="color:#f92672">=</span> <span style="color:#e6db74">"example"</span>
+  ssh_key_name                  <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+  pd_count                      <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  pd_instance_type              <span style="color:#f92672">=</span> <span style="color:#e6db74">"c5.large"</span>
+  tikv_count                    <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  tikv_instance_type            <span style="color:#f92672">=</span> <span style="color:#e6db74">"c5d.large"</span>
+  tidb_count                    <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  tidb_instance_type            <span style="color:#f92672">=</span> <span style="color:#e6db74">"c4.large"</span>
+  monitor_instance_type         <span style="color:#f92672">=</span> <span style="color:#e6db74">"c5.large"</span>
+  create_tidb_cluster_release   <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+}
+</code></pre></div><blockquote>
+<p><strong>注意：</strong></p>
+<p><code>cluster_name</code> 必须是唯一的。</p>
+</blockquote>
+<p>修改完成后，执行 <code>terraform init</code> 和 <code>terraform apply</code> 为集群创建节点池。</p>
+<p>最后，参考<a href="#%E9%83%A8%E7%BD%B2-TiDB-%E9%9B%86%E7%BE%A4%E5%92%8C%E7%9B%91%E6%8E%A7">部署 TiDB 集群和监控</a> 部署新集群及其监控。</p>
+<h2 id="heading-4">销毁集群</h2>
+<p>可以参考<a href="/docs-cn/tidb-in-kubernetes/dev/destroy-a-tidb-cluster#%E9%94%80%E6%AF%81-kubernetes-%E4%B8%8A%E7%9A%84-tidb-%E9%9B%86%E7%BE%A4">销毁 TiDB 集群</a>删除集群。</p>
+<p>然后通过如下命令销毁 EKS 集群：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">terraform destroy
+</code></pre></div><p>如果执行 <code>terraform destroy</code> 过程中遇到如下错误：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Error: Get http://localhost/apis/apps/v1/namespaces/kube-system/deployments/tiller-deploy: dial tcp [::1]:80: connect: connection refused
+</code></pre></div><p>请执行以下命令：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">terraform state rm module.tidb-operator.helm_release.tidb-operator
+</code></pre></div><p>然后再次执行 <code>terraform destroy</code>。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<ul>
+<li>该操作会销毁 EKS 集群。</li>
+<li>如果你不再需要存储卷中的数据，在执行 <code>terraform destroy</code> 后，你需要在 AWS 控制台手动删除 EBS 卷。</li>
+</ul>
+</blockquote>
+<h2 id="-kubernetes-">管理多个 Kubernetes 集群</h2>
+<p>本节详细介绍了如何管理多个 Kubernetes 集群（EKS），并在每个集群上部署一个或更多 TiDB 集群。</p>
+<p>上述文档中介绍的 Terraform 脚本组合了多个 Terraform 模块：</p>
+<ul>
+<li><code>tidb-operator</code> 模块，用于创建 EKS 集群并在 EKS 集群上安装配置 <a href="/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-operator">TiDB Operator</a>。</li>
+<li><code>tidb-cluster</code> 模块，用于创建 TiDB 集群所需的资源池。</li>
+<li>EKS 上的 TiDB 集群专用的 <code>vpc</code> 模块、<code>key-pair</code>模块和<code>bastion</code> 模块</li>
+</ul>
+<p>管理多个 Kubernetes 集群的最佳实践是为每个 Kubernetes 集群创建一个单独的目录，并在新目录中自行组合上述 Terraform 模块。这种方式能够保证多个集群间的 Terraform 状态不会互相影响，也便于自由定制和扩展。下面是一个例子：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">mkdir -p deploy/aws-staging
+vim deploy/aws-staging/main.tf
+</code></pre></div><p><code>deploy/aws-staging/main.tf</code> 的内容可以是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hcl" data-lang="hcl"><span style="color:#66d9ef">provider</span> <span style="color:#e6db74">"aws"</span> {
+  region <span style="color:#f92672">=</span> <span style="color:#e6db74">"us-west-1"</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># 创建一个 ssh key，用于登录堡垒机和 Kubernetes 节点
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"key-pair"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/key-pair"</span>
+
+  name <span style="color:#f92672">=</span> <span style="color:#e6db74">"another-eks-cluster"</span>
+  path <span style="color:#f92672">=</span> <span style="color:#e6db74">"${path.cwd}/credentials/"</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># 创建一个新的 VPC
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"vpc"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/vpc"</span>
+
+  vpc_name <span style="color:#f92672">=</span> <span style="color:#e6db74">"another-eks-cluster"</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># 在上面的 VPC 中创建一个 EKS 并部署 tidb-operator
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"tidb-operator"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/tidb-operator"</span>
+
+  eks_name           <span style="color:#f92672">=</span> <span style="color:#e6db74">"another-eks-cluster"</span>
+  config_output_path <span style="color:#f92672">=</span> <span style="color:#e6db74">"credentials/"</span>
+  subnets            <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">private_subnets</span>
+  vpc_id             <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">vpc_id</span>
+  ssh_key_name       <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># 特殊处理，确保 helm 操作在 EKS 创建完毕后进行
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">resource</span> <span style="color:#e6db74">"local_file" "kubeconfig"</span> {
+  depends_on        <span style="color:#f92672">=</span> [<span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>]
+  sensitive_content <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>.<span style="color:#66d9ef">kubeconfig</span>
+  filename          <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>.<span style="color:#66d9ef">kubeconfig_filename</span>
+}
+<span style="color:#66d9ef">provider</span> <span style="color:#e6db74">"helm"</span> {
+  alias    <span style="color:#f92672">=</span> <span style="color:#e6db74">"eks"</span>
+  insecure <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
+  install_tiller <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+  <span style="color:#66d9ef">kubernetes</span> {
+    config_path <span style="color:#f92672">=</span> <span style="color:#66d9ef">local_file</span>.<span style="color:#66d9ef">kubeconfig</span>.<span style="color:#66d9ef">filename</span>
+  }
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># 在上面的 EKS 集群上为 TiDB 集群创建节点池
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"tidb-cluster-a"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/tidb-cluster"</span>
+  providers <span style="color:#f92672">=</span> {
+    helm <span style="color:#f92672">=</span> <span style="color:#e6db74">"helm.eks"</span>
+  }
+
+  cluster_name <span style="color:#f92672">=</span> <span style="color:#e6db74">"tidb-cluster-a"</span>
+  eks          <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>
+  ssh_key_name <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+  subnets      <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">private_subnets</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># 在上面的 EKS 集群上为另一个 TiDB 集群创建节点池
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"tidb-cluster-b"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/tidb-cluster"</span>
+  providers <span style="color:#f92672">=</span> {
+    helm <span style="color:#f92672">=</span> <span style="color:#e6db74">"helm.eks"</span>
+  }
+  
+  cluster_name <span style="color:#f92672">=</span> <span style="color:#e6db74">"tidb-cluster-b"</span>
+  eks          <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>
+  ssh_key_name <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+  subnets      <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">private_subnets</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># 创建一台堡垒机
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"bastion"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/bastion"</span>
+
+  bastion_name             <span style="color:#f92672">=</span> <span style="color:#e6db74">"another-eks-cluster-bastion"</span>
+  key_name                 <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+  public_subnets           <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">public_subnets</span>
+  vpc_id                   <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">vpc_id</span>
+  target_security_group_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>.<span style="color:#66d9ef">worker_security_group_id</span>
+  enable_ssh_to_workers    <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># 输出堡垒机 IP
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">output</span> <span style="color:#e6db74">"bastion_ip"</span> {
+  description <span style="color:#f92672">=</span> <span style="color:#e6db74">"Bastion IP address"</span>
+  value       <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">bastion</span>.<span style="color:#66d9ef">bastion_ip</span>
+}
+</code></pre></div><p>上面的例子很容易进行定制，比如，假如你不需要堡垒机，便可以删去对 <code>bastion</code> 模块的调用。同时，项目中提供的 Terraform 模块均设置了合理的默认值，因此在调用这些 Terraform 模块时，你可以略去大部分的参数。</p>
+<p>你可以参考默认的 Terraform 脚本来定制每个模块的参数，也可以参考每个模块的 <code>variables.tf</code> 文件来了解所有可配置的参数。</p>
+<p>另外，这些 Terraform 模块可以很容易地集成到你自己的 Terraform 工作流中。假如你对 Terraform 非常熟悉，这也是我们推荐的一种使用方式。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<ul>
+<li>由于 Terraform 本身的限制（<a href="https://github.com/hashicorp/terraform/issues/2430#issuecomment-370685911">hashicorp/terraform#2430</a>），在你自己的 Terraform 脚本中，也需要保留上述例子中对 <code>helm provider</code> 的特殊处理。</li>
+<li>创建新目录时，需要注意与 Terraform 模块之间的相对路径，这会影响调用模块时的 <code>source</code> 参数。</li>
+<li>假如你想在 tidb-operator 项目之外使用这些模块，你需要确保 <code>modules</code> 目录中的所有模块的相对路径保持不变。</li>
+</ul>
+</blockquote>
+<p>假如你不想自己写 Terraform 代码，也可以直接拷贝 <code>deploy/aws</code> 目录来创建新的 Kubernetes 集群。但要注意不能拷贝已经运行过 <code>terraform apply</code> 的目录（已经有 Terraform 的本地状态）。这种情况下，推荐在拷贝前克隆一个新的仓库。</p>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-tidb-operator/blob/master/zh/deploy-on-aws-eks.md">"在 AWS EKS 上部署 TiDB"</a>
+    更新于
+    <span>May 14 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-tidb-operator/commit/012cee4cbe74a4e44bd241feb5cdb78cd551768b">
+        zh: add doc to enable cross-zone load balancing for nlb (#277) <span class="hash">(012cee4)</span>
+</a>
+</div></div>
+<div class="sidebar-page sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-tidb-operator/edit/master/zh/deploy-on-aws-eks.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    修改本文
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-tidb-operator/issues/new?body=File:%20[%2fzh%2fdeploy-on-aws-eks.md](https%3a%2f%2fpingcap.com%2fdocs-cn%2ftidb-in-kubernetes%2fdev%2fdeploy-on-aws-eks%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    反馈文档问题
+</a>
+<p class="toc-title">本页导航</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>产品</strong></h4>
+<ul>
+<li><a href="/docs-cn/v3.0/" onclick="trackViews('footer-product-tidb', 'docs-cn_view')">TiDB</a></li>
+<li><a href="/docs-cn/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs-cn/v3.0/roadmap/">TiDB 路线图</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>文档</strong></h4>
+<ul>
+<li><a href="/docs-cn/stable/how-to/get-started/deploy-tidb-from-docker-compose/">快速入门</a></li>
+<li><a href="/blog-cn/tidb-best-practice/">最佳实践</a></li>
+<li><a href="/docs-cn/stable/faq/tidb/">常见问题解答</a></li>
+<li><a href="/docs-cn/stable/reference/tools/user-guide/">TiDB 周边工具</a></li>
+<li><a href="/docs-cn/dev/releases/rn/">版本发布说明</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>资源</strong></h4>
+<ul>
+<li><a href="/blog-cn/">博客</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="https://book.tidb.io" target="_blank">TiDB in Action</a></li>
+<li><a href="https://university.pingcap.com/" onclick="trackViews('footer-source-university', 'pingcap-university_view')" target="_blank">PingCAP
+                    University</a></li>
+<li><a href="/solutions/intel/" onclick="trackViews('footer-resource-solutions', 'solutions_view')">联合解决方案</a></li>
+<li><a href="https://asktug.com/" onclick="trackViews('footer-resource-asktug', 'asktug_view')" target="_blank">Ask TUG</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>公司</strong></h4>
+<ul>
+<li><a href="/about-cn/">关于我们</a></li>
+<li><a href="/about-cn/recruit/join/" onclick="trackViews('footer-recruit-join', 'recruit-join_view')">招贤纳士</a>
+</li>
+<li><a href="/about-cn/news/">新闻报道</a></li>
+<li><a href="/privacy-policy/">隐私申明</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>联系我们</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg> Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg> Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg> Stack Overflow</a></li>
+<li id="wechat"><a class="wechat" href="javascript:void(0)"><svg height="17" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg> 微信公众号</a> <div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-pc"></div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 北京平凯星辰科技发展有限公司</p>
+<a class="copyright-btn-lang copyright-btn-en" href="/docs/tidb-in-kubernetes/dev" id="lang">English</a>
+<a class="prepared-num" href="http://www.beian.miit.gov.cn/">京 ICP 备 16046278 号 - 2</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

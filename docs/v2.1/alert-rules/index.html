@@ -1,0 +1,3059 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>TiDB Cluster Alert Rules | TiDB Documentation</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="Learn the alert rules in a TiDB cluster." name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="TiDB Cluster Alert Rules | TiDB Documentation" property="og:title"/>
+<meta content="Learn the alert rules in a TiDB cluster." property="og:description"/>
+<meta content="https://pingcap.com/docs/v2.1/alert-rules/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="Learn the alert rules in a TiDB cluster." name="twitter:description"/>
+<meta content="TiDB Cluster Alert Rules | TiDB Documentation" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script><link rel="canonical" href="https://pingcap.com/docs/stable/alert-rules" /></head> <body data-lang="en"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="a-en" href="/tidb-cloud/">Cloud</a></li>
+<li><a class="a-en" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">Docs</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a class="a-en" href="/success-stories">Success
+                    Stories</a></li>
+<li><a class="a-en" href="/blog">Blog</a></li>
+<li><a class="link-download link-download-en" href="/download">Free Download</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs/v2.1/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="en" data-type="" id="search-input" name="q" placeholder="Search TiDB Docs" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li><a href="/tidb-cloud/">Cloud</a></li>
+<li><a class="tidb-academy" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">Docs</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/success-stories">Success Stories</a></li>
+<li><a href="/blog">Blog</a></li>
+<li><a class="link-download" href="/download">Free Download</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc" style="margin-left: 0.75rem;">Subscribe to Blog</button></a>
+</div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs-cn/" id="lang">中文</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB Documentation </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">v2.1</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs/stable/alert-rules/">v4.0 (stable)</a>
+<a class="dropdown-item " href="
+                /docs/dev/alert-rules/">dev</a>
+<a class="dropdown-item " href="
+                /docs/v3.1/alert-rules/">v3.1</a>
+<a class="dropdown-item " href="
+                /docs/v3.0/alert-rules/">v3.0</a>
+<a class="dropdown-item " href="
+                /docs/v2.1/alert-rules/">v2.1</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>Introduction</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/overview/">
+<span>TiDB Introduction</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Benchmarks</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/benchmark/benchmark-tidb-using-sysbench/">
+<span>How to Test TiDB Using Sysbench</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/benchmark/v2.1-performance-benchmarking-with-sysbench/">
+<span>Sysbench Performance Test - v2.1 vs. v2.0</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/benchmark/v2.1-performance-benchmarking-with-tpch/">
+<span>TPC-H 50G Performance Test - v2.1 vs. v2.0</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Concepts</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/architecture/">
+<span>Architecture</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Key Features</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#horizontal-scalability">
+<span>Horizontal Scalability</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#mysql-compatible-syntax">
+<span>MySQL Compatible Syntax</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#replicate-from-and-to-mysql">
+<span>Replicate from and to MySQL</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#distributed-transactions-with-strong-consistency">
+<span>Distributed Transactions with Strong Consistency</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#cloud-native-architecture">
+<span>Cloud Native Architecture</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#minimize-etl-with-htap">
+<span>Minimize ETL with HTAP</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#fault-tolerance--recovery-with-raft">
+<span>Fault Tolerance &amp; Recovery with Raft</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#automatic-rebalancing">
+<span>Automatic Rebalancing</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#deployment-and-orchestration-with-ansible-kubernetes-docker">
+<span>Deployment and Orchestration with Ansible, Kubernetes, Docker</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#json-support">
+<span>JSON Support</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#spark-integration">
+<span>Spark Integration</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#read-historical-data-without-restoring-from-backup">
+<span>Read Historical Data Without Restoring from Backup</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#fast-import-and-restore-of-data">
+<span>Fast Import and Restore of Data</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#hybrid-of-column-and-row-storage">
+<span>Hybrid of Column and Row Storage</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#sql-plan-management">
+<span>SQL Plan Management</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#open-source">
+<span>Open Source</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/key-features/#online-schema-changes">
+<span>Online Schema Changes</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>How-to</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>Get Started</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>Start a Local Cluster</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/deploy-tidb-from-binary/">
+<span>From Binary</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">
+<span>From Docker Compose</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/basic-sql-operations/">
+<span>Explore SQL with TiDB</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/import-example-data/">
+<span>Import Example Database</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/read-historical-data/">
+<span>Read Historical Data</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/get-started-with-tidb-binlog/">
+<span>TiDB Binlog Tutorial</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs/tidb-data-migration/stable/get-started/">
+<span>TiDB Data Migration Tutorial</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/get-started-with-tidb-lightning/">
+<span>TiDB Lightning Tutorial</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/get-started-with-tispark/">
+<span>TiSpark Quick Start Guide</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Deploy</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/hardware-and-software-requirements/">
+<span>Hardware Recommendations</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>From Binary Tarball</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/test-deployment-from-binary-tarball/">
+<span>For Testing Environments</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/production-deployment-from-binary-tarball/">
+<span>For Production Environments</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Orchestrated Deployment</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/online-deployment-using-ansible/">
+<span>Ansible Deployment (Recommended)</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/offline-deployment-using-ansible/">
+<span>Ansible Offline Deployment</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/test-deployment-using-docker/">
+<span>Docker Deployment</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Geographic Redundancy</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/geo-redundancy-deployment/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/location-awareness/">
+<span>Configure Location Awareness</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs/tidb-data-migration/stable/deploy-a-dm-cluster-using-ansible/">
+<span>Data Migration with Ansible</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Configure</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/configure-time-zone/">
+<span>Time Zone</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/configure-memory-usage/">
+<span>Memory Control</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Secure</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>Transport Layer Security (TLS)</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/encrypted-connections-with-tls-protocols/">
+<span>Enable TLS For MySQL Clients</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/enable-tls-between-components/">
+<span>Enable TLS Between TiDB Components</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/generate-self-signed-certificates/">
+<span>Generate Self-signed Certificates</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Monitor</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/tidb-monitoring-framework/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/monitor-a-tidb-cluster/">
+<span>Monitor a TiDB Cluster</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Migrate</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/migration-overview/">
+<span>Overview</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Migrate from MySQL</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/migrate-full-data-from-mysql/">
+<span>Migrate the Full Data</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/migrate-incremental-data-from-mysql/">
+<span>Migrate the Incremental Data</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/migrate-from-aurora-mysql-database/">
+<span>Migrate from MySQL/Aurora</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/migrate-from-csv-using-tidb-lightning/">
+<span>Migrate from CSV</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Maintain</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/maintain-tidb-using-ansible/">
+<span>Common Ansible Operations</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/backup-and-restore/">
+<span>Backup and Restore</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/identify-slow-queries/">
+<span>Identify Slow Queries</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Scale</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/scale-tidb-using-ansible/">
+<span>Scale using Ansible</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/horizontal-scale/">
+<span>Scale a TiDB Cluster</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Upgrade</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/upgrade-tidb-using-ansible/">
+<span>Upgrade to TiDB 2.1</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Troubleshoot</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/tidb-troubleshooting-map/">
+<span>TiDB Troubleshooting Map</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/troubleshoot-tidb-cluster/">
+<span>Troubleshoot Cluster Setup</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/troubleshoot-tidb-lightning/">
+<span>Troubleshoot TiDB Lightning</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Reference</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>SQL</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/mysql-compatibility/">
+<span>MySQL Compatibility</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>SQL Language Structure</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/literal-values/">
+<span>Literal Values</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/schema-object-names/">
+<span>Schema Object Names</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/keywords-and-reserved-words/">
+<span>Keywords and Reserved Words</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/user-defined-variables/">
+<span>User-Defined Variables</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/expression-syntax/">
+<span>Expression Syntax</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/comment-syntax/">
+<span>Comment Syntax</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Data Types</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/data-type-overview/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-default-values/">
+<span>Default Values</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Numeric Types</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#bit-type">
+<span class="has-code">`BIT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#boolean-type">
+<span class="has-code">`BOOL|BOOLEAN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#tinyint-type">
+<span class="has-code">`TINYINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#smallint-type">
+<span class="has-code">`SMALLINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#mediumint-type">
+<span class="has-code">`MEDIUMINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#integer-type">
+<span class="has-code">`INT|INTEGER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#bigint-type">
+<span class="has-code">`BIGINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#float-type">
+<span class="has-code">`FLOAT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#double-type">
+<span class="has-code">`DOUBLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-numeric/#decimal-type">
+<span class="has-code">`DECIMAL`</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Date and Time Types</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/data-type-date-and-time/#date-type">
+<span class="has-code">`DATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-date-and-time/#time-type">
+<span class="has-code">`TIME`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-date-and-time/#datetime-type">
+<span class="has-code">`DATETIME`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-date-and-time/#timestamp-type">
+<span class="has-code">`TIMESTAMP`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-date-and-time/#year-type">
+<span class="has-code">`YEAR`</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>String Types</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#char-type">
+<span class="has-code">`CHAR`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#varchar-type">
+<span class="has-code">`VARCHAR`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#text-type">
+<span class="has-code">`TEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#tinytext-type">
+<span class="has-code">`TINYTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#text-type">
+<span class="has-code">`MEDIUMTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#longtext-type">
+<span class="has-code">`LONGTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#binary-type">
+<span class="has-code">`BINARY`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#varbinary-type">
+<span class="has-code">`VARBINARY`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#blob-type">
+<span class="has-code">`BLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#tinyblob-type">
+<span class="has-code">`TINYBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#mediumblob-type">
+<span class="has-code">`MEDIUMBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#longblob-type">
+<span class="has-code">`LONGBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#enum-type">
+<span class="has-code">`ENUM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-string/#set-type">
+<span class="has-code">`SET`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/data-type-json/">
+<span>JSON Type</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Functions and Operators</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/functions-and-operators-overview/">
+<span>Function and Operator Reference</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/type-conversion-in-expression-evaluation/">
+<span>Type Conversion in Expression Evaluation</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/operators/">
+<span>Operators</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/control-flow-functions/">
+<span>Control Flow Functions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/string-functions/">
+<span>String Functions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/numeric-functions-and-operators/">
+<span>Numeric Functions and Operators</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/date-and-time-functions/">
+<span>Date and Time Functions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/bit-functions-and-operators/">
+<span>Bit Functions and Operators</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/cast-functions-and-operators/">
+<span>Cast Functions and Operators</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/encryption-and-compression-functions/">
+<span>Encryption and Compression Functions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/information-functions/">
+<span>Information Functions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/json-functions/">
+<span>JSON Functions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/aggregate-group-by-functions/">
+<span>Aggregate (GROUP BY) Functions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/miscellaneous-functions/">
+<span>Miscellaneous Functions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/functions-and-operators/precision-math/">
+<span>Precision Math</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>SQL Statements</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-add-column/">
+<span class="has-code">`ADD COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-add-index/">
+<span class="has-code">`ADD INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-admin/">
+<span class="has-code">`ADMIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-alter-database/">
+<span class="has-code">`ALTER DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-alter-table/">
+<span class="has-code">`ALTER TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-alter-user/">
+<span class="has-code">`ALTER USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-analyze-table/">
+<span class="has-code">`ANALYZE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-begin/">
+<span class="has-code">`BEGIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-commit/">
+<span class="has-code">`COMMIT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-create-database/">
+<span class="has-code">`CREATE DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-create-index/">
+<span class="has-code">`CREATE INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-create-table-like/">
+<span class="has-code">`CREATE TABLE LIKE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-create-table/">
+<span class="has-code">`CREATE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-create-user/">
+<span class="has-code">`CREATE USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-deallocate/">
+<span class="has-code">`DEALLOCATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-delete/">
+<span class="has-code">`DELETE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-desc/">
+<span class="has-code">`DESC`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-describe/">
+<span class="has-code">`DESCRIBE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-do/">
+<span class="has-code">`DO`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-drop-column/">
+<span class="has-code">`DROP COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-drop-database/">
+<span class="has-code">`DROP DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-drop-index/">
+<span class="has-code">`DROP INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-drop-table/">
+<span class="has-code">`DROP TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-drop-user/">
+<span class="has-code">`DROP USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-execute/">
+<span class="has-code">`EXECUTE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-explain-analyze/">
+<span class="has-code">`EXPLAIN ANALYZE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-explain/">
+<span class="has-code">`EXPLAIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-flush-privileges/">
+<span class="has-code">`FLUSH PRIVILEGES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-flush-status/">
+<span class="has-code">`FLUSH STATUS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-flush-tables/">
+<span class="has-code">`FLUSH TABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-grant-privileges/">
+<span class="has-code">`GRANT &lt;privileges&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-insert/">
+<span class="has-code">`INSERT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-kill/">
+<span class="has-code">`KILL [TIDB]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-load-data/">
+<span class="has-code">`LOAD DATA`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-modify-column/">
+<span class="has-code">`MODIFY COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-prepare/">
+<span class="has-code">`PREPARE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-rename-index/">
+<span class="has-code">`RENAME INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-rename-table/">
+<span class="has-code">`RENAME TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-replace/">
+<span class="has-code">`REPLACE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-revoke-privileges/">
+<span class="has-code">`REVOKE &lt;privileges&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-rollback/">
+<span class="has-code">`ROLLBACK`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-select/">
+<span class="has-code">`SELECT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-set-names/">
+<span class="has-code">`SET [NAMES|CHARACTER SET]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-set-password/">
+<span class="has-code">`SET PASSWORD`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-set-transaction/">
+<span class="has-code">`SET TRANSACTION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-set-variable/">
+<span class="has-code">`SET [GLOBAL|SESSION] &lt;variable&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-character-set/">
+<span class="has-code">`SHOW CHARACTER SET`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-collation/">
+<span class="has-code">`SHOW COLLATION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-columns-from/">
+<span class="has-code">`SHOW [FULL] COLUMNS FROM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-create-table/">
+<span class="has-code">`SHOW CREATE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-databases/">
+<span class="has-code">`SHOW DATABASES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-engines/">
+<span class="has-code">`SHOW ENGINES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-errors/">
+<span class="has-code">`SHOW ERRORS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-fields-from/">
+<span class="has-code">`SHOW [FULL] FIELDS FROM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-grants/">
+<span class="has-code">`SHOW GRANTS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-indexes/">
+<span class="has-code">`SHOW INDEXES [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-index/">
+<span class="has-code">`SHOW INDEX [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-keys/">
+<span class="has-code">`SHOW KEYS [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-privileges/">
+<span class="has-code">`SHOW PRIVILEGES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-processlist/">
+<span class="has-code">`SHOW [FULL] PROCESSSLIST`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-schemas/">
+<span class="has-code">`SHOW SCHEMAS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-tables/">
+<span class="has-code">`SHOW [FULL] TABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-table-regions/">
+<span class="has-code">`SHOW TABLE REGIONS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-table-status/">
+<span class="has-code">`SHOW TABLE STATUS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-variables/">
+<span class="has-code">`SHOW [GLOBAL|SESSION] VARIABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-show-warnings/">
+<span class="has-code">`SHOW WARNINGS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-split-region/">
+<span class="has-code">`SPLIT REGION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-start-transaction/">
+<span class="has-code">`START TRANSACTION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-trace/">
+<span class="has-code">`TRACE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-truncate/">
+<span class="has-code">`TRUNCATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-update/">
+<span class="has-code">`UPDATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sql-statements/sql-statement-use/">
+<span class="has-code">`USE`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/constraints/">
+<span>Constraints</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/generated-columns/">
+<span>Generated Columns</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/character-set-and-collation/">
+<span>Character Set</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Configuration</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>tidb-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/system-variables/">
+<span>MySQL System Variables</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-specific-system-variables/">
+<span>TiDB Specific System Variables</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/command-line-flags-for-tidb-configuration/">
+<span>Configuration Flags</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-configuration-file/">
+<span>Configuration File</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>pd-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/pd-configuration-file/">
+<span>Configuration Flags</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>tikv-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/tikv-configuration-file/">
+<span>Configuration Flags</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Security</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/security-compatibility-with-mysql/">
+<span>Security Compatibility with MySQL</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/privilege-management/">
+<span>The TiDB Access Privilege System</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/user-account-management/">
+<span>TiDB User Account Management</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Transactions</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/transaction-overview/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/transaction-isolation-levels/">
+<span>Isolation Levels</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/optimistic-transaction/">
+<span>Optimistic Transactions</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>System Databases</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/system-tables/system-table-overview/">
+<span class="has-code">`mysql`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/system-tables/system-table-information-schema/">
+<span class="has-code">`information_schema`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/error-codes/">
+<span>Errors Codes</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/connectors-and-apis/">
+<span>Supported Client Drivers</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/garbage-collection/">
+<span>Garbage Collection (GC)</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Performance</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/sql-optimization-concepts/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/query-execution-plan/">
+<span>Understanding the Query Execution Plan</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/statistics/">
+<span>Introduction to Statistics</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/optimizer-hints/">
+<span>Optimizer Hints</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tune-tikv-performance/">
+<span>Tune TiKV</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Key Monitoring Metrics</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/grafana-overview-dashboard/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/grafana-tidb-dashboard/">
+<span>TiDB</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/grafana-pd-dashboard/">
+<span>PD</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/grafana-tikv-dashboard/">
+<span>TiKV</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/alert-rules/">
+<span>Alert Rules</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Best Practices</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/best-practices/haproxy-best-practices/">
+<span>HAProxy Best Practices</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/best-practices/java-app-best-practices/">
+<span>Java Application Development Best Practices</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/best-practices/pd-scheduling-best-practices/">
+<span>PD Scheduling Best Practices</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/best-practices/grafana-monitor-best-practices/">
+<span>Grafana Best Practices</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/best-practices/massive-regions-best-practices/">
+<span>TiKV Performance Tuning with Massive Regions</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tispark-overview/">
+<span>TiSpark</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>TiDB Binlog</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/tidb-binlog-overview/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/deploy-tidb-binlog/">
+<span>Deploy</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/maintain-tidb-binlog-cluster/">
+<span>Maintain</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/monitor-tidb-binlog-cluster/">
+<span>Monitor</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Configure</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/tidb-binlog-configuration-file/#pump">
+<span>Pump</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/tidb-binlog-configuration-file/#drainer">
+<span>Drainer</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/upgrade-tidb-binlog/">
+<span>Upgrade</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/tidb-binlog-reparo/">
+<span>Reparo</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/binlog-slave-client/">
+<span>Binlog Slave Client</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/tidb-binlog-glossary/">
+<span>Glossary</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Troubleshoot</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/troubleshoot-tidb-binlog/">
+<span>Troubleshooting</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/handle-tidb-binlog-errors/">
+<span>Error Handling</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-binlog/tidb-binlog-faq/">
+<span>FAQ</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Tools</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/mydumper-overview/">
+<span>Mydumper</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/syncer-overview/">
+<span>Syncer</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/loader-overview/">
+<span>Loader</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs/tidb-data-migration/stable/">
+<span>Data Migration</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>TiDB Lightning</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/tidb-lightning-overview/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/deploy-tidb-lightning/">
+<span>Deployment</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/tidb-lightning-configuration/">
+<span>Configuration</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/tidb-lightning-checkpoints/">
+<span>Checkpoints</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/tidb-lightning-table-filter/">
+<span>Table Filter</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/migrate-from-csv-using-tidb-lightning/">
+<span>CSV Support</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/tidb-lightning-web-interface/">
+<span>Web Interface</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/monitor-tidb-lightning/">
+<span>Monitor</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/troubleshoot-tidb-lightning/">
+<span>Troubleshoot</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/tidb-lightning-faq/">
+<span>FAQ</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/tidb-lightning-glossary/">
+<span>Glossary</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>sync-diff-inspector</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/sync-diff-inspector/sync-diff-inspector-overview/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sync-diff-inspector/route-diff/">
+<span>Data Check for Tables with Different Schema or Table Names</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sync-diff-inspector/shard-diff/">
+<span>Data Check in the Sharding Scenario</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/sync-diff-inspector/upstream-downstream-diff/">
+<span>Data Check for TiDB Upstream and Downstream Clusters</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/pd-control/">
+<span>PD Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/pd-recover/">
+<span>PD Recover</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tikv-control/">
+<span>TiKV Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-control/">
+<span>TiDB Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/download-ecosystem-tools/">
+<span>Download</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>FAQs</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/faq/tidb-faq/">
+<span>TiDB FAQs</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/tidb-lightning/tidb-lightning-faq/">
+<span>TiDB Lightning FAQs</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/faq/upgrade-faq/">
+<span>Upgrade FAQs</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Support</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/support/">
+<span>Support Resources</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/report-issue/">
+<span>Report an Issue</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Contribute</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/contribute/#contribute-to-tidb">
+<span>Contribute to TiDB</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/contribute/#improve-the-docs">
+<span>Improve the Docs</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/adopters/">
+<span>Adopters</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/roadmap/">
+<span>Roadmap</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Releases</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>v2.1</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.19/">
+<span>2.1.19</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.18/">
+<span>2.1.18</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.17/">
+<span>2.1.17</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.16/">
+<span>2.1.16</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.15/">
+<span>2.1.15</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.14/">
+<span>2.1.14</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.13/">
+<span>2.1.13</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.12/">
+<span>2.1.12</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.11/">
+<span>2.1.11</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.10/">
+<span>2.1.10</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.9/">
+<span>2.1.9</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.8/">
+<span>2.1.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.7/">
+<span>2.1.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.6/">
+<span>2.1.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.5/">
+<span>2.1.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.4/">
+<span>2.1.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.3/">
+<span>2.1.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.2/">
+<span>2.1.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1.1/">
+<span>2.1.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1-ga/">
+<span>2.1 GA</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1-rc.5/">
+<span>2.1 RC5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1-rc.4/">
+<span>2.1 RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1-rc.3/">
+<span>2.1 RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1-rc.2/">
+<span>2.1 RC2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1-rc.1/">
+<span>2.1 RC1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.1-beta/">
+<span>2.1 Beta</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>v2.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.11/">
+<span>2.0.11</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.10/">
+<span>2.0.10</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.9/">
+<span>2.0.9</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.8/">
+<span>2.0.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.7/">
+<span>2.0.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.6/">
+<span>2.0.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.5/">
+<span>2.0.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.4/">
+<span>2.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.3/">
+<span>2.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.2/">
+<span>2.0.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0.1/">
+<span>2.0.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0-ga/">
+<span>2.0</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0-rc.5/">
+<span>2.0 RC5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0-rc.4/">
+<span>2.0 RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0-rc.3/">
+<span>2.0 RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-2.0-rc.1/">
+<span>2.0 RC1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.1-beta/">
+<span>1.1 Beta</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.1-alpha/">
+<span>1.1 Alpha</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>v1.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0.8/">
+<span>1.0.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0.7/">
+<span>1.0.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0.6/">
+<span>1.0.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0.5/">
+<span>1.0.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0.4/">
+<span>1.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0.3/">
+<span>1.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0.2/">
+<span>1.0.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0.1/">
+<span>1.0.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-1.0-ga/">
+<span>1.0</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-pre-ga/">
+<span>Pre-GA</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-rc.4/">
+<span>RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-rc.3/">
+<span>RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-rc.2/">
+<span>RC2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/releases/release-rc.1/">
+<span>RC1</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/v2.1/glossary/">
+<span>Glossary</span>
+</a>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<!-- markdownlint-disable MD024 -->
+<h1 id="tidb-cluster-alert-rules">TiDB Cluster Alert Rules</h1>
+<p>This document describes the alert rules for different components in a TiDB cluster, including the rule descriptions and solutions of the alert items in TiDB, TiKV, PD, TiDB Binlog, Node_exporter and Blackbox_exporter.</p>
+<p>According to the severity level, alert rules are divided into three categories (from high to low): emergency-level, critical-level and warning-level.</p>
+<h2 id="tidb-alert-rules">TiDB alert rules</h2>
+<p>This section gives the alert rules for the TiDB component.</p>
+<h3 id="emergency-level-alerts">Emergency-level alerts</h3>
+<p>Emergency-level alerts are often caused by a service or node failure. Manual intervention is required immediately.</p>
+<h4 id="tidb-schema-error"><code>TiDB_schema_error</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tidb_session_schema_lease_error_total{type="outdated"}[15m]) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The latest schema information is not reloaded in TiDB within one lease. When TiDB fails to continue providing services, an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>It is often caused by an unavailable Region or a TiKV timeout. You need to locate the issue by checking the TiKV monitoring items.</p>
+</li>
+</ul>
+<h4 id="tidb-tikvclient-region-err-total"><code>TiDB_tikvclient_region_err_total</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tidb_tikvclient_region_err_total[10m]) &gt; 6000</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>When TiDB accesses TiKV, a Region error occurs. When the error is reported over 6000 times in 10 minutes, an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>View the monitoring status of TiKV.</p>
+</li>
+</ul>
+<h4 id="tidb-domain-load-schema-total"><code>TiDB_domain_load_schema_total</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tidb_domain_load_schema_total{type="failed"}[10m]) &gt; 10</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The total number of failures to reload the latest schema information in TiDB. If the reloading failure occurs over 10 times in 10 minutes, an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Same as <a href="#tidb_schema_error"><code>TiDB_schema_error</code></a>.</p>
+</li>
+</ul>
+<h4 id="tidb-monitor-keep-alive"><code>TiDB_monitor_keep_alive</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tidb_monitor_keep_alive_total[10m]) &lt; 100</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Indicates whether the TiDB process still exists. If the number of times for <code>tidb_monitor_keep_alive_total</code> increases less than 100 in 10 minutes, the TiDB process might already exit and an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the TiDB process is out of memory.</li>
+<li>Check whether the machine has restarted.</li>
+</ul>
+</li>
+</ul>
+<h3 id="critical-level-alerts">Critical-level alerts</h3>
+<p>For the critical-level alerts, a close watch on the abnormal metrics is required.</p>
+<h4 id="tidb-server-panic-total"><code>TiDB_server_panic_total</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tidb_server_panic_total[10m]) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The number of panicked TiDB threads. When a panic occurs, an alert is triggered. The thread is often recovered, otherwise, TiDB will frequently restart.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Collect the panic logs to locate the issue.</p>
+</li>
+</ul>
+<h3 id="warning-level-alerts">Warning-level alerts</h3>
+<p>Warning-level alerts are a reminder for an issue or error.</p>
+<h4 id="tidb-memory-abnormal"><code>TiDB_memory_abnormal</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>go_memstats_heap_inuse_bytes{job="tidb"} &gt; 1e+10</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>TiDB's monitoring on the memory usage. If the memory usage exceeds 10 G, an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Use the HTTP API to troubleshoot the goroutine leak issue.</p>
+</li>
+</ul>
+<h4 id="tidb-query-duration"><code>TiDB_query_duration</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tidb_server_handle_query_duration_seconds_bucket[1m])) BY (le, instance)) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The latency of handling a request in TiDB. If the 99th percentile latency exceeds 1 second, an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>View TiDB logs and search for the <code>SLOW_QUERY</code> and <code>TIME_COP_PROCESS</code> keywords to locate the slow SQL queries.</p>
+</li>
+</ul>
+<h4 id="tidb-server-event-error"><code>TiDB_server_event_error</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tidb_server_event_total{type=~"server_start|server_hang"}[15m]) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The number of events that happen in the TiDB service. An alert is triggered when the following events happen:</p>
+<ol>
+<li>start: The TiDB service starts.</li>
+<li>hang: When a critical-level event (currently there is only one scenario: TiDB cannot write binlog) happens, TiDB enters the <code>hang</code> mode and waits to be killed manually.</li>
+</ol>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Restart TiDB to recover the service.</li>
+<li>Check whether the TiDB Binlog service is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="tidb-tikvclient-backoff-total"><code>TiDB_tikvclient_backoff_total</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tidb_tikvclient_backoff_total[10m]) &gt; 10</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The number of retries when TiDB fails to access TiKV. When the retry times is over 10 in 10 minutes, an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>View the monitoring status of TiKV.</p>
+</li>
+</ul>
+<h4 id="tidb-monitor-time-jump-back-error"><code>TiDB_monitor_time_jump_back_error</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tidb_monitor_time_jump_back_total[10m]) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>When the time of the machine that holds TiDB rewinds, an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Troubleshoot the NTP configurations.</p>
+</li>
+</ul>
+<h4 id="tidb-ddl-waiting-jobs"><code>TiDB_ddl_waiting_jobs</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(tidb_ddl_waiting_jobs) &gt; 5</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>When the number of DDL tasks pending for execution in TiDB exceeds 5, an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Check whether there is any time-consuming <code>add index</code> operation that is being executed by running <code>admin show ddl</code>.</p>
+</li>
+</ul>
+<h2 id="pd-alert-rules">PD alert rules</h2>
+<p>This section gives the alert rules for the PD component.</p>
+<h3 id="emergency-level-alerts-1">Emergency-level alerts</h3>
+<p>Emergency-level alerts are often caused by a service or node failure. Manual intervention is required immediately.</p>
+<h4 id="pd-cluster-offline-tikv-nums"><code>PD_cluster_offline_tikv_nums</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(pd_cluster_status{type="store_down_count"}) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>PD has not received a TiKV heartbeat for a long time (the default configuration is 30 minutes).</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the TiKV process is normal, the network is isolated or the load is too high, and recover the service as much as possible.</li>
+<li>If the TiKV instance cannot be recovered, you can make it offline.</li>
+</ul>
+</li>
+</ul>
+<h3 id="critical-level-alerts-1">Critical-level alerts</h3>
+<p>For the critical-level alerts, a close watch on the abnormal metrics is required.</p>
+<h4 id="pd-etcd-write-disk-latency"><code>PD_etcd_write_disk_latency</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(etcd_disk_wal_fsync_duration_seconds_bucket[1m])) by (instance,job,le)) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>etcd writes data to disk at a lower speed than normal. It might lead to PD leader timeout or failure to store TSO on disk in time, which will shut down the service of the entire cluster.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Find the cause of slow writes. It might be other services that overload the system. You can check whether PD itself occupies a large amount of CPU or I/O resources.</li>
+<li>Try to restart PD or manually transfer leader to another PD to recover the service.</li>
+<li>If the problematic PD instance cannot be recovered due to environmental factors, make it offline and replace it.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-miss-peer-region-count"><code>PD_miss_peer_region_count</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(pd_regions_status{type="miss_peer_region_count"}) &gt; 100</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The number of Region replicas is smaller than the value of <code>max-replicas</code>. When a TiKV machine is down and its downtime exceeds <code>max-down-time</code>, it usually leads to missing replicas for some Regions during a period of time. When a TiKV node is made offline, it might result in a small number of Regions with missing replicas.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Find the cause of the issue by checking whether there is any TiKV that is down or being made offline.</li>
+<li>Watch the Region health panel and see whether <code>miss_peer_region_count</code> is continuously decreasing.</li>
+</ul>
+</li>
+</ul>
+<h3 id="warning-level-alerts-1">Warning-level alerts</h3>
+<p>Warning-level alerts are a reminder for an issue or error.</p>
+<h4 id="pd-cluster-lost-connect-tikv-nums"><code>PD_cluster_lost_connect_tikv_nums</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(pd_cluster_status{type="store_disconnected_count"}) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>PD does not receive a TiKV heartbeat within 20 seconds. Normally a TiKV heartbeat comes in every 10 seconds.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the TiKV instance is being restarted.</li>
+<li>Check whether the TiKV process is normal, the network is isolated, and the load is too high, and recover the service as much as possible.</li>
+<li>If you confirm that the TiKV instance cannot be recovered, you can make it offline.</li>
+<li>If you confirm that the TiKV instance can be recovered, but not in the short term, you can consider increasing the value of <code>max-down-time</code>. It will prevent the TiKV instance from being considered as irrecoverable and the data from being removed from the TiKV.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-cluster-low-space"><code>PD_cluster_low_space</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(pd_cluster_status{type="store_low_space_count"}) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Indicates that there is no sufficient space on the TiKV node.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the space in the cluster is generally insufficient. If so, increase its capacity.</li>
+<li>Check whether there is any issue with Region balance scheduling. If so, it will lead to uneven data distribution.</li>
+<li>Check whether there is any file that occupies a large amount of disk space, such as the log, snapshot, core dump, etc.</li>
+<li>Lower the Region weight of the node to reduce the data volume.</li>
+<li>When it is not possible to release the space, consider proactively making the node offline. This prevents insufficient disk space that leads to downtime.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-etcd-network-peer-latency"><code>PD_etcd_network_peer_latency</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(etcd_network_peer_round_trip_time_seconds_bucket[1m])) by (To,instance,job,le)) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The network latency between PD nodes is high. It might lead to the leader timeout and TSO disk storage timeout, which impacts the service of the cluster.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check the network and system load status.</li>
+<li>If the problematic PD instance cannot be recovered due to environmental factors, make it offline and replace it.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-tidb-handle-requests-duration"><code>PD_tidb_handle_requests_duration</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(pd_client_request_handle_requests_duration_seconds_bucket{type="tso"}[1m])) by (instance,job,le)) &gt; 0.1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>It takes a longer time for PD to handle the TSO request. It is often caused by a high load.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check the load status of the server.</li>
+<li>Use pprof to analyze the CPU profile of PD.</li>
+<li>Manually switch the PD leader.</li>
+<li>If the problematic PD instance cannot be recovered due to environmental factors, make it offline and replace it.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-down-peer-region-nums"><code>PD_down_peer_region_nums</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(pd_regions_status{type="down_peer_region_count"}) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The number of Regions with an unresponsive peer reported by the Raft leader.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether there is any TiKV that is down, or that was just restarted, or that is busy.</li>
+<li>Watch the Region health panel and see whether <code>down_peer_region_count</code> is continuously decreasing.</li>
+<li>Check the network between TiKV servers.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-pending-peer-region-count"><code>PD_pending_peer_region_count</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(pd_regions_status{type="pending_peer_region_count"}) &gt; 100</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>There are too many Regions that have lagged Raft logs. It is normal that scheduling leads to a small number of pending peers, but if the number remains high, there might be an issue.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Watch the Region health panel and see whether <code>pending_peer_region_count</code> is continuously decreasing.</li>
+<li>Check the network between TiKV servers, especially whether there is enough bandwidth.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-leader-change"><code>PD_leader_change</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>count(changes(pd_server_tso{type="save"}[10m]) &gt; 0) &gt;= 2</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The PD leader is recently switched.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Exclude the human factors, such as restarting PD, manually transferring leader, adjusting leader priority, etc.</li>
+<li>Check the network and system load status.</li>
+<li>If the problematic PD instance cannot be recovered due to environmental factors, make it offline and replace it.</li>
+</ul>
+</li>
+</ul>
+<h4 id="tikv-space-used-more-than-80"><code>TiKV_space_used_more_than_80%</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(pd_cluster_status{type="storage_size"}) / sum(pd_cluster_status{type="storage_capacity"}) * 100 &gt; 80</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Over 80% of the cluster space is occupied.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether it is needed to increase capacity.</li>
+<li>Check whether there is any file that occupies a large amount of disk space, such as the log, snapshot, core dump, etc.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-system-time-slow"><code>PD_system_time_slow</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>changes(pd_server_tso{type="system_time_slow"}[10m]) &gt;= 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The system time rewind might happen.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Check whether the system time is configured correctly.</p>
+</li>
+</ul>
+<h4 id="pd-no-store-for-making-replica"><code>PD_no_store_for_making_replica</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(pd_checker_event_count{type="replica_checker", name="no_target_store"}[1m]) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>There is no appropriate store for additional replicas.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether there is enough space in the store.</li>
+<li>Check whether there is any store for additional replicas according to the label configuration if it is configured.</li>
+</ul>
+</li>
+</ul>
+<h2 id="tikv-alert-rules">TiKV alert rules</h2>
+<p>This section gives the alert rules for the TiKV component.</p>
+<h3 id="emergency-level-alerts-2">Emergency-level alerts</h3>
+<p>Emergency-level alerts are often caused by a service or node failure. Manual intervention is required immediately.</p>
+<h4 id="tikv-memory-used-too-fast"><code>TiKV_memory_used_too_fast</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>process_resident_memory_bytes{job=~"tikv",instance=~".*"} - (process_resident_memory_bytes{job=~"tikv",instance=~".*"} offset 5m) &gt; 5*1024*1024*1024</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Currently, there are no TiKV monitoring items about memory. You can monitor the memory usage of the machines in the cluster by Node_exporter. The above rule indicates that when the memory usage exceeds 5 GB within 5 minutes (the memory is occupied too fast in TiKV), an alert is triggered.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Adjust the <code>block-cache-size</code> value of both <code>rockdb.defaultcf</code> and <code>rocksdb.writecf</code>.</p>
+</li>
+</ul>
+<h4 id="tikv-gc-can-not-work"><code>TiKV_GC_can_not_work</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(increase(tidb_tikvclient_gc_action_result{type="success"}[6h])) &lt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>GC is not performed successfully in a Region within 6 hours, which indicates that GC is not working properly. If GC does not run in a short term, it will not cause much trouble; but if GC keeps down, more and more versions are retained, which slows down the query.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>Perform <code>select VARIABLE_VALUE from mysql.tidb where VARIABLE_NAME = "tikv_gc_leader_desc"</code> to locate the <code>tidb-server</code> corresponding to the GC leader;</li>
+<li>View the log of the <code>tidb-server</code>, and grep gc_worker tidb.log;</li>
+<li>If you find that the GC worker has been resolving locks (the last log is “start resolve locks”) or deleting ranges (the last log is “start delete {number} ranges”) during this time, it means the GC process is running normally. Otherwise, contact <a href="mailto:support@pingcap.com">support@pingcap.com</a> to resolve this issue.</li>
+</ol>
+</li>
+</ul>
+<h3 id="critical-level-alerts-2">Critical-level alerts</h3>
+<p>For the critical-level alerts, a close watch on the abnormal metrics is required.</p>
+<h4 id="tikv-server-report-failure-msg-total"><code>TiKV_server_report_failure_msg_total</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(rate(tikv_server_report_failure_msg_total{type="unreachable"}[10m])) BY (store_id) &gt; 10</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Indicates that the remote TiKV cannot be connected.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>Check whether the network is clear.</li>
+<li>Check whether the remote TiKV is down.</li>
+<li>If the remote TiKV is not down, check whether the pressure is too high. Refer to the solution in <a href="#tikv_channel_full_total"><code>TiKV_channel_full_total</code></a>.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-channel-full-total"><code>TiKV_channel_full_total</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(rate(tikv_channel_full_total[10m])) BY (type, instance) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>This issue is often caused by the stuck Raftstore thread and high pressure on TiKV.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>Watch the Raft Propose monitor, and see whether the alerted TiKV node has a much higher Raft propose than other TiKV nodes. If so, it means that there are one or more hot spots on this TiKV. You need to check whether the hot spot scheduling can work properly.</li>
+<li>Watch the Raft I/O monitor, and see whether the latency increases. If the latency is high, it means a bottleneck might exist in the disk. One feasible but unsafe solution is setting <code>sync-log</code> to <code>false</code>.</li>
+<li>Watch the Raft Process monitor, and see whether the tick duration is high. If so, you need to add <code>raft-base-tick-interval = "2s"</code> under the <code>[raftstore]</code> configuration.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-write-stall"><code>TiKV_write_stall</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>delta(tikv_engine_write_stall[10m]) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The write pressure on RocksDB is too high, and a stall occurs.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>View the disk monitor, and troubleshoot the disk issues;</li>
+<li>Check whether there is any write hot spot on the TiKV;</li>
+<li>Set <code>max-sub-compactions</code> to a larger value under the <code>[rocksdb]</code> and <code>[raftdb]</code> configurations.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-raft-log-lag"><code>TiKV_raft_log_lag</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tikv_raftstore_log_lag_bucket[1m])) by (le, instance)) &gt; 5000</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>If this value is relatively large, it means Follower has lagged far behind Leader, and Raft cannot be replicated normally. It is possibly because the TiKV machine where Follower is located is stuck or down.</p>
+</li>
+</ul>
+<h4 id="tikv-async-request-snapshot-duration-seconds"><code>TiKV_async_request_snapshot_duration_seconds</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tikv_storage_engine_async_request_duration_seconds_bucket{type="snapshot"}[1m])) by (le, instance, type)) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>If this value is relatively large, it means the load pressure on Raftstore is too high, and it might be stuck already.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Refer to the solution in <a href="#tikv_channel_full_total"><code>TiKV_channel_full_total</code></a>.</p>
+</li>
+</ul>
+<h4 id="tikv-async-request-write-duration-seconds"><code>TiKV_async_request_write_duration_seconds</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tikv_storage_engine_async_request_duration_seconds_bucket{type="write"}[1m])) by (le, instance, type)) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>If this value is relatively large, it means the Raft write takes a long time.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>Check the pressure on Raftstore. See the solution in <a href="#tikv_channel_full_total"><code>TiKV_channel_full_total</code></a>.</li>
+<li>Check the pressure on the apply worker thread.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-coprocessor-request-wait-seconds"><code>TiKV_coprocessor_request_wait_seconds</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.9999, sum(rate(tikv_coprocessor_request_wait_seconds_bucket[1m])) by (le, instance, req)) &gt; 10</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>If this value is relatively large, it means the pressure on the Coprocessor worker is high. There might be a slow task that makes the Coprocessor thread stuck.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>View the slow query log from the TiDB log to see whether the index or full table scan is used in a query, or see whether it is needed to analyze;</li>
+<li>Check whether there is a hot spot;</li>
+<li>View the Coprocessor monitor and see whether <code>total</code> and <code>process</code> in <code>coprocessor table/index scan</code> match. If they differ a lot, it indicates too many invalid queries are performed. You can see whether there is <code>over seek bound</code>. If so, there are too many versions that GC does not handle in time. Then you need to increase the number of parallel GC threads.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-raftstore-thread-cpu-seconds-total"><code>TiKV_raftstore_thread_cpu_seconds_total</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(rate(tikv_thread_cpu_seconds_total{name=~"raftstore_.*"}[1m])) by (instance, name) &gt; 0.8</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The pressure on the Raftstore thread is too high.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Refer to the solution in <a href="#tikv_channel_full_total"><code>TiKV_channel_full_total</code></a>.</p>
+</li>
+</ul>
+<h4 id="tikv-raft-append-log-duration-secs"><code>TiKV_raft_append_log_duration_secs</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tikv_raftstore_append_log_duration_seconds_bucket[1m])) by (le, instance)) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Indicates the time cost of appending Raft log. If it is high, it usually means I/O is too busy.</p>
+</li>
+</ul>
+<h4 id="tikv-raft-apply-log-duration-secs"><code>TiKV_raft_apply_log_duration_secs</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tikv_raftstore_apply_log_duration_seconds_bucket[1m])) by (le, instance)) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Indicates the time cost of applying Raft log. If it is high, it usually means I/O is too busy.</p>
+</li>
+</ul>
+<h4 id="tikv-scheduler-latch-wait-duration-seconds"><code>TiKV_scheduler_latch_wait_duration_seconds</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tikv_scheduler_latch_wait_duration_seconds_bucket[1m])) by (le, instance, type)) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The waiting time for the write operations to obtain the memory lock in Scheduler. If it is high, there might be many write conflicts, or that some operations that lead to conflicts take a long time to finish and block other operations that wait for the same lock.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>View the scheduler command duration in the Scheduler-All monitor and see which command is most time-consuming;</li>
+<li>View the scheduler scan details in the Scheduler-All monitor and see whether <code>total</code> and <code>process</code> match. If they differ a lot, there are many invalid scans. You can also see whether there is <code>over seek bound</code>. If there is too much, it indicates GC does not work in time;</li>
+<li>View the storage async snapshot/write duration in the Storage monitor and see whether the Raft operation is performed in time.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-thread-apply-worker-cpu-seconds"><code>TiKV_thread_apply_worker_cpu_seconds</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(rate(tikv_thread_cpu_seconds_total{name="apply_worker"}[1m])) by (instance) &gt; 0.9</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The pressure on the apply Raft log thread is too high. It is often caused by a burst of writes.</p>
+</li>
+</ul>
+<h4 id="tidb-tikvclient-gc-action-fail"><code>TiDB_tikvclient_gc_action_fail</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(increase(tidb_tikvclient_gc_action_result{type="fail”}[1m])) &gt; 10</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>There are many Regions where GC fails to work.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>It is normally because the GC concurrency is set too high. You can moderately lower the GC concurrency degree, and you need to first confirm that the failed GC is caused by the busy server.</li>
+<li>You can moderately lower the concurrency degree by running <code>update set VARIABLE_VALUE="{number}” where VARIABLE_NAME=”tikv_gc_concurrency”</code>.</li>
+</ol>
+</li>
+</ul>
+<h3 id="warning-level-alerts-2">Warning-level alerts</h3>
+<p>Warning-level alerts are a reminder for an issue or error.</p>
+<h4 id="tikv-leader-drops"><code>TiKV_leader_drops</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>delta(tikv_pd_heartbeat_tick_total{type="leader"}[30s]) &lt; -10</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>It is often caused by a stuck Raftstore thread.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>Refer to <a href="#tikv_channel_full_total"><code>TiKV_channel_full_total</code></a>.</li>
+<li>It there is low pressure on TiKV, consider whether the PD scheduling is too frequent. You can view the Operator Create panel on the PD page, and check the types and number of the PD scheduling.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-raft-process-ready-duration-secs"><code>TiKV_raft_process_ready_duration_secs</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.999, sum(rate(tikv_raftstore_raft_process_duration_secs_bucket{type='ready'}[1m])) by (le, instance, type)) &gt; 2</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Indicates the time cost of handling Raft ready. If this value is large, it is often caused by the stuck appending log task.</p>
+</li>
+</ul>
+<h4 id="tikv-raft-process-tick-duration-secs"><code>TiKV_raft_process_tick_duration_secs</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.999, sum(rate(tikv_raftstore_raft_process_duration_secs_bucket{type=’tick’}[1m])) by (le, instance, type)) &gt; 2</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Indicates the time cost of handling Raft tick. If this value is large, it is often caused by too many Regions.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>Consider using a higher-level log such as <code>warn</code> or <code>error</code>.</li>
+<li>Add <code>raft-base-tick-interval = "2s"</code> under the <code>[raftstore]</code> configuration.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-scheduler-context-total"><code>TiKV_scheduler_context_total</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>abs(delta( tikv_scheduler_context_total[5m])) &gt; 1000</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The number of write commands that are being executed by Scheduler. If this value is large, it means the task is not finished timely.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Refer to <a href="#tikv_scheduler_latch_wait_duration_seconds"><code>TiKV_scheduler_latch_wait_duration_seconds</code></a>.</p>
+</li>
+</ul>
+<h4 id="tikv-scheduler-command-duration-seconds"><code>TiKV_scheduler_command_duration_seconds</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tikv_scheduler_command_duration_seconds_bucket[1m])) by (le, instance, type)  / 1000) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Indicates the time cost of executing the Scheduler command.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Refer to <a href="#tikv_scheduler_latch_wait_duration_seconds"><code>TiKV_scheduler_latch_wait_duration_seconds</code></a>.</p>
+</li>
+</ul>
+<h4 id="tikv-thread-storage-scheduler-cpu-seconds"><code>TiKV_thread_storage_scheduler_cpu_seconds</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(rate(tikv_thread_cpu_seconds_total{name=~"storage_schedul.*"}[1m])) by (instance) &gt; 0.8</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The CPU usage of a single scheduler thread exceeds 80%. It is often caused by too many writes.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>Check whether there is any write hot spot.</li>
+<li>If this issue happens in all TiKVs, it means the write pressure is too high and you need to increase capacity.</li>
+</ol>
+</li>
+</ul>
+<h4 id="tikv-coprocessor-outdated-request-wait-seconds"><code>TiKV_coprocessor_outdated_request_wait_seconds</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>delta(tikv_coprocessor_outdated_request_wait_seconds_count[10m]) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The waiting time of the expired requests by Coprocessor. If this value is large, it means there is high pressure on Coprocessor.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Refer to <a href="#tikv_coprocessor_request_wait_seconds"><code>TiKV_coprocessor_request_wait_seconds</code></a>.</p>
+</li>
+</ul>
+<h4 id="tikv-coprocessor-request-error"><code>TiKV_coprocessor_request_error</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tikv_coprocessor_request_error{reason!="lock"}[10m]) &gt; 100</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The request error of Coprocessor.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>The reasons for the Coprocessor error can be divided into three types: “lock”, “outdated” and “full”. “outdated” indicates that the request has a timeout. It might be caused by a long queue time or a long time to handle a single request. “full” indicates that the request queue is full. It is possibly because the running request is time-consuming, which sends all new requests in the queue. You need to check whether the time-consuming query’s execution plan is correct.</p>
+</li>
+</ul>
+<h4 id="tikv-coprocessor-request-lock-error"><code>TiKV_coprocessor_request_lock_error</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>increase(tikv_coprocessor_request_error{reason="lock"}[10m]) &gt; 10000</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The lock requesting error of Coprocessor.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>The reasons for the Coprocessor error can be divided into three types: “lock”, “outdated” and “full”. “lock” indicates that the read data is being written and you need to wait a while and read again (the automatic retry happens inside TiDB). If just a few errors of this kind occur, you can ignore them; but if there are a lot of them, you need to check whether there is a conflict between the write and the query.</p>
+</li>
+</ul>
+<h4 id="tikv-coprocessor-pending-request"><code>TiKV_coprocessor_pending_request</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>delta(tikv_coprocessor_pending_request[10m]) &gt; 5000</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The queuing requests of Coprocessor.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Refer to <a href="#tikv_coprocessor_request_wait_seconds"><code>TiKV_coprocessor_request_wait_seconds</code></a>.</p>
+</li>
+</ul>
+<h4 id="tikv-batch-request-snapshot-nums"><code>TiKV_batch_request_snapshot_nums</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(rate(tikv_thread_cpu_seconds_total{name=~"cop_.*"}[1m])) by (instance) / (count(tikv_thread_cpu_seconds_total{name=~"cop_.*"}) * 0.9) / count(count(tikv_thread_cpu_seconds_total) by (instance)) &gt; 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The Coprocessor CPU usage of a TiKV machine exceeds 90%.</p>
+</li>
+</ul>
+<h4 id="tikv-pending-task"><code>TiKV_pending_task</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>sum(tikv_worker_pending_task_total) BY (instance,name)  &gt; 1000</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The number of pending tasks of TiKV.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Check which kind of tasks has a higher value. You can normally find a solution to the Coprocessor and apply worker tasks from other metrics.</p>
+</li>
+</ul>
+<h4 id="tikv-low-space-and-add-region"><code>TiKV_low_space_and_add_region</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>count((sum(tikv_store_size_bytes{type="available"}) by (instance) / sum(tikv_store_size_bytes{type="capacity"}) by (instance) &lt; 0.2) and (sum(tikv_raftstore_snapshot_traffic_total{type="applying"}) by (instance) &gt; 0)) &gt; 0</code></p>
+</li>
+</ul>
+<h4 id="tikv-approximate-region-size"><code>TiKV_approximate_region_size</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>histogram_quantile(0.99, sum(rate(tikv_raftstore_region_size_bucket[1m])) by (le)) &gt; 1073741824</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The maximum Region approximate size that is scanned by the TiKV split checker is continually larger than 1 GB within one minute.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>The speed of splitting Regions is slower than the write speed. To alleviate this issue, you’d better update TiDB to a version that supports batch-split (&gt;= 2.1.0-rc1). If it is not possible to update temporarily, you can use <code>pd-ctl operator add split-region &lt;region_id&gt; --policy=approximate</code> to manually split Regions.</p>
+</li>
+</ul>
+<h2 id="tidb-binlog-alert-rules">TiDB Binlog alert rules</h2>
+<p>For the detailed descriptions of TiDB Binlog alert rules, see <a href="/docs/v2.1/tidb-binlog/monitor-tidb-binlog-cluster#alert-rules">TiDB Binlog monitoring document</a>.</p>
+<h2 id="node-exporter-host-alert-rules">Node_exporter host alert rules</h2>
+<p>This section gives the alert rules for the Node_exporter host.</p>
+<h3 id="emergency-level-alerts-3">Emergency-level alerts</h3>
+<p>Emergency-level alerts are often caused by a service or node failure. Manual intervention is required immediately.</p>
+<h4 id="node-disk-used-more-than-80"><code>NODE_disk_used_more_than_80%</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>node_filesystem_avail{fstype=~"(ext.|xfs)", mountpoint!~"/boot"} / node_filesystem_size{fstype=~"(ext.|xfs)", mountpoint!~"/boot"} * 100 &lt;= 20</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The disk space usage of the machine exceeds 80%.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ol>
+<li>Log in to the machine and run the <code>df -h</code> command to check the disk space usage;</li>
+<li>Make a plan to increase the disk capacity or delete some data or increase cluster node depending on different situations.</li>
+</ol>
+</li>
+</ul>
+<h4 id="node-disk-inode-more-than-80"><code>NODE_disk_inode_more_than_80%</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>node_filesystem_files_free{fstype=~"(ext.|xfs)"} / node_filesystem_files{fstype=~"(ext.|xfs)"} * 100 &lt; 20</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The inode usage of the filesystem on the machine exceeds 80%.</p>
+</li>
+<li>
+<p>Solution:</p>
+<p>Log in to the machine and run the <code>df -i</code> command to view the inode usage of the filesystem.</p>
+</li>
+</ul>
+<h4 id="node-disk-readonly"><code>NODE_disk_readonly</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>node_filesystem_readonly{fstype=~"(ext.|xfs)"} == 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The filesystem is read-only and data cannot be written in it. It is often caused by disk failure or filesystem corruption.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Log in to the machine and create a file to test whether it is normal.</li>
+<li>Check whether the disk LED is normal on the machine. If not, replace the disk and repair the filesystem of the machine.</li>
+</ul>
+</li>
+</ul>
+<h3 id="critical-level-alerts-3">Critical-level alerts</h3>
+<p>For the critical-level alerts, a close watch on the abnormal metrics is required.</p>
+<h4 id="node-memory-used-more-than-80"><code>NODE_memory_used_more_than_80%</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>(((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100)) &gt;= 80</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The memory usage of the machine exceeds 80%.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>View the Memory panel of the host on the Grafana Node Exporter dashboard, and check whether Used memory is too high and Available memory is too low.</li>
+<li>Log in to the machine and run the <code>free -m</code> command to view the memory usage. You can run <code>top</code> to check whether there is any abnormal process that has an overly high memory usage.</li>
+</ul>
+</li>
+</ul>
+<h3 id="warning-level-alerts-3">Warning-level alerts</h3>
+<p>Warning-level alerts are a reminder for an issue or error.</p>
+<h4 id="node-node-overload"><code>NODE_node_overload</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>(node_load5 / count without (cpu, mode) (node_cpu{mode="system"})) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The CPU load on the machine is relatively high.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>View the CPU Usage and Load Average of the host on the Grafana Node Exporter dashboard to check whether they are too high.</li>
+<li>Log in to the machine and run <code>top</code> to check the load average and the CPU usage, and see whether there is any abnormal process that has an overly high CPU usage.</li>
+</ul>
+</li>
+</ul>
+<h4 id="node-cpu-used-more-than-80"><code>NODE_cpu_used_more_than_80%</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>avg(irate(node_cpu{mode="idle"}[5m])) by(instance) * 100 &lt;= 20</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The CPU usage of the machine exceeds 80%.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>View the CPU Usage and Load Average of the host on the Grafana Node Exporter dashboard to check whether they are too high.</li>
+<li>Log in to the machine and run <code>top</code> to check the Load Average and the CPU Usage, and see whether there is any abnormal process that has an overly high CPU usage.</li>
+</ul>
+</li>
+</ul>
+<h4 id="node-tcp-estab-num-more-than-50000"><code>NODE_tcp_estab_num_more_than_50000</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>node_netstat_Tcp_CurrEstab &gt; 50000</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>There are more than 50,000 TCP links in the “establish” status on the machine.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Log in to the machine and run <code>ss -s</code> to check the number of TCP links in the “estab” status in the current system.</li>
+<li>Run <code>netstat</code> to check whether there is any abnormal link.</li>
+</ul>
+</li>
+</ul>
+<h4 id="node-disk-read-latency-more-than-32ms"><code>NODE_disk_read_latency_more_than_32ms</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>((rate(node_disk_read_time_ms{device=~".+"}[5m]) / rate(node_disk_reads_completed{device=~".+"}[5m])) or (irate(node_disk_read_time_ms{device=~".+"}[5m]) / irate(node_disk_reads_completed{device=~".+"}[5m]))) &gt; 32</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The read latency of the disk exceeds 32 ms.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check the disk status by viewing the Grafana Disk Performance dashboard.</li>
+<li>Check the read latency of the disk by viewing the Disk Latency panel.</li>
+<li>Check the I/O usage by viewing the Disk I/O Utilization panel.</li>
+</ul>
+</li>
+</ul>
+<h4 id="node-disk-write-latency-more-than-16ms"><code>NODE_disk_write_latency_more_than_16ms</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>((rate(node_disk_write_time_ms{device=~".+"}[5m]) / rate(node_disk_writes_completed{device=~".+"}[5m])) or (irate(node_disk_write_time_ms{device=~".+"}[5m]) / irate(node_disk_writes_completed{device=~".+"}[5m])))&gt; 16</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The write latency of the disk exceeds 16 ms.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check the disk status by viewing the Grafana Disk Performance dashboard.</li>
+<li>Check the write latency of the disk by viewing the Disk Latency panel.</li>
+<li>Check the I/O usage by viewing the Disk I/O Utilization panel.</li>
+</ul>
+</li>
+</ul>
+<h2 id="blackbox-exporter-tcp-icmp-and-http-alert-rules">Blackbox_exporter TCP, ICMP, and HTTP alert rules</h2>
+<p>This section gives the alert rules for the Blackbox_exporter TCP, ICMP, and HTTP.</p>
+<h3 id="emergency-level-alerts-4">Emergency-level alerts</h3>
+<p>Emergency-level alerts are often caused by a service or node failure. Manual intervention is required immediately.</p>
+<h4 id="tidb-server-is-down"><code>TiDB_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="tidb"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the TiDB service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the TiDB service is down.</li>
+<li>Check whether the TiDB process exists.</li>
+<li>Check whether the network between the monitoring machine and the TiDB machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pump-server-is-down"><code>Pump_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="pump"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the pump service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the pump service is down.</li>
+<li>Check whether the pump process exists.</li>
+<li>Check whether the network between the monitoring machine and the pump machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="drainer-server-is-down"><code>Drainer_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="drainer"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the Drainer service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the Drainer service is down.</li>
+<li>Check whether the Drainer process exists.</li>
+<li>Check whether the network between the monitoring machine and the Drainer machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="tikv-server-is-down"><code>TiKV_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="tikv"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the TiKV service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the TiKV service is down.</li>
+<li>Check whether the TiKV process exists.</li>
+<li>Check whether the network between the monitoring machine and the TiKV machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pd-server-is-down"><code>PD_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="pd"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the PD service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the PD service is down.</li>
+<li>Check whether the PD process exists.</li>
+<li>Check whether the network between the monitoring machine and the PD machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="node-exporter-server-is-down"><code>Node_exporter_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="node_exporter"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the Node_exporter service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the Node_exporter service is down.</li>
+<li>Check whether the Node_exporter process exists.</li>
+<li>Check whether the network between the monitoring machine and the Node_exporter machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="blackbox-exporter-server-is-down"><code>Blackbox_exporter_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="blackbox_exporter"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the Blackbox_Exporter service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the Blackbox_Exporter service is down.</li>
+<li>Check whether the Blackbox_Exporter process exists.</li>
+<li>Check whether the network between the monitoring machine and the Blackbox_Exporter machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="grafana-server-is-down"><code>Grafana_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="grafana"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the Grafana service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the Grafana service is down.</li>
+<li>Check whether the Grafana process exists.</li>
+<li>Check whether the network between the monitoring machine and the Grafana machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pushgateway-server-is-down"><code>Pushgateway_server_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="pushgateway"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the Pushgateway service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the Pushgateway service is down.</li>
+<li>Check whether the Pushgateway process exists.</li>
+<li>Check whether the network between the monitoring machine and the Pushgateway machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="kafka-exporter-is-down"><code>Kafka_exporter_is_down</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{group="kafka_exporter"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the Kafka_Exporter service port.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the Kafka_Exporter service is down.</li>
+<li>Check whether the Kafka_Exporter process exists.</li>
+<li>Check whether the network between the monitoring machine and the Kafka_Exporter machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h4 id="pushgateway-metrics-interface"><code>Pushgateway_metrics_interface</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>probe_success{job="blackbox_exporter_http"} == 0</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>Failure to probe the Pushgateway service http interface.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>Check whether the machine that provides the Pushgateway service is down.</li>
+<li>Check whether the Pushgateway process exists.</li>
+<li>Check whether the network between the monitoring machine and the Pushgateway machine is normal.</li>
+</ul>
+</li>
+</ul>
+<h3 id="warning-level-alerts-4">Warning-level alerts</h3>
+<p>Warning-level alerts are a reminder for an issue or error.</p>
+<h4 id="blacker-ping-latency-more-than-1s"><code>BLACKER_ping_latency_more_than_1s</code></h4>
+<ul>
+<li>
+<p>Alert rule:</p>
+<p><code>max_over_time(probe_duration_seconds{job=~"blackbox_exporter.*_icmp"}[1m]) &gt; 1</code></p>
+</li>
+<li>
+<p>Description:</p>
+<p>The ping latency exceeds 1 second.</p>
+</li>
+<li>
+<p>Solution:</p>
+<ul>
+<li>View the ping latency between the two nodes on the Grafana Blackbox Exporter dashboard to check whether it is too high.</li>
+<li>Check the tcp panel on the Grafana Node Exporter dashboard to check whether there is any packet loss.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs/blob/release-2.1/alert-rules.md">"TiDB Cluster Alert Rules"</a>
+    was last updated
+    <span>May 14 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs/commit/080213ec7deceb2e389488d1de5a4379e1746359">
+        add alias in 2.1 (#2569) <span class="hash">(080213e)</span>
+</a>
+</div></div>
+<div class="sidebar-page">
+<div class="sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs/edit/release-2.1/alert-rules.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    Edit this page
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs/issues/new?body=File:%20[%2falert-rules.md](https%3a%2f%2fpingcap.com%2fdocs%2fv2.1%2falert-rules%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    Request docs changes
+</a>
+<p class="toc-title">What’s on this page</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Product</strong></h4>
+<ul>
+<li><a href="/docs/v3.0/">TiDB</a></li>
+<li><a href="/docs/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs/v3.0/roadmap/">Roadmap</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Docs</strong></h4>
+<ul>
+<li><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">Quick Start</a></li>
+<li><a href="/blog/2017-07-24-tidbbestpractice/">Best Practices</a></li>
+<li><a href="/docs/stable/faq/tidb/">FAQ</a></li>
+<li><a href="/docs/stable/reference/tools/user-guide/">TiDB Tools</a></li>
+<li><a href="/docs/dev/releases/rn/">Release Notes</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Resources</strong></h4>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/weekly/">Monthly</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="/community">TiDB Community</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Company</strong></h4>
+<ul>
+<li><a href="/about/">About</a></li>
+<li><a href="https://angel.co/pingcap-1/jobs" target="_blank">Careers</a></li>
+<li><a href="/news/">News</a></li>
+<li><a href="/contact-us/">Contact Us</a></li>
+<li><a href="/en/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/terms-of-service/">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Connect</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg>Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg>Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg>Stack Overflow</a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc">Subscribe to Blog</button></a>
+</div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 PingCAP. All Rights Reserved.</p>
+<a class="copyright-btn-lang" href="/docs-cn/v2.1" id="lang">中文</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

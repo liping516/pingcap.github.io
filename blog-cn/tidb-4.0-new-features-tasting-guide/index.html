@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>TiDB 4.0 新特性尝鲜指南 | PingCAP</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="在 TiDB 4.0 中我们实现了 很多具有里程碑意义的功能，这里为大家列一份「新特性尝鲜指南」。" name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="TiDB 4.0 新特性尝鲜指南 | PingCAP" property="og:title"/>
+<meta content="在 TiDB 4.0 中我们实现了 很多具有里程碑意义的功能，这里为大家列一份「新特性尝鲜指南」。" property="og:description"/>
+<meta content="https://pingcap.com/blog-cn/tidb-4.0-new-features-tasting-guide/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="在 TiDB 4.0 中我们实现了 很多具有里程碑意义的功能，这里为大家列一份「新特性尝鲜指南」。" name="twitter:description"/>
+<meta content="TiDB 4.0 新特性尝鲜指南 | PingCAP" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/>
+<meta content="https://download.pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="cn"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/index.html"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP
+                            University</a></li>
+<li class="docs-type-selector " id="docsTypeSelector">
+<a class="header-doc-nav" href="#">文档</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li class="sel"><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs-cn/stable/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="cn" data-type="" id="search-input" name="q" placeholder="搜索 TiDB 文档" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li class="docs-type-selector " id="docsTypeSelector">
+<p class="header-doc-nav">文档</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li class="sel"><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP University</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social social-cn ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+<li id="wechat-mobile"><a class="wechat" href="javascript:void(0)"><svg height="18" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg></a><div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-mobile"></div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/blog" id="lang">English</a>
+</div>
+</div>
+</nav>
+<div class="blog">
+<div class="container">
+<div class="sidebar nav-tags" data-type="single"><div class="title">热门标签<a class="rss" href="/blog-cn/index.xml" title="RSS Feed"><svg height="17" viewbox="0 0 402.041 402.04" width="13" xmlns="http://www.w3.org/2000/svg"><g fill="#3A59F0"><path d="M54.816 292.382c-15.229 0-28.169 5.331-38.831 15.988C5.33 319.026 0 331.969 0 347.197c0 15.232 5.325 28.172 15.985 38.828 10.662 10.657 23.606 15.988 38.831 15.988 15.227 0 28.168-5.331 38.828-15.988 10.656-10.656 15.986-23.596 15.986-38.828 0-15.229-5.33-28.171-15.986-38.827-10.657-10.657-23.598-15.988-38.828-15.988zM181.01 221.002c-21.51-21.698-46.158-38.97-73.948-51.816-27.79-12.85-56.914-20.511-87.366-22.985h-1.425c-4.949 0-9.042 1.619-12.275 4.854C1.997 154.477 0 158.953 0 164.472v38.543c0 4.757 1.569 8.85 4.708 12.279 3.14 3.429 7.089 5.332 11.848 5.708 43.586 4.189 80.845 21.752 111.773 52.678 30.93 30.926 48.49 68.187 52.677 111.771.382 4.764 2.284 8.712 5.712 11.847 3.427 3.148 7.517 4.72 12.275 4.72h38.545c5.517 0 9.989-1.995 13.415-5.996 3.621-3.812 5.236-8.381 4.863-13.709-2.478-30.447-10.14-59.573-22.987-87.361-12.846-27.792-30.121-52.438-51.819-73.95z"></path><path d="M367.728 239.701c-20.365-45.585-48.345-86.078-83.936-121.482-35.405-35.594-75.896-63.572-121.485-83.939C116.723 13.917 68.996 2.494 19.126.02h-.855c-4.949 0-9.136 1.713-12.563 5.14C1.903 8.583 0 12.964 0 18.294v40.825c0 4.76 1.667 8.897 4.996 12.419 3.33 3.523 7.373 5.376 12.132 5.57 40.924 2.478 79.799 12.188 116.63 29.127 36.83 16.94 68.806 38.972 95.93 66.09 27.118 27.123 49.149 59.101 66.089 95.931 16.94 36.836 26.557 75.705 28.839 116.627.195 4.764 2.046 8.809 5.564 12.139 3.524 3.329 7.762 4.999 12.71 4.999h40.823c5.331 0 9.701-1.902 13.134-5.715 3.809-3.806 5.517-8.274 5.144-13.415-2.471-49.874-13.898-97.6-34.263-143.19z"></path></g></svg></a></div><a class="tag all" href="#">ALL (218)</a>
+<div class="tag-list"><a class="tag " data-tag="Contributor" href="#Contributor">Contributor (9)
+                </a><a class="tag " data-tag="DM-源码阅读" href="#DM-%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb">DM 源码阅读 (10)
+                </a><a class="tag " data-tag="Go" href="#Go">Go (3)
+                </a><a class="tag " data-tag="HTAP" href="#HTAP">HTAP (2)
+                </a><a class="tag " data-tag="Hackathon" href="#Hackathon">Hackathon (4)
+                </a><a class="tag " data-tag="K8s" href="#K8s">K8s (2)
+                </a><a class="tag " data-tag="Key-Visualizer" href="#Key-Visualizer">Key Visualizer (2)
+                </a><a class="tag " data-tag="Kubernetes" href="#Kubernetes">Kubernetes (2)
+                </a><a class="tag " data-tag="MVCC" href="#MVCC">MVCC (2)
+                </a><a class="tag " data-tag="MySQL" href="#MySQL">MySQL (2)
+                </a><a class="tag " data-tag="PD" href="#PD">PD (5)
+                </a><a class="tag " data-tag="Percolator" href="#Percolator">Percolator (2)
+                </a><a class="tag " data-tag="Prometheus" href="#Prometheus">Prometheus (3)
+                </a><a class="tag " data-tag="Raft" href="#Raft">Raft (11)
+                </a><a class="tag " data-tag="RocksDB" href="#RocksDB">RocksDB (3)
+                </a><a class="tag " data-tag="Rust" href="#Rust">Rust (5)
+                </a><a class="tag " data-tag="SQL" href="#SQL">SQL (6)
+                </a><a class="tag " data-tag="Spanner" href="#Spanner">Spanner (2)
+                </a><a class="tag sel" data-tag="TiDB" href="#TiDB">TiDB (61)
+                </a><a class="tag sel" data-tag="TiDB-4.0-新特性" href="#TiDB-4.0-%e6%96%b0%e7%89%b9%e6%80%a7">TiDB 4.0 新特性 (9)
+                </a><a class="tag " data-tag="TiDB-Binlog" href="#TiDB-Binlog">TiDB Binlog (5)
+                </a><a class="tag " data-tag="TiDB-Binlog-源码阅读" href="#TiDB-Binlog-%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb">TiDB Binlog 源码阅读 (9)
+                </a><a class="tag " data-tag="TiDB-Ecosystem-Tools" href="#TiDB-Ecosystem-Tools">TiDB Ecosystem Tools (3)
+                </a><a class="tag " data-tag="TiDB-Operator" href="#TiDB-Operator">TiDB Operator (5)
+                </a><a class="tag " data-tag="TiDB-性能挑战赛" href="#TiDB-%e6%80%a7%e8%83%bd%e6%8c%91%e6%88%98%e8%b5%9b">TiDB 性能挑战赛 (2)
+                </a><a class="tag " data-tag="TiDB-易用性挑战赛" href="#TiDB-%e6%98%93%e7%94%a8%e6%80%a7%e6%8c%91%e6%88%98%e8%b5%9b">TiDB 易用性挑战赛 (3)
+                </a><a class="tag " data-tag="TiDB-源码阅读" href="#TiDB-%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb">TiDB 源码阅读 (24)
+                </a><a class="tag " data-tag="TiFlash" href="#TiFlash">TiFlash (5)
+                </a><a class="tag " data-tag="TiKV" href="#TiKV">TiKV (27)
+                </a><a class="tag " data-tag="TiKV-源码解析" href="#TiKV-%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90">TiKV 源码解析 (18)
+                </a><a class="tag " data-tag="TiSpark" href="#TiSpark">TiSpark (3)
+                </a><a class="tag " data-tag="WebAssembly" href="#WebAssembly">WebAssembly (2)
+                </a><a class="tag " data-tag="gRPC" href="#gRPC">gRPC (2)
+                </a><a class="tag " data-tag="事务" href="#%e4%ba%8b%e5%8a%a1">事务 (4)
+                </a><a class="tag " data-tag="优化器" href="#%e4%bc%98%e5%8c%96%e5%99%a8">优化器 (2)
+                </a><a class="tag " data-tag="分布式系统前沿技术" href="#%e5%88%86%e5%b8%83%e5%bc%8f%e7%b3%bb%e7%bb%9f%e5%89%8d%e6%b2%bf%e6%8a%80%e6%9c%af">分布式系统前沿技术 (4)
+                </a><a class="tag " data-tag="分布式系统测试" href="#%e5%88%86%e5%b8%83%e5%bc%8f%e7%b3%bb%e7%bb%9f%e6%b5%8b%e8%af%95">分布式系统测试 (3)
+                </a><a class="tag " data-tag="工具" href="#%e5%b7%a5%e5%85%b7">工具 (4)
+                </a><a class="tag " data-tag="性能" href="#%e6%80%a7%e8%83%bd">性能 (4)
+                </a><a class="tag " data-tag="数据同步" href="#%e6%95%b0%e6%8d%ae%e5%90%8c%e6%ad%a5">数据同步 (2)
+                </a><a class="tag " data-tag="最佳实践" href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5">最佳实践 (6)
+                </a><a class="tag " data-tag="架构" href="#%e6%9e%b6%e6%9e%84">架构 (6)
+                </a><a class="tag " data-tag="社区" href="#%e7%a4%be%e5%8c%ba">社区 (99)
+                </a><a class="tag sel" data-tag="社区动态" href="#%e7%a4%be%e5%8c%ba%e5%8a%a8%e6%80%81">社区动态 (27)
+                </a><a class="tag " data-tag="集群调度" href="#%e9%9b%86%e7%be%a4%e8%b0%83%e5%ba%a6">集群调度 (2)
+                </a>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 class="title">TiDB 4.0 新特性尝鲜指南</h1>
+<ul class="blog-post-meta">
+<li class="meta-item">
+<img alt="Date icon" src="/images/svgs/icon-date.svg"/>Fri, Apr 10, 2020</li>
+<li class="meta-item">
+<img alt="Pen icon" src="/images/svgs/icon-writer.svg"/>PingCAP</li>
+</ul>
+<div class="blog-text"><blockquote>
+<p>在 TiDB 4.0 中我们实现了 <a href="https://pingcap.com/blog-cn/the-overview-of-tidb-4.0/">很多具有里程碑意义的功能</a>，这里为大家列一份「新特性尝鲜指南」。</p>
+</blockquote>
+<h2 id="tiup">TiUP：一键安装工具</h2>
+<p><strong>试玩第一步当然是安装部署：如何在 1 分钟内快速部署、单机启动 TiDB 集群？</strong></p>
+<p>我们专门为 TiDB 4.0 做了一个全新的组件管理工具—— <a href="https://tiup.io">TiUP</a>。</p>
+<p>当然我们要先安装 TiUP，使用如下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+</code></pre></div><p>装完之后，控制台会提示使用 tiup playground 来在单机启动一个 TiDB 集群，然后我们就可以使用 MySQL 客户端连接 TiDB 集群，并且愉快地开始测试了！</p>
+<p>当然如果在生产环境，大家也可以方便地使用 TiUP cluster 功能，依然可以 1 分钟部署 TiDB 集群，具体方法可以参考 <a href="https://pingcap.com/blog-cn/the-overview-of-tidb-4.0/">这篇文章</a>。</p>
+<p>点击查看 <a href="https://pingcap.com/docs-cn/stable/how-to/deploy/orchestrated/tiup/">TiUP 官方操作文档</a>。</p>
+<h2 id="tidb-dashboard">TiDB Dashboard</h2>
+<p>TiDB 4.0 新提供 TiDB Dashboard 图形化界面，内置各种有力工具方便 DBA 同学诊断、监视和管理集群。</p>
+<p><img alt="" class="lazy" data-original="https://download.pingcap.com/images/blog-cn/tidb-4.0-new-features-tasting-guide/1-tidb-dashboard.gif" src="/images/svgs/loader-spinner.svg"/></p>
+<p>比如， <a href="https://pingcap.com/blog-cn/tidb-4.0-key-visualizer/">Key Visualizer</a>（简称 KeyViz）就是 TiDB Dashboard 包含的工具之一，它可以用于观察业务模式的变化、快速直观地查看热点读写情况，提升 <a href="https://pingcap.com/blog-cn/observability-of-distributed-system/">系统的可观测性</a>。除此之外，TiDB Dashboard 还包含其他工具，如集群诊断报告、SQL 语句分析（Statements）、日志搜索和导出、节点性能分析（Profiling）等，详情可阅读 <a href="https://pingcap.com/blog-cn/tidb-4.0-tidb-dashboard/">这篇文章</a>。</p>
+<h2 id="tiflash">TiFlash</h2>
+<p>TiFlash 是配合 TiDB 体系的列存引擎，它和 TiDB 无缝结合，在线 DDL、无缝扩容、自动容错等等方便运维的特点也在 TiFlash 中得到继承。其次，TiFlash 可以<strong>实时</strong>与行存保持同步。
+关于 TiFlash 的性能与架构原理，可以参考以下几篇文章：</p>
+<ul>
+<li>
+<p><a href="https://pingcap.com/blog-cn/10x-improving-analytical-processing-ability-of-tidb-with-tiflash/">一两个节点、一两条命令，轻松让 TiDB 分析场景无痛提速十倍</a></p>
+</li>
+<li>
+<p><a href="https://pingcap.com/blog-cn/tidb-and-tiflash-vs-mysql-mariadb-greenplum-apache-spark/">为了证明它的速度，我们一口气对比了 Oracle、MySQL、MariaDB、Greenplum、Apache Spark</a></p>
+</li>
+<li>
+<p><a href="https://pingcap.com/blog-cn/tiflash-column-database/">TiFlash：并非另一个 T+1 列存数据库</a></p>
+</li>
+</ul>
+<p>点击查看 <a href="https://pingcap.com/docs-cn/stable/reference/tiflash/overview/">TiFlash 官方操作文档</a>。</p>
+<h2 id="heading">悲观锁</h2>
+<p>TiDB 不仅仅在互联网行业广泛使用，更在一些传统金融行业开花结果，而悲观事务是在多数金融场景不可或缺的一个特性。在 TiDB 4.0 中我们提供多种方式打开悲观锁，详情可以阅读 <a href="https://pingcap.com/blog-cn/tidb-4.0-pessimistic-lock/">这篇文章</a>。</p>
+<p>点击查看 <a href="https://pingcap.com/docs-cn/stable/reference/transactions/transaction-pessimistic/">悲观锁官方操作文档</a>。</p>
+<h2 id="heading-1">快速备份恢复</h2>
+<p>TiDB 4.0 提供了分布式备份恢复工具  <strong>Backup&amp;Restore</strong>（BR），经过内部测试，10T 数据的备份恢复速度可以达到 1 GB/s 级别。如果你业务产生海量数据，并极度重视数据安全、备份恢复的效率，那么 TiDB + BR 值得一试，从此再也不怕“删库跑路、恢复缓慢”，详情可参考 <a href="https://pingcap.com/blog-cn/cluster-data-security-backup/">这篇文章</a>。</p>
+<p>点击查看 <a href="https://pingcap.com/docs-cn/stable/reference/tools/br/br/">BR 官方操作文档</a>。</p>
+<h2 id="sql-hint--sql-plan-management">SQL Hint &amp; SQL Plan Management</h2>
+<p>TiDB 已支持 Optimizer Hints 语法，它基于 MySQL 5.7 中介绍的类似 comment 的语法，例如 <code>/*+ HINT_NAME(t1, t2) */</code>。当 TiDB 优化器选择的不是最优查询计划时，建议使用 Optimizer Hints。</p>
+<p>点击查看 <a href="https://pingcap.com/docs-cn/stable/reference/performance/optimizer-hints/">官方操作文档</a>。</p>
+<p>用户虽然可以通过 Hint 的方式选择指定的执行计划，但有的时候需要在不修改 SQL 语句的情况下干预执行计划的选择。在 TiDB 4.0 中执行计划绑定提供了一系列功能，使得可以在不修改 SQL 语句的情况下选择指定的执行计划。此外，随着数据的变更，有可能原先绑定的执行计划已经不是最优的了，这时候，<strong>自动演进绑定功能</strong>可以自动优化已经绑定的执行计划，详情可以查看这篇文章：<a href="https://pingcap.com/blog-cn/tidb-4.0-sql-plan-management/">「再也不用担心我的 SQL 突然变慢了」</a>。</p>
+<p>点击查看 <a href="https://pingcap.com/docs-cn/stable/reference/performance/execution-plan-bind/">官方操作文档</a>。</p>
+<h2 id="view">View</h2>
+<p>TiDB 支持视图，视图是一张虚拟表，该虚拟表的结构由创建视图时的 SELECT 语句定义。使用视图一方面可以对用户只暴露安全的字段及数据，进而保证底层表的敏感字段及数据的安全。另一方面，将频繁出现的复杂查询定义为视图，可以使复杂查询更加简单便捷。</p>
+<p>点击查看 <a href="https://pingcap.com/docs-cn/stable/reference/sql/view/">View 官方操作文档</a>。</p>
+<h2 id="heading-2">更多新特性等你探索！</h2>
+<ol>
+<li>
+<p><a href="https://pingcap.com/docs-cn/stable/reference/configuration/tidb-server/configuration-file/#txn-total-size-limit">大事务支持</a></p>
+</li>
+<li>
+<p><a href="https://pingcap.com/docs-cn/stable/reference/sql/character-set/">支持  utf8_general_ci 和 utf8mb4_general_ci collation</a></p>
+</li>
+<li>
+<p><a href="https://pingcap.com/docs-cn/stable/reference/sql/attributes/auto-random/">AutoRandom Key</a></p>
+</li>
+<li>
+<p><a href="https://pingcap.com/docs-cn/stable/reference/sql/statements/load-data/">LOAD DATA 功能完善与优化</a></p>
+</li>
+<li>
+<p><a href="https://pingcap.com/docs-cn/stable/reference/security/role-based-access-control/">基于角色的访问控制（role-based-access-control）</a></p>
+</li>
+<li>
+<p><a href="https://pingcap.com/docs-cn/stable/reference/sql/statements/admin/">ADMIN DDL 支持 [like_or_where]</a></p>
+</li>
+<li>
+<p>……</p>
+</li>
+</ol>
+<hr/>
+<p>🎁即日起，投稿「TiDB 4.0 试玩体验」 的同学可以有机会得到 TiDB 限量周边奖励哦～</p>
+<p>投稿渠道：</p>
+<ul>
+<li>
+<p>方式一：进入 <a href="https://asktug.com">AskTUG</a>  发帖，标题格式：【TiDB 4.0 试玩体验】……，即可与广大 TiDB 用户们一起交流讨论！</p>
+</li>
+<li>
+<p>方式二：加入「TiDB 4.0 尝鲜群」，在群内分享你的博客链接并 @TiDB Robot，可以实时与大家分享试玩心得、反馈建议。加群方式：点击【<a href="http://t.cn/A6h5LjZR">这里</a>】添加 TiDB Robot 为好友，回复“新特性”即可入群！</p>
+</li>
+</ul>
+</div>
+</div><div class="ssba-wrap">
+<div class="ssba">
+<a class="ssba_mail_share" href="mailto:info@pingcap.com" onclick="trackViews('blog-contact-us', 'mail_to_info_view')" target="_blank">
+<svg height="18" viewbox="0 0 14 14" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M7 9L5.268 7.484.316 11.729c.18.167.423.271.691.271h11.986c.267 0 .509-.104.688-.271L8.732 7.484 7 9z"></path><path d="M13.684 2.271A1.007 1.007 0 0 0 12.993 2H1.007c-.267 0-.509.104-.689.273L7 8l6.684-5.729zM0 2.878v8.308l4.833-4.107zM9.167 7.079L14 11.186V2.875z"></path></svg>
+</a>
+<a class="ssba_wechat_share" data-site="wechat" data-url="https://pingcap.com/blog-cn/tidb-4.0-new-features-tasting-guide/" href="javascript:void(0)" id="wechat_share_btn" onclick="toggleBlogQRCode()">
+<svg height="18" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg>
+</a>
+</div>
+</div>
+<style type="text/css">
+    .fixed-qrcode {
+        position: fixed;
+        top: 120px;
+        right: 105px;
+        padding: 10px 15px;
+        width: 200px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.9);
+        text-align: center;
+    }
+
+    .fixed-qrcode p {
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.6;
+        margin: 8px 0;
+        color: #333;
+    }
+
+    .fixed-qrcode #close_share_qrcode {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 30px;
+        height: 30px;
+        padding: 10px;
+    }
+
+    .fixed-qrcode #close_share_qrcode svg {
+        display: block;
+    }
+
+    .f-hide #share_qrcode {
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .fixed-qrcode #share_qrcode {
+        visibility: visible;
+        opacity: 1;
+        height: 128px;
+        transition: visibility 0s linear 0s, opacity .3s 0s;
+        -webkit-transition: visibility 0s linear 0s, opacity .3s 0s;
+    }
+
+    #share_qrcode img {
+        margin: 0 auto;
+    }
+</style>
+<div class="f-hide" id="share_qrcode_outer">
+<i id="close_share_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<p>分享到微信</p>
+<div id="share_qrcode"></div>
+<p>打开微信，使用 “扫一扫” 即可将网页分享至朋友圈。</p>
+</div>
+<script src="/js/vendor/qrcode.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    window.onload = function() {
+        var close_share_qrcode_btn = document.getElementById('close_share_qrcode')
+        var wechat_share_btn = document.getElementById('wechat_share_btn')
+        var blog_url = wechat_share_btn.getAttribute('data-url')
+
+        window.pingcap_blog_qrcode = new QRCode(
+            document.getElementById('share_qrcode'),
+            {
+            text: blog_url,
+            width: 128,
+            height: 128,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+            }
+        )
+
+        close_share_qrcode_btn.addEventListener('click', function(event) {
+            document
+            .getElementById('share_qrcode_outer')
+            .setAttribute('class', 'f-hide')
+        })
+    }
+
+    function toggleBlogQRCode() {
+        var qrcode_wrapper = document.getElementById('share_qrcode_outer')
+
+        if (qrcode_wrapper.getAttribute('class') == 'f-hide') {
+            qrcode_wrapper.setAttribute('class', 'fixed-qrcode')
+        } else {
+            qrcode_wrapper.setAttribute('class', 'f-hide')
+        }
+    }
+</script>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>产品</strong></h4>
+<ul>
+<li><a href="/docs-cn/v3.0/" onclick="trackViews('footer-product-tidb', 'docs-cn_view')">TiDB</a></li>
+<li><a href="/docs-cn/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs-cn/v3.0/roadmap/">TiDB 路线图</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>文档</strong></h4>
+<ul>
+<li><a href="/docs-cn/stable/how-to/get-started/deploy-tidb-from-docker-compose/">快速入门</a></li>
+<li><a href="/blog-cn/tidb-best-practice/">最佳实践</a></li>
+<li><a href="/docs-cn/stable/faq/tidb/">常见问题解答</a></li>
+<li><a href="/docs-cn/stable/reference/tools/user-guide/">TiDB 周边工具</a></li>
+<li><a href="/docs-cn/dev/releases/rn/">版本发布说明</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>资源</strong></h4>
+<ul>
+<li><a href="/blog-cn/">博客</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="https://book.tidb.io" target="_blank">TiDB in Action</a></li>
+<li><a href="https://university.pingcap.com/" onclick="trackViews('footer-source-university', 'pingcap-university_view')" target="_blank">PingCAP
+                    University</a></li>
+<li><a href="/solutions/intel/" onclick="trackViews('footer-resource-solutions', 'solutions_view')">联合解决方案</a></li>
+<li><a href="https://asktug.com/" onclick="trackViews('footer-resource-asktug', 'asktug_view')" target="_blank">Ask TUG</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>公司</strong></h4>
+<ul>
+<li><a href="/about-cn/">关于我们</a></li>
+<li><a href="/about-cn/recruit/join/" onclick="trackViews('footer-recruit-join', 'recruit-join_view')">招贤纳士</a>
+</li>
+<li><a href="/about-cn/news/">新闻报道</a></li>
+<li><a href="/privacy-policy/">隐私申明</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>联系我们</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg> Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg> Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg> Stack Overflow</a></li>
+<li id="wechat"><a class="wechat" href="javascript:void(0)"><svg height="17" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg> 微信公众号</a> <div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-pc"></div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 北京平凯星辰科技发展有限公司</p>
+<a class="copyright-btn-lang copyright-btn-en" href="/blog" id="lang">English</a>
+<a class="prepared-num" href="http://www.beian.miit.gov.cn/">京 ICP 备 16046278 号 - 2</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

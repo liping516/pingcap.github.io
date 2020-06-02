@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TiDB Data Migration Documentation on SQL at Scale</title>
+    <link>https://pingcap.com/docs/tidb-data-migration/dev/</link>
+    <description>Recent content in TiDB Data Migration Documentation on SQL at Scale</description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	<atom:link href="https://pingcap.com/docs/tidb-data-migration/dev/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/change-request/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/change-request/</guid>
+      <description>Change Request This repository is ONLY used to solve issues related to TiDB Data Migration (DM) documentation. For other issues (related to TiDB, PD, etc), please move to other repositories.
+Please answer the following questions before submitting your issue. Thanks!
+  Describe what you find is inappropriate or missing in the existing docs.
+  Describe your suggestion or addition.
+  Provide some reference materials (documents, websites, etc) if you could.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/error-report/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/error-report/</guid>
+      <description>Error Report This repository is ONLY used to solve issues related to TiDB Data Migration (DM) documentation. For other issues (related to TiDB, PD, etc), please move to other repositories.
+Please answer the following questions before submitting your issue. Thanks!
+  What is the URL/path of the document related to this issue?
+  How would you like to improve it?
+  </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/pull_request_template/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/pull_request_template/</guid>
+      <description>Which TiDB Data Migration (DM) version(s) do your changes apply to? (Required)  master (the latest development version, including v2.0 changes for now) v1.0 (TiDB DM 1.0 versions)  What is the related PR or file link(s)?  This PR is translated from:  Other reference link(s):   </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/question/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/question/</guid>
+      <description>Question This repository is ONLY used to solve issues related to TiDB Data Migration (DM) documentation. For other issues (related to TiDB, PD, etc), please move to other repositories.
+Before submitting your question, make sure you have:
+ Searched existing Stack Overflow questions. Googled your question. Read the documentation:  TiDB DM (en) TiDB DM (zh)    Now, please describe your question here:</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/README/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/README/</guid>
+      <description>TiDB Data Migration (DM) Documentation This repository stores all the source files of TiDB Data Migration (DM) documentation at the PingCAP website. That is, the documentation for TiDB DM.
+ en: documentation in English zh: documentation in Chinese  Documentation versions Currently, we maintain the following versions for TiDB DM documentation, each with a separate branch:
+   Branch name Version description     master the latest development version, including v2.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/TOC/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/TOC/</guid>
+      <description>TiDB Data Migration (DM) Documentation TOC  Overview  DM Overview Restrictions DM-worker DM Relay Log   Features  Table Routing Black and White Lists Binlog Event Filter Replication Delay Monitoring Online-ddl-scheme   Sharding Support  Introduction Restrictions Handle Sharding DDL Locks Manually     Benchmark  DM 1.0-GA Benchmark Report DM 1.0-alpha Benchmark Report   Usage Scenarios  Simple Scenario Shard Merge Scenario Shard Merge Best Practices     Quick Start   Deploy  Deploy a DM Cluster  Use DM-Ansible Use Binary   Replicate Data Using DM   Configure  Overview DM-master Configuration DM-worker Configuration Upstream Database Configuration Task Configuration   Manage the DM Cluster  Cluster Operations Cluster Upgrade   Manage Replication Tasks  Manage Tasks Precheck Tasks Query Task Status Skip or Replace Abnormal SQL Statements     Monitor   Migrate from MySQL compatible database  Migrate from Amazon Aurora   DM Portal Troubleshoot  DM Troubleshooting Error Description Error Handling     FAQ   Releases  v1.</description>
+    </item>
+    
+    <item>
+      <title>Best Practices of Data Migration in the Shard Merge Scenario</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/shard-merge-best-practices/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/shard-merge-best-practices/</guid>
+      <description>Learn the best practices of data migration in the shard merge scenario.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Cluster Operations</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/cluster-operations/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/cluster-operations/</guid>
+      <description>This document introduces the DM cluster operations and considerations when you administer a DM cluster using DM-Ansible.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Configuration File Overview</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/config-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/config-overview/</guid>
+      <description>This document gives an overview of Data Migration configuration files.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Error Handling</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/error-handling/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/error-handling/</guid>
+      <description>Learn how to deal with errors when you use TiDB Data Migration.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Error Message Description</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/error-system/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/error-system/</guid>
+      <description>Learn the system and description of error messages in Data Migration.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Monitoring Metrics</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/monitor-a-dm-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/monitor-a-dm-cluster/</guid>
+      <description>Learn about the monitoring metrics when you use Data Migration to replicate data.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Overview</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/overview/</guid>
+      <description>Learn about the Data Migration tool, the architecture, the key components and features.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Query Status</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/query-status/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/query-status/</guid>
+      <description>Learn the DM query result and subtask status.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Relay Log</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/relay-log/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/relay-log/</guid>
+      <description>Learn the directory structure, initial replication rules and data purge of DM relay logs.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Shard Merge Scenario</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/usage-scenario-shard-merge/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/usage-scenario-shard-merge/</guid>
+      <description>Learn how to use Data Migration to replicate data in the shard merge scenario.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Simple Usage Scenario</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/usage-scenario-simple-replication/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/usage-scenario-simple-replication/</guid>
+      <description>Learn how to use Data Migration to replicate data in a simple scenario.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Task Configuration File</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/task-configuration-file/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/task-configuration-file/</guid>
+      <description>This document introduces the task configuration file of Data Migration.</description>
+    </item>
+    
+    <item>
+      <title>Data Migration Troubleshooting</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/troubleshoot-dm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/troubleshoot-dm/</guid>
+      <description>Learn how to diagnose and resolve issues when you use Data Migration.</description>
+    </item>
+    
+    <item>
+      <title>Data Replication Features</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/feature-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/feature-overview/</guid>
+      <description>Learn about the data replication features provided by the Data Migration tool.</description>
+    </item>
+    
+    <item>
+      <title>Deploy Data Migration Cluster Using DM Binary</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/deploy-a-dm-cluster-using-binary/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/deploy-a-dm-cluster-using-binary/</guid>
+      <description>Learn how to deploy the Data Migration cluster using DM binary.</description>
+    </item>
+    
+    <item>
+      <title>Deploy Data Migration Using DM-Ansible</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/deploy-a-dm-cluster-using-ansible/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/deploy-a-dm-cluster-using-ansible/</guid>
+      <description>Use DM-Ansible to deploy the Data Migration cluster.</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0-alpha Benchmark Report</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/benchmark-v1-alpha/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/benchmark-v1-alpha/</guid>
+      <description>Learn about the DM 1.0-alpha benchmark report.</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0-GA Benchmark Report</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/benchmark-v1.0-ga/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/benchmark-v1.0-ga/</guid>
+      <description>Learn about the DM 1.0-GA benchmark report.</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0.2 Release Notes</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/1.0.2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/1.0.2/</guid>
+      <description>DM 1.0.2 Release Notes Release date: October 30, 2019
+DM version: 1.0.2
+DM-Ansible version: 1.0.2
+Improvements  Generate some config items for DM-worker automatically Generate some config items for replication task automatically Simplify the output of query-status without arguments Manage DB connections directly for downstream  Bug fixes  Fix some panic when starting up or executing SQL statements Fix abnormal sharding DDL replication on DDL execution timeout Fix starting task failure caused by the checking timeout or any inaccessible DM-worker Fix SQL execution retry for some error  Detailed bug fixes and changes  Generate random server-id for DM-worker config automatically #337 Generate flavor for DM-worker config automatically #328 Generate relay-binlog-name and relay-binlog-gtid for DM-worker config automatically #318 Generate the name list of tables to be dumped in task config from black &amp;amp; white table lists automatically #326 Add concurrency items (mydumper-thread, loader-thread and syncer-thread) for task config #314 Simplify the output of query-status without arguments #340 Fix abnormal sharding DDL replication on DDL execution timeout #338 Fix potential DM-worker panic when restoring subtask from local meta #311 Fix DM-worker panic when committing a DML transaction failed #313 Fix DM-worker or DM-master panic when the listening port is being used #301 Fix retry for error code 1105 #321, #332 Fix retry for Duplicate entry and Data too long for column #313 Fix task check timeout when having large amounts of tables in upstream #327 Fix starting task failure when any DM-worker is not accessible #319 Fix potential DM-worker startup failure in GTID mode after being recovered from corrupt relay log #339 Fix in-memory TPS count for sync unit #294 Manage DB connections directly for downstream #325 Improve the error system by refining error information passed between components #320  </description>
+    </item>
+    
+    <item>
+      <title>DM 1.0.3 Release Notes</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/1.0.3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/1.0.3/</guid>
+      <description>DM 1.0.3 Release Notes Release date: December 13, 2019
+DM version: 1.0.3
+DM-Ansible version: 1.0.3
+Improvements  Add the command mode in dmctl Support replicating the ALTER DATABASE DDL statement Optimize the error message output  Bug fixes  Fix the panic-causing data race issue occurred when the full import unit pauses or exits Fix the issue that stop-task and pause-task might not take effect when retrying SQL operations to the downstream  Detailed bug fixes and changes  Add the command mode in dmctl #364 Optimize the error message output #351 Optimize the output of the query-status command #357 Optimize the privilege check for different task modes #374 Support checking the duplicate quoted route-rules or filter-rules in task config #385 Support replicating the ALTER DATABASE DDL statement #389 Optimize the retry mechanism for anomalies #391 Fix the panic issue caused by the data race when the import unit pauses or exits #353 Fix the issue that stop-task and pause-task might not take effect when retrying SQL operations to the downstream #400 Upgrade Golang to v1.</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0.4 Release Notes</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/1.0.4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/1.0.4/</guid>
+      <description>DM 1.0.4 Release Notes Release date: March 13, 2020
+DM version: 1.0.4
+DM-Ansible version: 1.0.4
+Improvements  Add English UI for DM-portal Add the --more parameter in the query-status command to show complete replication status information  Bug fixes  Fix the issue that resume-task might fail to resume the replication task which is interrupted by the abnormal connection to the downstream TiDB server Fix the issue that the online DDL operation cannot be properly replicated after a failed replication task is restarted because the online DDL meta information has been cleared after the DDL operation failure Fix the issue that query-error might cause the DM-worker to panic after start-task goes into error Fix the issue that the relay log file and relay.</description>
+    </item>
+    
+    <item>
+      <title>DM 1.0.5 Release Notes</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/1.0.5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/1.0.5/</guid>
+      <description>DM 1.0.5 Release Notes Release date: April 27, 2020
+DM version: 1.0.5
+DM-Ansible version: 1.0.5
+Improvements  Improve the incremental replication speed when the UNIQUE KEY column has the NULL value Add retry for the Write conflict (9007 and 8005) error returned by TiDB  Bug fixes  Fix the issue that the Duplicate entry error might occur during the full data import Fix the issue that the replication task cannot be stopped or paused when the full data import is completed and the upstream has no written data Fix the issue the monitoring metrics still display data after the replication task is stopped  Detailed bug fixes and changes  Improve the incremental replication speed when the UNIQUE KEY column has the NULL value #588 #597 Add retry for the Write conflict (9007 and 8005) error returned by TiDB #632 Fix the issue that the Duplicate entry error might occur during the full data import #554 Fix the issue that the replication task cannot be stopped or paused when the full data import is completed and the upstream has no written data #622 Fix the issue the monitoring metrics still display data after the replication task is stopped #616 Fix the issue that the Column count doesn&#39;t match value count error might be returned during the sharding DDL replication #624 Fix the issue that some metrics such as data file size are incorrectly displayed when the paused task of full data import is resumed #570 Add and fix multiple monitoring metrics #590 #594  </description>
+    </item>
+    
+    <item>
+      <title>DM Advanced Task Configuration File</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/task-configuration-file-full/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/task-configuration-file-full/</guid>
+      <description>DM Advanced Task Configuration File This document introduces the advanced task configuration file of Data Migration (DM), including global configuration and instance configuration.
+For the feature and configuration of each configuration item, see Data replication features.
+Important concepts For description of important concepts including source-id and the DM-worker ID, see Important concepts.
+Task configuration file template (advanced) The following is the task configuration file template which allows you to perform advanced data replication tasks.</description>
+    </item>
+    
+    <item>
+      <title>DM online-ddl-scheme</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/online-ddl-scheme/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/online-ddl-scheme/</guid>
+      <description>This document introduces the online-ddl-scheme feature of DM.</description>
+    </item>
+    
+    <item>
+      <title>DM Portal Overview</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/dm-portal/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/dm-portal/</guid>
+      <description>Learn the features of DM Portal and how to use it.</description>
+    </item>
+    
+    <item>
+      <title>DM-master Configuration File</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/dm-master-configuration-file/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/dm-master-configuration-file/</guid>
+      <description>Learn the configuration file of DM-master.</description>
+    </item>
+    
+    <item>
+      <title>DM-worker Configuration File</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/dm-worker-configuration-file/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/dm-worker-configuration-file/</guid>
+      <description>Learn the configuration file of DM-worker.</description>
+    </item>
+    
+    <item>
+      <title>DM-worker Introduction</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/dm-worker-intro/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/dm-worker-intro/</guid>
+      <description>Learn the features of DM-worker.</description>
+    </item>
+    
+    <item>
+      <title>Handle Sharding DDL Locks Manually in DM</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/feature-manually-handling-sharding-ddl-locks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/feature-manually-handling-sharding-ddl-locks/</guid>
+      <description>Learn how to handle sharding DDL locks manually in DM.</description>
+    </item>
+    
+    <item>
+      <title>Manage the Data Replication Task</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/manage-replication-tasks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/manage-replication-tasks/</guid>
+      <description>Use dmctl to manage the data replication task.</description>
+    </item>
+    
+    <item>
+      <title>Merge and Replicate Data from Sharded Tables</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/feature-shard-merge/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/feature-shard-merge/</guid>
+      <description>Learn how DM merges and replicates data from sharded tables.</description>
+    </item>
+    
+    <item>
+      <title>Migrate from MySQL (Amazon Aurora)</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/migrate-from-mysql-aurora/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/migrate-from-mysql-aurora/</guid>
+      <description>Learn how to migrate from MySQL (using a case of Amazon Aurora) to TiDB by using TiDB Data Migration (DM).</description>
+    </item>
+    
+    <item>
+      <title>Precheck the upstream MySQL instance configuration</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/precheck/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/precheck/</guid>
+      <description>Use the precheck feature provided by DM to detect errors in the upstream MySQL instance configuration.</description>
+    </item>
+    
+    <item>
+      <title>Replicate Data Using Data Migration</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/replicate-data-using-dm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/replicate-data-using-dm/</guid>
+      <description>Use the Data Migration tool to replicate the full data and the incremental data.</description>
+    </item>
+    
+    <item>
+      <title>Skip or Replace Abnormal SQL Statements</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/skip-or-replace-abnormal-sql-statements/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/skip-or-replace-abnormal-sql-statements/</guid>
+      <description>Learn how to skip or replace abnormal SQL statements when you use Data Migration.</description>
+    </item>
+    
+    <item>
+      <title>Table Selector</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/table-selector/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/table-selector/</guid>
+      <description>Learn about Table Selector used by the table routing, binlog event filtering, and column mapping rule of Data Migration.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Data Migration FAQ</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/faq/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/faq/</guid>
+      <description>Learn about frequently asked questions (FAQs) about TiDB Data Migration (DM).</description>
+    </item>
+    
+    <item>
+      <title>TiDB Data Migration Glossary</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/glossary/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/glossary/</guid>
+      <description>Learn the terms used in TiDB Data Migration.</description>
+    </item>
+    
+    <item>
+      <title>TiDB DM (Data Migration) Tutorial</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/get-started/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/get-started/</guid>
+      <description>Learn the basics of the TiDB DM (Data Migration) platform, to migrate a simple sharded schema from MySQL to TiDB.</description>
+    </item>
+    
+    <item>
+      <title>Upgrade Data Migration</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/dm-upgrade/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/dm-upgrade/</guid>
+      <description>Learn how to upgrade a Data Migration version to an incompatible version.</description>
+    </item>
+    
+    <item>
+      <title>Upstream Database Configuration File</title>
+      <link>https://pingcap.com/docs/tidb-data-migration/dev/source-configuration-file/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-data-migration/dev/source-configuration-file/</guid>
+      <description>Learn the configuration file of the upstream database</description>
+    </item>
+    
+  </channel>
+</rss>

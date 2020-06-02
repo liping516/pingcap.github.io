@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TiDB in Kubernetes Documentation on SQL at Scale</title>
+    <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/</link>
+    <description>Recent content in TiDB in Kubernetes Documentation on SQL at Scale</description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	<atom:link href="https://pingcap.com/docs/tidb-in-kubernetes/dev/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/change-request/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/change-request/</guid>
+      <description>Change Request This repository is ONLY used to solve issues related to TiDB Operator documentation. For other issues (related to TiDB, PD, etc), please move to other repositories.
+Please answer the following questions before submitting your issue. Thanks!
+  Describe what you find is inappropriate or missing in the existing docs.
+  Describe your suggestion or addition.
+  Provide some reference materials (documents, websites, etc) if you could.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/error-report/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/error-report/</guid>
+      <description>Error Report This repository is ONLY used to solve issues related to TiDB Operator documentation. For other issues (related to TiDB, PD, etc), please move to other repositories.
+Please answer the following questions before submitting your issue. Thanks!
+  What is the URL/path of the document related to this issue?
+  How would you like to improve it?
+  </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/pull_request_template/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/pull_request_template/</guid>
+      <description>Which TiDB Operator version(s) do your changes apply to? (Required)  master (the latest development version) v1.1 (TiDB Operator 1.1 versions) v1.0 (TiDB Operator 1.0 versions)  What is the related PR or file link(s)?  This PR is translated from:  Other reference link(s):   </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/question/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/question/</guid>
+      <description>Question This repository is ONLY used to solve issues related to TiDB Operator documentation. For other issues (related to TiDB, PD, etc), please move to other repositories.
+Before submitting your question, make sure you have:
+ Searched existing Stack Overflow questions. Googled your question. Read the documentation:  TiDB Operator (en) TiDB Operator (zh)    Now, please describe your question here:</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/README/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/README/</guid>
+      <description>TiDB in Kubernetes Documentation This repository stores all the source files of TiDB in Kubernetes documentation at the PingCAP website. That is, the documentation for TiDB Operator.
+ en: documentation in English zh: documentation in Chinese  Documentation versions Currently, we maintain the following versions for TiDB in Kubernetes documentation, each with a separate branch:
+   Branch name Version description     master the latest development version   release-1.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/TOC/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/TOC/</guid>
+      <description>TiDB in Kubernetes Documentation TOC  Introduction  Overview TiDB Operator v1.1 Notice   Get Started  kind GKE Minikube   Deploy  Deploy TiDB Cluster  On AWS EKS On GCP GKE On Alibaba Cloud ACK   On Self-managed Kubernetes  Prerequisites Configure Storage Class Deploy TiDB Operator Configure Resource and Disaster Recovery Configure TiDB Cluster Using TidbCluster Deploy TiDB Cluster Initialize TiDB Cluster Access TiDB Cluster     Deploy TiFlash Deploy TiCDC Deploy TiDB Binlog   Deploy Monitoring  Monitor Kubernetes and TiDB Cluster Monitor TiDB Cluster Using TidbMonitor Access TiDB Dashboard     Secure  Enable TLS for the MySQL Client Enable TLS between TiDB Components   Operate  Upgrade TiDB Cluster Upgrade TiDB Operator   Scale TiDB Cluster  Manually Scale Automatically Scale   Backup and Restore  Use Helm Charts   Use CRDs  Back up Data to GCS Using Mydumper Restore Data from GCS Using TiDB Lightning Back up Data to S3-Compatible Storage Using Mydumper Restore Data from S3-Compatible Storage Using TiDB Lightning Back up Data to S3-Compatible Storage Using BR Restore Data from S3-Compatible Storage Using BR       Restart a TiDB Cluster Maintain a Kubernetes Node Collect TiDB Logs Enable Automatic Failover Recover the PD Cluster Destroy a TiDB Cluster     Import Data Troubleshoot FAQs   Reference  Architecture  TiDB Scheduler Advanced StatefulSet Controller Admission Controller     Sysbench Performance Test API References   Tools  tkctl TiDB Toolkit   Configure  Configure tidb-drainer Chart Configure tidb-cluster Chart Configure tidb-backup Chart      </description>
+    </item>
+    
+    <item>
+      <title>Access the TiDB Cluster in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/access-tidb/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/access-tidb/</guid>
+      <description>Learn how to access the TiDB cluster in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Access TiDB Dashboard</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/access-dashboard/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/access-dashboard/</guid>
+      <description>Learn how to access TiDB Dashboard in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Advanced StatefulSet Controller</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/advanced-statefulset/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/advanced-statefulset/</guid>
+      <description>Learn how to enable and use the advanced StatefulSet controller.</description>
+    </item>
+    
+    <item>
+      <title>Automatic Failover</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/use-auto-failover/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/use-auto-failover/</guid>
+      <description>Learn the automatic failover policies of TiDB cluster components on Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Back up Data to GCS</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/backup-to-gcs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/backup-to-gcs/</guid>
+      <description>Learn how to back up the TiDB cluster to GCS.</description>
+    </item>
+    
+    <item>
+      <title>Back up Data to S3-Compatible Storage Using BR</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/backup-to-aws-s3-using-br/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/backup-to-aws-s3-using-br/</guid>
+      <description>Learn how to back up data to Amazon S3 using BR.</description>
+    </item>
+    
+    <item>
+      <title>Back up Data to S3-Compatible Storage Using Mydumper</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/backup-to-s3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/backup-to-s3/</guid>
+      <description>Learn how to back up the TiDB cluster to the S3-compatible storage.</description>
+    </item>
+    
+    <item>
+      <title>Backup and Restore Using Helm Charts</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/backup-and-restore-using-helm-charts/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/backup-and-restore-using-helm-charts/</guid>
+      <description>Learn how to back up and restore data of the TiDB cluster in Kubernetes using Helm charts.</description>
+    </item>
+    
+    <item>
+      <title>Collect TiDB Logs in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/collect-tidb-logs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/collect-tidb-logs/</guid>
+      <description>Learn how to collect TiDB logs in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Configuration of tidb-backup Chart</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-backup/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-backup/</guid>
+      <description>Learn the configurations of the tidb-backup chart.</description>
+    </item>
+    
+    <item>
+      <title>Configuration of tidb-cluster Chart</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/tidb-cluster-chart-config/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/tidb-cluster-chart-config/</guid>
+      <description>Learn the configurations of the tidb-cluster chart.</description>
+    </item>
+    
+    <item>
+      <title>Configure a TiDB Cluster Using TidbCluster</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-cluster-using-tidbcluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-cluster-using-tidbcluster/</guid>
+      <description>This document introduces how to use TidbCluster to configure a TiDB cluster.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiCDC in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-ticdc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-ticdc/</guid>
+      <description>Learn how to deploy TiCDC in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB Binlog</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-binlog/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-binlog/</guid>
+      <description>Learn how to deploy TiDB Binlog for a TiDB cluster in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB in Kubernetes Using kind</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-kind/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-kind/</guid>
+      <description>Learn how to deploy a TiDB cluster in Kubernetes using kind.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB in the Minikube Cluster</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-minikube/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-minikube/</guid>
+      <description>Learn how to deploy TiDB in the minikube cluster.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB on Alibaba Cloud Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-on-alibaba-cloud/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-on-alibaba-cloud/</guid>
+      <description>Learn how to deploy a TiDB cluster on Alibaba Cloud Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB on AWS EKS</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-on-aws-eks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-on-aws-eks/</guid>
+      <description>Learn how to deploy a TiDB cluster on AWS EKS.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB on GCP GKE</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-on-gcp-gke/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-on-gcp-gke/</guid>
+      <description>Learn how to deploy a TiDB cluster on GCP GKE.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB on General Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-on-general-kubernetes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-on-general-kubernetes/</guid>
+      <description>Learn how to deploy a TiDB cluster on general Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB on Google Cloud</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-gke/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-gke/</guid>
+      <description>Learn how to quickly deploy a TiDB cluster on Google Cloud using Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiDB Operator in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-operator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tidb-operator/</guid>
+      <description>Learn how to deploy TiDB Operator in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Deploy TiFlash on Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tiflash/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/deploy-tiflash/</guid>
+      <description>Learn how to deploy TiFlash on Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Destroy TiDB Clusters in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/destroy-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/destroy-a-tidb-cluster/</guid>
+      <description>Learn how to delete TiDB Cluster in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Enable Admission Controller in TiDB Operator</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/enable-admission-webhook/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/enable-admission-webhook/</guid>
+      <description>Learn how to enable the admission controller in TiDB Operator and the functionality of the admission controller.</description>
+    </item>
+    
+    <item>
+      <title>Enable TidbCluster Auto-scaling</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/enable-tidb-cluster-auto-scaling/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/enable-tidb-cluster-auto-scaling/</guid>
+      <description>Learn how to use the TidbCluster auto-scaling feature.</description>
+    </item>
+    
+    <item>
+      <title>Enable TLS between TiDB Components</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/enable-tls-between-components/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/enable-tls-between-components/</guid>
+      <description>Learn how to enable TLS between TiDB components on Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Enable TLS for the MySQL Client</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/enable-tls-for-mysql-client/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/enable-tls-for-mysql-client/</guid>
+      <description>Learn how to enable TLS for MySQL client of the TiDB cluster on Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Initialize a TiDB Cluster in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/initialize-a-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/initialize-a-cluster/</guid>
+      <description>Learn how to initialize a TiDB cluster in K8s.</description>
+    </item>
+    
+    <item>
+      <title>Maintain Kubernetes Nodes that Hold the TiDB Cluster</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/maintain-a-kubernetes-node/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/maintain-a-kubernetes-node/</guid>
+      <description>Learn how to maintain Kubernetes nodes that hold the TiDB cluster.</description>
+    </item>
+    
+    <item>
+      <title>Monitor a TiDB Cluster in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/monitor-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/monitor-a-tidb-cluster/</guid>
+      <description>Learn how to monitor a TiDB cluster in kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Monitor a TiDB Cluster Using TidbMonitor</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/monitor-using-tidbmonitor/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/monitor-using-tidbmonitor/</guid>
+      <description>This document introduces how to monitor a TiDB cluster using TidbMonitor.</description>
+    </item>
+    
+    <item>
+      <title>Perform a Rolling Update to a TiDB Cluster in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/upgrade-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/upgrade-a-tidb-cluster/</guid>
+      <description>Learn how to perform a rolling update to a TiDB cluster in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Persistent Storage Class Configuration in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-storage-class/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-storage-class/</guid>
+      <description>Learn how to configure local PVs and network PVs.</description>
+    </item>
+    
+    <item>
+      <title>Prerequisites for TiDB in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/prerequisites/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/prerequisites/</guid>
+      <description>Learn the prerequisites for TiDB in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Resource and Disaster Recovery Configurations</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-a-tidb-cluster/</guid>
+      <description>Learn the resource and disaster recovery configurations of a TiDB cluster in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Restart a TiDB Cluster in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/restart-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/restart-a-tidb-cluster/</guid>
+      <description>Learn how to restart a TiDB cluster in the Kubernetes cluster.</description>
+    </item>
+    
+    <item>
+      <title>Restore Data from GCS</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/restore-from-gcs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/restore-from-gcs/</guid>
+      <description>Learn how to restore the backup data from GCS.</description>
+    </item>
+    
+    <item>
+      <title>Restore Data from S3-Compatible Storage Using BR</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/restore-from-aws-s3-using-br/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/restore-from-aws-s3-using-br/</guid>
+      <description>Learn how to restore data from Amazon S3 using BR.</description>
+    </item>
+    
+    <item>
+      <title>Restore Data from S3-Compatible Storage Using TiDB Lightning</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/restore-from-s3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/restore-from-s3/</guid>
+      <description>Learn how to restore data from the S3-compatible storage.</description>
+    </item>
+    
+    <item>
+      <title>Restore Data into TiDB in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/restore-data-using-tidb-lightning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/restore-data-using-tidb-lightning/</guid>
+      <description>Learn how to quickly restore data into a TiDB cluster in Kubernetes with TiDB Lightning.</description>
+    </item>
+    
+    <item>
+      <title>Scale TiDB in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/scale-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/scale-a-tidb-cluster/</guid>
+      <description>Learn how to horizontally and vertically scale up and down a TiDB cluster in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Binlog Drainer Configurations in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-tidb-binlog-drainer/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/configure-tidb-binlog-drainer/</guid>
+      <description>Learn the configurations of a TiDB Binlog Drainer in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>TiDB FAQs in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/faq/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/faq/</guid>
+      <description>Learn about TiDB FAQs in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>TiDB in Kubernetes Sysbench Performance Test</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/benchmark-sysbench/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/benchmark-sysbench/</guid>
+      <description>Learn the Sysbench performance test of TiDB in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Kubernetes Control User Guide</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/use-tkctl/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/use-tkctl/</guid>
+      <description>Learn how to use the tkctl (TiDB Kubernetes Control) tool.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Operator API Document</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/api-references/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/api-references/</guid>
+      <description>Reference of TiDB Operator API</description>
+    </item>
+    
+    <item>
+      <title>TiDB Operator Overview</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/tidb-operator-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/tidb-operator-overview/</guid>
+      <description>Learn the overview of TiDB Operator.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Operator v1.1 Notes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/notes-tidb-operator-v1.1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/notes-tidb-operator-v1.1/</guid>
+      <description>Learn the important notes for TiDB Operator v1.1.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Scheduler</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/tidb-scheduler/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/tidb-scheduler/</guid>
+      <description>Learn what is TiDB Scheduler and how it works.</description>
+    </item>
+    
+    <item>
+      <title>Tools in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/tidb-toolkit/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/tidb-toolkit/</guid>
+      <description>Learn about operation tools for TiDB in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Troubleshoot TiDB in Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/troubleshoot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/troubleshoot/</guid>
+      <description>Learn how to diagnose and resolve issues when you use TiDB in Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Upgrade TiDB Operator and Kubernetes</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/upgrade-tidb-operator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/upgrade-tidb-operator/</guid>
+      <description>Learn how to upgrade TiDB Operator and Kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Use PD Recover to Recover the PD Cluster</title>
+      <link>https://pingcap.com/docs/tidb-in-kubernetes/dev/pd-recover/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs/tidb-in-kubernetes/dev/pd-recover/</guid>
+      <description>Learn how to use PD Recover to recover the PD cluster.</description>
+    </item>
+    
+  </channel>
+</rss>

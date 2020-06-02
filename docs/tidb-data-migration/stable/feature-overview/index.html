@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>Data Replication Features | TiDB Documentation</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="Learn about the data replication features provided by the Data Migration tool." name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="Data Replication Features | TiDB Documentation" property="og:title"/>
+<meta content="Learn about the data replication features provided by the Data Migration tool." property="og:description"/>
+<meta content="https://pingcap.com/docs/tidb-data-migration/stable/feature-overview/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="Learn about the data replication features provided by the Data Migration tool." name="twitter:description"/>
+<meta content="Data Replication Features | TiDB Documentation" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="en"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="a-en" href="/tidb-cloud/">Cloud</a></li>
+<li><a class="a-en" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">Docs</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a class="a-en" href="/success-stories">Success
+                    Stories</a></li>
+<li><a class="a-en" href="/blog">Blog</a></li>
+<li><a class="link-download link-download-en" href="/download">Free Download</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs/tidb-data-migration/stable/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="en" data-type="/tidb-data-migration/" id="search-input" name="q" placeholder="Search TiDB Docs" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li><a href="/tidb-cloud/">Cloud</a></li>
+<li><a class="tidb-academy" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">Docs</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/success-stories">Success Stories</a></li>
+<li><a href="/blog">Blog</a></li>
+<li><a class="link-download" href="/download">Free Download</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc" style="margin-left: 0.75rem;">Subscribe to Blog</button></a>
+</div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs-cn/" id="lang">中文</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB Data Migration Documentation </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">v1.0</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs/tidb-data-migration/stable/feature-overview/">v1.0 (stable)</a>
+<a class="dropdown-item " href="
+                /docs/tidb-data-migration/dev/feature-overview/">dev</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>Overview</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/overview/">
+<span>DM Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/overview/#usage-restrictions">
+<span>Restrictions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/dm-worker-intro/">
+<span>DM-worker</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/relay-log/">
+<span>DM Relay Log</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Features</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/feature-overview/#table-routing">
+<span>Table Routing</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/feature-overview/#black-and-white-table-lists">
+<span>Black and White Lists</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/feature-overview/#binlog-event-filter">
+<span>Binlog Event Filter</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/feature-overview/#replication-delay-monitoring">
+<span>Replication Delay Monitoring</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/online-ddl-scheme/">
+<span>Online-ddl-scheme</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Sharding Support</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/feature-shard-merge/">
+<span>Introduction</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/feature-shard-merge/#restrictions">
+<span>Restrictions</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/feature-manually-handling-sharding-ddl-locks/">
+<span>Handle Sharding DDL Locks Manually</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Benchmark</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/benchmark-v1.0-ga/">
+<span>DM 1.0-GA Benchmark Report</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/benchmark-v1-alpha/">
+<span>DM 1.0-alpha Benchmark Report</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Usage Scenarios</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/usage-scenario-simple-replication/">
+<span>Simple Scenario</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/usage-scenario-shard-merge/">
+<span>Shard Merge Scenario</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/shard-merge-best-practices/">
+<span>Shard Merge Best Practices</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/get-started/">
+<span>Quick Start</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Deploy</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>Deploy a DM Cluster</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/deploy-a-dm-cluster-using-ansible/">
+<span>Use DM-Ansible</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/deploy-a-dm-cluster-using-binary/">
+<span>Use Binary</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/replicate-data-using-dm/">
+<span>Replicate Data Using DM</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Configure</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/config-overview/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/dm-master-configuration-file/">
+<span>DM-master Configuration</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/dm-worker-configuration-file/">
+<span>DM-worker Configuration</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/task-configuration-file/">
+<span>Task Configuration</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Manage the DM Cluster</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/cluster-operations/">
+<span>Cluster Operations</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/dm-upgrade/">
+<span>Cluster Upgrade</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Manage Replication Tasks</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/manage-replication-tasks/">
+<span>Manage Tasks</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/precheck/">
+<span>Precheck Tasks</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/query-status/">
+<span>Query Task Status</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/skip-or-replace-abnormal-sql-statements/">
+<span>Skip or Replace Abnormal SQL Statements</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/monitor-a-dm-cluster/">
+<span>Monitor</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Migrate from MySQL compatible database</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/migrate-from-mysql-aurora/">
+<span>Migrate from Amazon Aurora</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/dm-portal/">
+<span>DM Portal</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Troubleshoot</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/troubleshoot-dm/">
+<span>DM Troubleshooting</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/error-system/">
+<span>Error Description</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/error-handling/">
+<span>Error Handling</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/faq/">
+<span>FAQ</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Releases</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>v1.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/1.0.2/">
+<span>1.0.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/1.0.3/">
+<span>1.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/1.0.4/">
+<span>1.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/1.0.5/">
+<span>1.0.5</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-data-migration/stable/glossary/">
+<span>TiDB DM Glossary</span>
+</a>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="data-replication-features">Data Replication Features</h1>
+<p>This document describes the data replication features provided by the Data Migration tool and explains the configuration of corresponding parameters.</p>
+<p>For different DM versions, pay attention to the different match rules of schema or table names in the table routing, black &amp; white lists, and binlog event filter features:</p>
+<ul>
+<li>For DM v1.0.5 or later versions, all the above features support the <a href="https://en.wikipedia.org/wiki/Glob_(programming)#Syntax">wildcard match</a>. For all versions of DM, note that there can be <strong>only one</strong> <code>*</code> in the wildcard expression, and <code>*</code> <strong>must be placed at the end</strong>.</li>
+<li>For DM versions earlier than v1.0.5, table routing and binlog event filter support the wildcard but do not support the <code>[...]</code> and <code>[!...]</code> expressions. The black &amp; white lists only supports the regular expression.</li>
+</ul>
+<p>It is recommended that you use the wildcard for matching in simple scenarios.</p>
+<h2 id="table-routing">Table routing</h2>
+<p>The table routing feature enables DM to replicate a certain table of the upstream MySQL or MariaDB instance to the specified table in the downstream.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>Configuring multiple different routing rules for a single table is not supported.</li>
+<li>The match rule of schema needs to be configured separately, which is used to replicate <code>create/drop schema xx</code>, as shown in <code>rule-2</code> of the <a href="#parameter-configuration">parameter configuration</a>.</li>
+</ul>
+</blockquote>
+<h3 id="parameter-configuration">Parameter configuration</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">routes:
+  rule<span style="color:#ae81ff">-1</span>:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    table-pattern: <span style="color:#e6db74">"t_*"</span>
+    target-schema: <span style="color:#e6db74">"test"</span>
+    target-table: <span style="color:#e6db74">"t"</span>
+  rule<span style="color:#ae81ff">-2</span>:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    target-schema: <span style="color:#e6db74">"test"</span>
+</code></pre></div><h3 id="parameter-explanation">Parameter explanation</h3>
+<p>DM replicates the upstream MySQL or MariaDB instance table that matches the <a href="/docs/tidb-data-migration/stable/table-selector"><code>schema-pattern</code>/<code>table-pattern</code> rule provided by Table selector</a> to the downstream <code>target-schema</code>/<code>target-table</code>.</p>
+<h3 id="usage-examples">Usage examples</h3>
+<p>This sections shows the usage examples in different scenarios.</p>
+<h4 id="merge-sharded-schemas-and-tables">Merge sharded schemas and tables</h4>
+<p>Assuming in the scenario of sharded schemas and tables, you want to replicate the <code>test_{1,2,3...}</code>.<code>t_{1,2,3...}</code> tables in two upstream MySQL instances to the <code>test</code>.<code>t</code> table in the downstream TiDB instance.</p>
+<p>To replicate the upstream instances to the downstream <code>test</code>.<code>t</code>, you must create two routing rules:</p>
+<ul>
+<li><code>rule-1</code> is used to replicate DML or DDL statements of the table that matches <code>schema-pattern: "test_*"</code> and <code>table-pattern: "t_*"</code> to the downstream <code>test</code>.<code>t</code>.</li>
+<li><code>rule-2</code> is used to replicate DDL statements of the schema that matches <code>schema-pattern: "test_*"</code>, such as <code>create/drop schema xx</code>.</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>If the downstream <code>schema: test</code> already exists and will not be deleted, you can omit <code>rule-2</code>.</li>
+<li>If the downstream <code>schema: test</code> does not exist and only <code>rule-1</code> is configured, then it reports the <code>schema test doesn't exist</code> error during replication.</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">  rule<span style="color:#ae81ff">-1</span>:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    table-pattern: <span style="color:#e6db74">"t_*"</span>
+    target-schema: <span style="color:#e6db74">"test"</span>
+    target-table: <span style="color:#e6db74">"t"</span>
+  rule<span style="color:#ae81ff">-2</span>:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    target-schema: <span style="color:#e6db74">"test"</span>
+</code></pre></div><h4 id="merge-sharded-schemas">Merge sharded schemas</h4>
+<p>Assuming in the scenario of sharded schemas, you want to replicate the <code>test_{1,2,3...}</code>.<code>t_{1,2,3...}</code> tables in the two upstream MySQL instances to the <code>test</code>.<code>t_{1,2,3...}</code> tables in the downstream TiDB instance.</p>
+<p>To replicate the upstream schemas to the downstream <code>test</code>.<code>t_[1,2,3]</code>, you only need to create one routing rule.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">  rule<span style="color:#ae81ff">-1</span>:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    target-schema: <span style="color:#e6db74">"test"</span>
+</code></pre></div><h4 id="incorrect-table-routing">Incorrect table routing</h4>
+<p>Assuming that the following two routing rules are configured and <code>test_1_bak</code>.<code>t_1_bak</code> matches both <code>rule-1</code> and <code>rule-2</code>, an error is reported because the table routing configuration violates the number limitation.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">  rule<span style="color:#ae81ff">-1</span>:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    table-pattern: <span style="color:#e6db74">"t_*"</span>
+    target-schema: <span style="color:#e6db74">"test"</span>
+    target-table: <span style="color:#e6db74">"t"</span>
+  rule<span style="color:#ae81ff">-2</span>:
+    schema-pattern: <span style="color:#e6db74">"test_1_bak"</span>
+    table-pattern: <span style="color:#e6db74">"t_1_bak"</span>
+    target-schema: <span style="color:#e6db74">"test"</span>
+    target-table: <span style="color:#e6db74">"t_bak"</span>
+</code></pre></div><h2 id="black-and-white-table-lists">Black and white table lists</h2>
+<p>The black and white lists filtering rule of the upstream database instance tables is similar to MySQL replication-rules-db/tables, which can be used to filter or only replicate all operations of some databases or some tables.</p>
+<h3 id="parameter-configuration-1">Parameter configuration</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">black-white-list:
+  rule<span style="color:#ae81ff">-1</span>:
+    do-dbs: [<span style="color:#e6db74">"test*"</span>]         <span style="color:#75715e"># Starting with characters other than "~" indicates that it is a wildcard;</span>
+                              <span style="color:#75715e"># v1.0.5 or later versions support the regular expression rules.</span>
+​    do-tables:
+    - db-name: <span style="color:#e6db74">"test[123]"</span>    <span style="color:#75715e"># Matches test1, test2, and test3.</span>
+      tbl-name: <span style="color:#e6db74">"t[1-5]"</span>      <span style="color:#75715e"># Matches t1, t2, t3, t4, and t5.</span>
+    - db-name: <span style="color:#e6db74">"test"</span>
+      tbl-name: <span style="color:#e6db74">"t"</span>
+  rule<span style="color:#ae81ff">-2</span>:
+    do-dbs: [<span style="color:#e6db74">"~^test.*"</span>]      <span style="color:#75715e"># Starting with "~" indicates that it is a regular expression.</span>
+​    ignore-dbs: [<span style="color:#e6db74">"mysql"</span>]
+    do-tables:
+    - db-name: <span style="color:#e6db74">"~^test.*"</span>
+      tbl-name: <span style="color:#e6db74">"~^t.*"</span>
+    - db-name: <span style="color:#e6db74">"test"</span>
+      tbl-name: <span style="color:#e6db74">"t"</span>
+    ignore-tables:
+    - db-name: <span style="color:#e6db74">"test"</span>
+      tbl-name: <span style="color:#e6db74">"log"</span>
+</code></pre></div><h3 id="parameter-explanation-1">Parameter explanation</h3>
+<ul>
+<li><code>do-dbs</code>: white lists of the schemas to be replicated, similar to <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-options-slave.html#option_mysqld_replicate-do-db"><code>replicate-do-db</code></a> in MySQL</li>
+<li><code>ignore-dbs</code>: black lists of the schemas to be replicated, similar to <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-options-slave.html#option_mysqld_replicate-ignore-db"><code>replicate-ignore-db</code></a> in MySQL</li>
+<li><code>do-tables</code>: white lists of the tables to be replicated, similar to <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-options-slave.html#option_mysqld_replicate-do-table"><code>replicate-do-table</code></a> in MySQL</li>
+<li><code>ignore-tables</code>: black lists of the tables to be replicated, similar to <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-options-slave.html#option_mysqld_replicate-ignore-table"><code>replicate-ignore-table</code></a> in MySQl</li>
+</ul>
+<p>If a value of the above parameters starts with the <code>~</code> character, the subsequent characters of this value are treated as a <a href="https://golang.org/pkg/regexp/syntax/#hdr-syntax">regular expression</a>. You can use this parameter to match schema or table names.</p>
+<h3 id="filtering-process">Filtering process</h3>
+<p>The filtering rules corresponding to <code>do-dbs</code> and <code>ignore-dbs</code> are similar to the <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-rules-db-options.html">Evaluation of Database-Level Replication and Binary Logging Options</a> in MySQL. The filtering rules corresponding to <code>do-tables</code> and <code>ignore-tables</code> are similar to the <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-rules-table-options.html">Evaluation of Table-Level Replication Options</a> in MySQL.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>In DM and in MySQL, the white and black lists filtering rules are different in the following ways:</p>
+<ul>
+<li>In MySQL, <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-options-slave.html#option_mysqld_replicate-wild-do-table"><code>replicate-wild-do-table</code></a> and <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-options-slave.html#option_mysqld_replicate-wild-ignore-table"><code>replicate-wild-ignore-table</code></a> support wildcard characters. In DM, some parameter values directly supports regular expressions that start with the <code>~</code> character.</li>
+<li>DM currently only supports binlogs in the <code>ROW</code> format, and does not support those in the <code>STATEMENT</code> or <code>MIXED</code> format. Therefore, the filtering rules in DM correspond to those in the <code>ROW</code> format in MySQL.</li>
+<li>MySQL determines a DDL statement only by the database name explicitly specified in the <code>USE</code> section of the statement. DM determines a statement first based on the database name section in the DDL statement. If the DDL statement does not contain such section, DM determines the statement by the <code>USE</code> section. Suppose that the SQL statement to be determined is <code>USE test_db_2; CREATE TABLE test_db_1.test_table (c1 INT PRIMARY KEY)</code>; that <code>replicate-do-db=test_db_1</code> is configured in MySQL and <code>do-dbs: ["test_db_1"]</code> is configured in DM. Then this rule only applies to DM and not to MySQL.</li>
+</ul>
+</blockquote>
+<p>The filtering process is as follows:</p>
+<ol>
+<li>
+<p>Filter at the schema level:</p>
+<ul>
+<li>
+<p>If <code>do-dbs</code> is not empty, judge whether a matched schema exists in <code>do-dbs</code>.</p>
+<ul>
+<li>If yes, continue to filter at the table level.</li>
+<li>If not, filter <code>test</code>.<code>t</code>.</li>
+</ul>
+</li>
+<li>
+<p>If <code>do-dbs</code> is empty and <code>ignore-dbs</code> is not empty, judge whether a matched schema exits in <code>ignore-dbs</code>.</p>
+<ul>
+<li>If yes, filter <code>test</code>.<code>t</code>.</li>
+<li>If not, continue to filter at the table level.</li>
+</ul>
+</li>
+<li>
+<p>If both <code>do-dbs</code> and <code>ignore-dbs</code> are empty, continue to filter at the table level.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Filter at the table level:</p>
+<ol>
+<li>
+<p>If <code>do-tables</code> is not empty, judge whether a matched table exists in <code>do-tables</code>.</p>
+<ul>
+<li>If yes, replicate <code>test</code>.<code>t</code>.</li>
+<li>If not, filter <code>test</code>.<code>t</code>.</li>
+</ul>
+</li>
+<li>
+<p>If <code>ignore-tables</code> is not empty, judge whether a matched table exists in <code>ignore-tables</code>.</p>
+<ul>
+<li>If yes, filter <code>test</code>.<code>t</code>.</li>
+<li>If not, replicate <code>test</code>.<code>t</code>.</li>
+</ul>
+</li>
+<li>
+<p>If both <code>do-tables</code> and <code>ignore-tables</code> are empty, replicate <code>test</code>.<code>t</code>.</p>
+</li>
+</ol>
+</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>To judge whether the schema <code>test</code> is filtered, you only need to filter at the schema level.</p>
+</blockquote>
+<h3 id="usage-example">Usage example</h3>
+<p>Assume that the upstream MySQL instances include the following tables:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">`logs`.`messages_2016`
+`logs`.`messages_2017`
+`logs`.`messages_2018`
+`forum`.`users`
+`forum`.`messages`
+`forum_backup_2016`.`messages`
+`forum_backup_2017`.`messages`
+`forum_backup_2018`.`messages`
+</code></pre></div><p>The configuration is as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">black-white-list:
+  bw-rule:
+    do-dbs: [<span style="color:#e6db74">"forum_backup_2018"</span>, <span style="color:#e6db74">"forum"</span>]
+    ignore-dbs: [<span style="color:#e6db74">"~^forum_backup_"</span>]
+    do-tables:
+    - db-name: <span style="color:#e6db74">"logs"</span>
+      tbl-name: <span style="color:#e6db74">"~_2018$"</span>
+    - db-name: <span style="color:#e6db74">"~^forum.*"</span>
+​      tbl-name: <span style="color:#e6db74">"messages"</span>
+    ignore-tables:
+    - db-name: <span style="color:#e6db74">"~.*"</span>
+​      tbl-name: <span style="color:#e6db74">"^messages.*"</span>
+</code></pre></div><p>After using the <code>bw-rule</code> rule:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Table</th>
+<th align="left">Whether to filter</th>
+<th align="left">Why filter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>logs</code>.<code>messages_2016</code></td>
+<td align="left">Yes</td>
+<td align="left">The schema <code>logs</code> fails to match any <code>do-dbs</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>logs</code>.<code>messages_2017</code></td>
+<td align="left">Yes</td>
+<td align="left">The schema <code>logs</code> fails to match any <code>do-dbs</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>logs</code>.<code>messages_2018</code></td>
+<td align="left">Yes</td>
+<td align="left">The schema <code>logs</code> fails to match any <code>do-dbs</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>forum_backup_2016</code>.<code>messages</code></td>
+<td align="left">Yes</td>
+<td align="left">The schema <code>forum_backup_2016</code> fails to match any <code>do-dbs</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>forum_backup_2017</code>.<code>messages</code></td>
+<td align="left">Yes</td>
+<td align="left">The schema <code>forum_backup_2017</code> fails to match any <code>do-dbs</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>forum</code>.<code>users</code></td>
+<td align="left">Yes</td>
+<td align="left">1. The schema <code>forum</code> matches <code>do-dbs</code> and continues to filter at the table level.<br/> 2. The schema and table fail to match any of <code>do-tables</code> and <code>ignore-tables</code> and <code>do-tables</code> is not empty.</td>
+</tr>
+<tr>
+<td align="left"><code>forum</code>.<code>messages</code></td>
+<td align="left">No</td>
+<td align="left">1. The schema <code>forum</code> matches <code>do-dbs</code> and continues to filter at the table level.<br/> 2. The table <code>messages</code> is in the <code>db-name: "~^forum.*",tbl-name: "messages"</code> of <code>do-tables</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>forum_backup_2018</code>.<code>messages</code></td>
+<td align="left">No</td>
+<td align="left">1. The schema <code>forum_backup_2018</code> matches <code>do-dbs</code> and continues to filter at the table level.<br/> 2. The schema and table match the <code>db-name: "~^forum.*",tbl-name: "messages"</code> of <code>do-tables</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="binlog-event-filter">Binlog event filter</h2>
+<p>Binlog event filter is a more fine-grained filtering rule than the black and white lists filtering rule. You can use statements like <code>INSERT</code> or <code>TRUNCATE TABLE</code> to specify the binlog events of <code>schema/table</code> that you need to replicate or filter out.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>If a same table matches multiple rules, these rules are applied in order and the black list has priority over the white list. This means if both the <code>Ignore</code> and <code>Do</code> rules are applied to a single table, the <code>Ignore</code> rule takes effect.</p>
+</blockquote>
+<h3 id="parameter-configuration-2">Parameter configuration</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">filters:
+  rule<span style="color:#ae81ff">-1</span>:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    ​table-pattern: <span style="color:#e6db74">"t_*"</span>
+    ​events: [<span style="color:#e6db74">"truncate table"</span>, <span style="color:#e6db74">"drop table"</span>]
+    sql-pattern: [<span style="color:#e6db74">"^DROP\\s+PROCEDURE"</span>, <span style="color:#e6db74">"^CREATE\\s+PROCEDURE"</span>]
+    ​action: Ignore
+</code></pre></div><h3 id="parameter-explanation-2">Parameter explanation</h3>
+<ul>
+<li>
+<p><a href="/docs/tidb-data-migration/stable/table-selector"><code>schema-pattern</code>/<code>table-pattern</code></a>: the binlog events or DDL SQL statements of upstream MySQL or MariaDB instance tables that match <code>schema-pattern</code>/<code>table-pattern</code> are filtered by the rules below.</p>
+</li>
+<li>
+<p><code>events</code>: the binlog event array.</p>
+<table>
+<thead>
+<tr>
+<th>Events</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>all</code></td>
+<td></td>
+<td>Includes all the events below</td>
+</tr>
+<tr>
+<td><code>all dml</code></td>
+<td></td>
+<td>Includes all DML events below</td>
+</tr>
+<tr>
+<td><code>all ddl</code></td>
+<td></td>
+<td>Includes all DDL events below</td>
+</tr>
+<tr>
+<td><code>none</code></td>
+<td></td>
+<td>Includes none of the events below</td>
+</tr>
+<tr>
+<td><code>none ddl</code></td>
+<td></td>
+<td>Includes none of the DDL events below</td>
+</tr>
+<tr>
+<td><code>none dml</code></td>
+<td></td>
+<td>Includes none of the DML events below</td>
+</tr>
+<tr>
+<td><code>insert</code></td>
+<td>DML</td>
+<td>The <code>INSERT</code> DML event</td>
+</tr>
+<tr>
+<td><code>update</code></td>
+<td>DML</td>
+<td>The <code>UPDATE</code> DML event</td>
+</tr>
+<tr>
+<td><code>delete</code></td>
+<td>DML</td>
+<td>The <code>DELETE</code> DML event</td>
+</tr>
+<tr>
+<td><code>create database</code></td>
+<td>DDL</td>
+<td>The <code>CREATE DATABASE</code> DDL event</td>
+</tr>
+<tr>
+<td><code>drop database</code></td>
+<td>DDL</td>
+<td>The <code>DROP DATABASE</code> DDL event</td>
+</tr>
+<tr>
+<td><code>create table</code></td>
+<td>DDL</td>
+<td>The <code>CREATE TABLE</code> DDL event</td>
+</tr>
+<tr>
+<td><code>create index</code></td>
+<td>DDL</td>
+<td>The <code>CREATE INDEX</code> DDL event</td>
+</tr>
+<tr>
+<td><code>drop table</code></td>
+<td>DDL</td>
+<td>The <code>DROP TABLE</code> DDL event</td>
+</tr>
+<tr>
+<td><code>truncate table</code></td>
+<td>DDL</td>
+<td>The <code>TRUNCATE TABLE</code> DDL event</td>
+</tr>
+<tr>
+<td><code>rename table</code></td>
+<td>DDL</td>
+<td>The <code>RENAME TABLE</code> DDL event</td>
+</tr>
+<tr>
+<td><code>drop index</code></td>
+<td>DDL</td>
+<td>The <code>DROP INDEX</code> DDL event</td>
+</tr>
+<tr>
+<td><code>alter table</code></td>
+<td>DDL</td>
+<td>The <code>ALTER TABLE</code> DDL event</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><code>sql-pattern</code>: it is used to filter specified DDL SQL statements. The matching rule supports using a regular expression. For example, <code>"^DROP\\s+PROCEDURE"</code>.</p>
+</li>
+<li>
+<p><code>action</code>: the string (<code>Do</code>/<code>Ignore</code>). Based on the following rules, it judges whether to filter. If either of the two rules is satisfied, the binlog will be filtered; otherwise, the binlog will not be filtered.</p>
+<ul>
+<li><code>Do</code>: the white list. The binlog will be filtered in either of the following two conditions:
+<ul>
+<li>The type of the event is not in the <code>event</code> list of the rule.</li>
+<li>The SQL statement of the event cannot be matched by <code>sql-pattern</code> of the rule.</li>
+</ul>
+</li>
+<li><code>Ignore</code>: the black list. The binlog will be filtered in either of the following two conditions:
+<ul>
+<li>The type of the event is in the <code>event</code> list of the rule.</li>
+<li>The SQL statement of the event can be matched by <code>sql-pattern</code> of the rule.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="usage-examples-1">Usage examples</h3>
+<p>This sections shows the usage examples in the scenario of sharding (sharded schemas and tables).</p>
+<h4 id="filter-all-sharding-deletion-operations">Filter all sharding deletion operations</h4>
+<p>To filter out all deletion operations, configure the following two filtering rules:</p>
+<ul>
+<li><code>filter-table-rule</code> filters out the <code>truncate table</code>, <code>drop table</code> and <code>delete statement</code> operations of all tables that match the <code>test_*</code>.<code>t_*</code> pattern.</li>
+<li><code>filter-schema-rule</code> filters out the <code>drop database</code> operation of all schemas that match the <code>test_*</code> pattern.</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">filters:
+  filter-table-rule:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    table-pattern: <span style="color:#e6db74">"t_*"</span>
+    events: [<span style="color:#e6db74">"truncate table"</span>, <span style="color:#e6db74">"drop table"</span>, <span style="color:#e6db74">"delete"</span>]
+    action: Ignore
+  filter-schema-rule:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    events: [<span style="color:#e6db74">"drop database"</span>]
+    action: Ignore
+</code></pre></div><h4 id="only-replicate-sharding-dml-statements">Only replicate sharding DML statements</h4>
+<p>To only replicate sharding DML statements, configure the following two filtering rules:</p>
+<ul>
+<li><code>do-table-rule</code> only replicates the <code>create table</code>, <code>insert</code>, <code>update</code> and <code>delete</code> statements of all tables that match the <code>test_*</code>.<code>t_*</code> pattern.</li>
+<li><code>do-schema-rule</code> only replicates the <code>create database</code> statement of all schemas that match the <code>test_*</code> pattern.</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>The reason why the <code>create database/table</code> statement is replicated is that you can replicate DML statements only after the schema and table are created.</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">filters:
+  do-table-rule:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    table-pattern: <span style="color:#e6db74">"t_*"</span>
+    events: [<span style="color:#e6db74">"create table"</span>, <span style="color:#e6db74">"all dml"</span>]
+    action: Do
+  do-schema-rule:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    events: [<span style="color:#e6db74">"create database"</span>]
+    action: Do
+</code></pre></div><h4 id="filter-out-the-sql-statements-that-tidb-does-not-support">Filter out the SQL statements that TiDB does not support</h4>
+<p>To filter out the <code>PROCEDURE</code> statements that TiDB does not support, configure the following <code>filter-procedure-rule</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">filters:
+  filter-procedure-rule:
+    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+    table-pattern: <span style="color:#e6db74">"t_*"</span>
+    sql-pattern: [<span style="color:#e6db74">"^DROP\\s+PROCEDURE"</span>, <span style="color:#e6db74">"^CREATE\\s+PROCEDURE"</span>]
+    action: Ignore
+</code></pre></div><p><code>filter-procedure-rule</code> filters out the <code>^CREATE\\s+PROCEDURE</code> and <code>^DROP\\s+PROCEDURE</code> statements of all tables that match the <code>test_*</code>.<code>t_*</code> pattern.</p>
+<h4 id="filter-out-the-sql-statements-that-the-tidb-parser-does-not-support">Filter out the SQL statements that the TiDB parser does not support</h4>
+<p>For the SQL statements that the TiDB parser does not support, DM cannot parse them and get the <code>schema</code>/<code>table</code> information. So you must use the global filtering rule: <code>schema-pattern: "*"</code>.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>To avoid unexpectedly filtering out data that need to be replicated, you must configure the global filtering rule as strictly as possible.</p>
+</blockquote>
+<p>To filter out the <code>PARTITION</code> statements that the TiDB parser does not support, configure the following filtering rule:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">filters:
+  filter-partition-rule:
+    schema-pattern: <span style="color:#e6db74">"*"</span>
+    sql-pattern: [<span style="color:#e6db74">"ALTER\\s+TABLE[\\s\\S]*ADD\\s+PARTITION"</span>, <span style="color:#e6db74">"ALTER\\s+TABLE[\\s\\S]*DROP\\s+PARTITION"</span>]
+    action: Ignore
+</code></pre></div><h2 id="column-mapping">Column mapping</h2>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>The column mapping is not recommended as the primary solution due to its usage restrictions. The preferable solution is <a href="/docs/tidb-data-migration/stable/shard-merge-best-practices#handle-conflicts-of-auto-increment-primary-key">handling conflicts of auto-increment primary key</a>.</p>
+</blockquote>
+<p>The column mapping feature supports modifying the value of table columns. You can execute different modification operations on the specified column according to different expressions. Currently, only the built-in expressions provided by DM are supported.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>It does not support modifying the column type and the table schema.</li>
+<li>It does not support configuring multiple different column mapping rules for a same table.</li>
+</ul>
+</blockquote>
+<h3 id="parameter-configuration-3">Parameter configuration</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">column-mappings:
+  rule<span style="color:#ae81ff">-1</span>:
+​    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+​    table-pattern: <span style="color:#e6db74">"t_*"</span>
+​    expression: <span style="color:#e6db74">"partition id"</span>
+​    source-column: <span style="color:#e6db74">"id"</span>
+​    target-column: <span style="color:#e6db74">"id"</span>
+​    arguments: [<span style="color:#e6db74">"1"</span>, <span style="color:#e6db74">"test"</span>, <span style="color:#e6db74">"t"</span>, <span style="color:#e6db74">"_"</span>]
+  rule<span style="color:#ae81ff">-2</span>:
+​    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+​    table-pattern: <span style="color:#e6db74">"t_*"</span>
+​    expression: <span style="color:#e6db74">"partition id"</span>
+​    source-column: <span style="color:#e6db74">"id"</span>
+​    target-column: <span style="color:#e6db74">"id"</span>
+​    arguments: [<span style="color:#e6db74">"2"</span>, <span style="color:#e6db74">"test"</span>, <span style="color:#e6db74">"t"</span>, <span style="color:#e6db74">"_"</span>]
+</code></pre></div><h3 id="parameter-explanation-3">Parameter explanation</h3>
+<ul>
+<li><a href="/docs/tidb-data-migration/stable/table-selector"><code>schema-pattern</code>/<code>table-pattern</code></a>: to execute column value modifying operations on the upstream MySQL or MariaDB instance tables that match the <code>schema-pattern</code>/<code>table-pattern</code> filtering rule.</li>
+<li><code>source-column</code>, <code>target-column</code>: to modify the value of the <code>source-column</code> column according to specified <code>expression</code> and assign the new value to <code>target-column</code>.</li>
+<li><code>expression</code>: the expression used to modify data. Currently, only the <code>partition id</code> built-in expression is supported.</li>
+</ul>
+<h4 id="the-partition-id-expression">The <code>partition id</code> expression</h4>
+<p><code>partition id</code> is used to resolve the conflicts of auto-increment primary keys of sharded tables.</p>
+<p><strong><code>partition id</code> restrictions</strong></p>
+<p>Note the following restrictions:</p>
+<ul>
+<li>The <code>partition id</code> expression only supports the bigint type of auto-increment primary key.</li>
+<li>If the <code>schema prefix</code> is not empty, the schema name format must be <code>schema prefix</code> or <code>schema prefix + separator + number (the schema ID)</code>. For example, it supports <code>s</code> and <code>s_1</code>, but does not support <code>s_a</code>.</li>
+<li>If the <code>table prefix</code> is not empty, the table name format must be <code>table prefix</code> or <code>table prefix + separator + number (the table ID)</code>.</li>
+<li>If the schema/table name does not contain the <code>… + separator + number</code> part, the corresponding ID is considered as 0.</li>
+<li>Restrictions on sharding size:
+<ul>
+<li>It supports 16 MySQL or MariaDB instances at most (Requirement: 0 &lt;= instance ID &lt;= 15).</li>
+<li>Each instance supports 128 schemas at most (Requirement: 0 &lt;= schema ID &lt;= 127).</li>
+<li>Each schema of each instance supports 256 tables at most (Requirement: 0 &lt;= table ID &lt;= 255).</li>
+<li>The range of the mapped column should meet the requirement: 0 &lt;= ID &lt;= 17592186044415.</li>
+<li>The <code>{instance ID, schema ID, table ID}</code> group must be unique.</li>
+</ul>
+</li>
+<li>Currently, the <code>partition id</code> expression is a customized feature. If you want to modify this feature, contact the corresponding developers.</li>
+</ul>
+<p><strong><code>partition id</code> arguments configuration</strong></p>
+<p>Configure the following three or four arguments in order:</p>
+<ul>
+<li><code>instance_id</code>: the ID of the upstream sharded MySQL or MariaDB instance (0 &lt;= instance ID &lt;= 15)</li>
+<li><code>schema prefix</code>: used to parse the schema name and get the <code>schema ID</code></li>
+<li><code>table prefix</code>: used to parse the table name and get the <code>table ID</code></li>
+<li>The separator: used to separate between the prefix and the IDs, and can be omitted to use an empty string as separator</li>
+</ul>
+<p>Any of <code>instance_id</code>, <code>schema prefix</code> and <code>table prefix</code> can be set to an empty string (<code>""</code>) to indicate that the corresponding parts will not be encoded into the partition ID.</p>
+<p><strong><code>partition id</code> expression rules</strong></p>
+<p><code>partition id</code> fills the beginning bit of the auto-increment primary key ID with the argument number, and computes an int64 (MySQL bigint) type of value. The specific rules are as follows:</p>
+<table>
+<thead>
+<tr>
+<th align="left">instance_id</th>
+<th align="left">schema prefix</th>
+<th align="left">table prefix</th>
+<th align="right">Encoding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">☑ defined</td>
+<td align="left">☑ defined</td>
+<td align="left">☑ defined</td>
+<td align="right">[<code>S</code>: 1 bit] [<code>I</code>: 4 bits] [<code>D</code>: 7 bits] [<code>T</code>: 8 bits] [<code>P</code>: 44 bits]</td>
+</tr>
+<tr>
+<td align="left">☐ empty</td>
+<td align="left">☑ defined</td>
+<td align="left">☑ defined</td>
+<td align="right">[<code>S</code>: 1 bit] [<code>D</code>: 7 bits] [<code>T</code>: 8 bits] [<code>P</code>: 48 bits]</td>
+</tr>
+<tr>
+<td align="left">☑ defined</td>
+<td align="left">☐ empty</td>
+<td align="left">☑ defined</td>
+<td align="right">[<code>S</code>: 1 bit] [<code>I</code>: 4 bits] [<code>T</code>: 8 bits] [<code>P</code>: 51 bits]</td>
+</tr>
+<tr>
+<td align="left">☑ defined</td>
+<td align="left">☑ defined</td>
+<td align="left">☐ empty</td>
+<td align="right">[<code>S</code>: 1 bit] [<code>I</code>: 4 bits] [<code>D</code>: 7 bits] [<code>P</code>: 52 bits]</td>
+</tr>
+<tr>
+<td align="left">☐ empty</td>
+<td align="left">☐ empty</td>
+<td align="left">☑ defined</td>
+<td align="right">[<code>S</code>: 1 bit] [<code>T</code>: 8 bits] [<code>P</code>: 55 bits]</td>
+</tr>
+<tr>
+<td align="left">☐ empty</td>
+<td align="left">☑ defined</td>
+<td align="left">☐ empty</td>
+<td align="right">[<code>S</code>: 1 bit] [<code>D</code>: 7 bits] [<code>P</code>: 56 bits]</td>
+</tr>
+<tr>
+<td align="left">☑ defined</td>
+<td align="left">☐ empty</td>
+<td align="left">☐ empty</td>
+<td align="right">[<code>S</code>: 1 bit] [<code>I</code>: 4 bits] [<code>P</code>: 59 bits]</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>S</code>: the sign bit, reserved</li>
+<li><code>I</code>: the instance ID, 4 bits by default if set</li>
+<li><code>D</code>: the schema ID, 7 bits by default if set</li>
+<li><code>T</code>: the table ID, 8 bits by default if set</li>
+<li><code>P</code>: the auto-increment primary key ID, occupying the rest of bits (≥44 bits)</li>
+</ul>
+<h3 id="usage-example-1">Usage example</h3>
+<p>Assuming in the sharding scenario where all tables have the auto-increment primary key, you want to replicate two upstream MySQL instances <code>test_{1,2,3...}</code>.<code>t_{1,2,3...}</code> to the downstream TiDB instances <code>test</code>.<code>t</code>.</p>
+<p>Configure the following two rules:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">column-mappings:
+  rule<span style="color:#ae81ff">-1</span>:
+​    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+​    table-pattern: <span style="color:#e6db74">"t_*"</span>
+​    expression: <span style="color:#e6db74">"partition id"</span>
+​    source-column: <span style="color:#e6db74">"id"</span>
+​    target-column: <span style="color:#e6db74">"id"</span>
+​    arguments: [<span style="color:#e6db74">"1"</span>, <span style="color:#e6db74">"test"</span>, <span style="color:#e6db74">"t"</span>, <span style="color:#e6db74">"_"</span>]
+  rule<span style="color:#ae81ff">-2</span>:
+​    schema-pattern: <span style="color:#e6db74">"test_*"</span>
+​    table-pattern: <span style="color:#e6db74">"t_*"</span>
+​    expression: <span style="color:#e6db74">"partition id"</span>
+​    source-column: <span style="color:#e6db74">"id"</span>
+​    target-column: <span style="color:#e6db74">"id"</span>
+​    arguments: [<span style="color:#e6db74">"2"</span>, <span style="color:#e6db74">"test"</span>, <span style="color:#e6db74">"t"</span>, <span style="color:#e6db74">"_"</span>]
+</code></pre></div><ul>
+<li>The column ID of the MySQL instance 1 table <code>test_1</code>.<code>t_1</code> is converted from <code>1</code> to <code>1 &lt;&lt; (64-1-4) | 1 &lt;&lt; (64-1-4 -7) | 1 &lt;&lt; 44 | 1 = 580981944116838401</code>.</li>
+<li>The row ID of the MySQL instance 2 table <code>test_1</code>.<code>t_2</code> is converted from <code>2</code> to <code>2 &lt;&lt; (64-1-4) | 1 &lt;&lt; (64-1-4 -7) | 2 &lt;&lt; 44 | 2 = 1157460288606306306</code>.</li>
+</ul>
+<h2 id="replication-delay-monitoring">Replication delay monitoring</h2>
+<p>The heartbeat feature supports calculating the real-time replication delay between each replication task and MySQL or MariaDB based on real replication data.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>The estimation accuracy of the replication delay is at the second level.</li>
+<li>The heartbeat related binlog will not be replicated into the downstream, which is discarded after calculating the replication delay.</li>
+</ul>
+</blockquote>
+<h3 id="system-privileges">System privileges</h3>
+<p>If the heartbeat feature is enabled, the upstream MySQL or MariaDB instances must provide the following privileges:</p>
+<ul>
+<li>SELECT</li>
+<li>INSERT</li>
+<li>CREATE (databases, tables)</li>
+</ul>
+<h3 id="parameter-configuration-4">Parameter configuration</h3>
+<p>In the task configuration file, enable the heartbeat feature:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">enable-heartbeat: true
+</code></pre></div><h3 id="principles-introduction">Principles introduction</h3>
+<ul>
+<li>DM-worker creates the <code>dm_heartbeat</code> (currently unconfigurable) schema in the corresponding upstream MySQL or MariaDB.</li>
+<li>DM-worker creates the <code>heartbeat</code> (currently unconfigurable) table in the corresponding upstream MySQL or MariaDB.</li>
+<li>DM-worker uses <code>replace statement</code> to update the current <code>TS_master</code> timestamp every second (currently unconfigurable) in the corresponding upstream MySQL or MariaDB <code>dm_heartbeat</code>.<code>heartbeat</code> tables.</li>
+<li>DM-worker updates the <code>TS_slave_task</code> replication time after each replication task obtains the <code>dm_heartbeat</code>.<code>heartbeat</code> binlog.</li>
+<li>DM-worker queries the current <code>TS_master</code> timestamp in the corresponding upstream MySQL or MariaDB <code>dm_heartbeat</code>.<code>heartbeat</code> tables every 10 seconds, and calculates <code>task_lag</code> = <code>TS_master</code> - <code>TS_slave_task</code> for each task.</li>
+</ul>
+<p>See the <code>replicate lag</code> in the <a href="/docs/tidb-data-migration/stable/monitor-a-dm-cluster#binlog-replication">binlog replication</a> processing unit of DM monitoring metrics.</p>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-dm/blob/release-1.0/en/feature-overview.md">"Data Replication Features"</a>
+    was last updated
+    <span>May 12 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-dm/commit/d1dba0e8be502e07ca9b351affd29477a886475f">
+        en, zh: address version support (#70) (#71) <span class="hash">(d1dba0e)</span>
+</a>
+</div></div>
+<div class="sidebar-page">
+<div class="sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-dm/edit/release-1.0/en/feature-overview.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    Edit this page
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-dm/issues/new?body=File:%20[%2fen%2ffeature-overview.md](https%3a%2f%2fpingcap.com%2fdocs%2ftidb-data-migration%2fv1.0%2ffeature-overview%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    Request docs changes
+</a>
+<p class="toc-title">What’s on this page</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Product</strong></h4>
+<ul>
+<li><a href="/docs/v3.0/">TiDB</a></li>
+<li><a href="/docs/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs/v3.0/roadmap/">Roadmap</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Docs</strong></h4>
+<ul>
+<li><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">Quick Start</a></li>
+<li><a href="/blog/2017-07-24-tidbbestpractice/">Best Practices</a></li>
+<li><a href="/docs/stable/faq/tidb/">FAQ</a></li>
+<li><a href="/docs/stable/reference/tools/user-guide/">TiDB Tools</a></li>
+<li><a href="/docs/dev/releases/rn/">Release Notes</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Resources</strong></h4>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/weekly/">Monthly</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="/community">TiDB Community</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Company</strong></h4>
+<ul>
+<li><a href="/about/">About</a></li>
+<li><a href="https://angel.co/pingcap-1/jobs" target="_blank">Careers</a></li>
+<li><a href="/news/">News</a></li>
+<li><a href="/contact-us/">Contact Us</a></li>
+<li><a href="/en/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/terms-of-service/">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Connect</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg>Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg>Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg>Stack Overflow</a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc">Subscribe to Blog</button></a>
+</div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 PingCAP. All Rights Reserved.</p>
+<a class="copyright-btn-lang" href="/docs-cn/tidb-data-migration/stable" id="lang">中文</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

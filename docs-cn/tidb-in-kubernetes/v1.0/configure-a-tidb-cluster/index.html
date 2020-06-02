@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>Kubernetes 上的 TiDB 集群配置 | TiDB 官方用户文档</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="介绍 Kubernetes 上 TiDB 集群的配置。" name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="Kubernetes 上的 TiDB 集群配置 | TiDB 官方用户文档" property="og:title"/>
+<meta content="介绍 Kubernetes 上 TiDB 集群的配置。" property="og:description"/>
+<meta content="https://pingcap.com/docs-cn/tidb-in-kubernetes/v1.0/configure-a-tidb-cluster/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="介绍 Kubernetes 上 TiDB 集群的配置。" name="twitter:description"/>
+<meta content="Kubernetes 上的 TiDB 集群配置 | TiDB 官方用户文档" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="cn"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/index.html"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP
+                            University</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">文档</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs-cn/tidb-in-kubernetes/v1.0/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="cn" data-type="/tidb-in-kubernetes/" id="search-input" name="q" placeholder="搜索 TiDB 文档" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">文档</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP University</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social social-cn ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+<li id="wechat-mobile"><a class="wechat" href="javascript:void(0)"><svg height="18" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg></a><div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-mobile"></div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs/" id="lang">English</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB in Kubernetes 文档 </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">v1.0</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs-cn/tidb-in-kubernetes/stable/configure-a-tidb-cluster/">v1.1 (stable)</a>
+<a class="dropdown-item " href="
+                /docs-cn/tidb-in-kubernetes/v1.0/configure-a-tidb-cluster/">v1.0</a>
+<a class="dropdown-item " href="
+                /docs-cn/tidb-in-kubernetes/dev/configure-a-tidb-cluster/">dev</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/tidb-operator-overview/">
+<span>TiDB Operator 简介</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Benchmark</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/benchmark-sysbench/">
+<span>Sysbench</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>快速上手</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-tidb-from-kubernetes-kind/">
+<span>kind</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-tidb-from-kubernetes-gke/">
+<span>GKE</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-tidb-from-kubernetes-minikube/">
+<span>Minikube</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>部署</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/prerequisites/">
+<span>集群环境要求</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-tidb-operator/">
+<span>部署 TiDB Operator</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-on-general-kubernetes/">
+<span>标准 Kubernetes 上的 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-on-aws-eks/">
+<span>AWS EKS 上的 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-on-gcp-gke/">
+<span>GCP 上的 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-on-alibaba-cloud/">
+<span>阿里云上的 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/access-tidb/">
+<span>访问 Kubernetes 上的 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/deploy-tidb-binlog/">
+<span>部署 TiDB Binlog</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>配置</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/initialize-a-cluster/">
+<span>初始化集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/configure-a-tidb-cluster/">
+<span>配置集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/configure-backup/">
+<span>配置备份</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/configure-storage-class/">
+<span>配置 Storage Class</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/configure-tidb-binlog-drainer/">
+<span>配置 TiDB Binlog Drainer</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/monitor-a-tidb-cluster/">
+<span>监控</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>运维</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/destroy-a-tidb-cluster/">
+<span>销毁 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/restart-a-tidb-cluster/">
+<span>重启 TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/maintain-a-kubernetes-node/">
+<span>维护 TiDB 集群所在节点</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/pd-recover/">
+<span>使用 PD Recover 恢复 PD 集群</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>备份与恢复</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/backup-and-restore-using-helm-charts/">
+<span>基于 Helm Charts 的备份恢复</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/restore-data-using-tidb-lightning/">
+<span>使用 TiDB Lightning 恢复集群数据</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/collect-tidb-logs/">
+<span>收集日志</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/use-auto-failover/">
+<span>集群故障自动转移</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/scale-a-tidb-cluster/">
+<span>扩缩容</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>升级</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/upgrade-a-tidb-cluster/">
+<span>TiDB 集群</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/upgrade-tidb-operator/">
+<span>TiDB Operator</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>工具</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/use-tkctl/">
+<span>tkctl</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/tidb-toolkit/">
+<span>TiDB Toolkit</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>组件</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/tidb-scheduler/">
+<span>TiDB Scheduler 扩展调度器</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/troubleshoot/">
+<span>故障诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-in-kubernetes/v1.0/faq/">
+<span>常见问题</span>
+</a>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="kubernetes--tidb-">Kubernetes 上的 TiDB 集群配置</h1>
+<!-- markdownlint-disable MD007 -->
+<p>本文介绍 Kubernetes 上 TiDB 集群的配置参数、资源配置，以及容灾配置。</p>
+<h2 id="heading">配置参数</h2>
+<p>TiDB Operator 使用 Helm 部署和管理 TiDB 集群。通过 Helm 获取的配置文件默认提供了基本的配置，通过这个基本配置，可以快速启动一个 TiDB 集群。但是如果用户需要特殊配置或是用于生产环境，则需要根据以下配置参数列表手动配置对应的配置项。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>下文用 <code>values.yaml</code> 指代要修改的 TiDB 集群配置文件。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">说明</th>
+<th align="left">默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>rbac.create</code></td>
+<td align="left">是否启用 Kubernetes 的 RBAC</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>clusterName</code></td>
+<td align="left">TiDB 集群名，默认不设置该变量，<code>tidb-cluster</code> 会直接用执行安装时的 <code>ReleaseName</code> 代替</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>extraLabels</code></td>
+<td align="left">添加额外的 labels 到 <code>TidbCluster</code> 对象 (CRD) 上，参考：<a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/">labels</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>schedulerName</code></td>
+<td align="left">TiDB 集群使用的调度器</td>
+<td align="left"><code>tidb-scheduler</code></td>
+</tr>
+<tr>
+<td align="left"><code>timezone</code></td>
+<td align="left">TiDB 集群默认时区</td>
+<td align="left"><code>UTC</code></td>
+</tr>
+<tr>
+<td align="left"><code>pvReclaimPolicy</code></td>
+<td align="left">TiDB 集群使用的 PV (Persistent Volume)的 reclaim policy</td>
+<td align="left"><code>Retain</code></td>
+</tr>
+<tr>
+<td align="left"><code>services[0].name</code></td>
+<td align="left">TiDB 集群对外暴露服务的名字</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>services[0].type</code></td>
+<td align="left">TiDB 集群对外暴露服务的类型，(从 <code>ClusterIP</code>、<code>NodePort</code>、<code>LoadBalancer</code> 中选择)</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>discovery.image</code></td>
+<td align="left">TiDB 集群 PD 服务发现组件的镜像，该组件用于在 PD 集群第一次启动时，为各个 PD 实例提供服务发现功能以协调启动顺序</td>
+<td align="left"><code>pingcap/tidb-operator:v1.0.0-beta.3</code></td>
+</tr>
+<tr>
+<td align="left"><code>discovery.imagePullPolicy</code></td>
+<td align="left">PD 服务发现组件镜像的拉取策略</td>
+<td align="left"><code>IfNotPresent</code></td>
+</tr>
+<tr>
+<td align="left"><code>discovery.resources.limits.cpu</code></td>
+<td align="left">PD 服务发现组件的 CPU 资源限额</td>
+<td align="left"><code>250m</code></td>
+</tr>
+<tr>
+<td align="left"><code>discovery.resources.limits.memory</code></td>
+<td align="left">PD 服务发现组件的内存资源限额</td>
+<td align="left"><code>150Mi</code></td>
+</tr>
+<tr>
+<td align="left"><code>discovery.resources.requests.cpu</code></td>
+<td align="left">PD 服务发现组件的 CPU 资源请求</td>
+<td align="left"><code>80m</code></td>
+</tr>
+<tr>
+<td align="left"><code>discovery.resources.requests.memory</code></td>
+<td align="left">PD 服务发现组件的内存资源请求</td>
+<td align="left"><code>50Mi</code></td>
+</tr>
+<tr>
+<td align="left"><code>enableConfigMapRollout</code></td>
+<td align="left">是否开启 TiDB 集群自动滚动更新。如果启用，则 TiDB 集群的 ConfigMap 变更时，TiDB 集群自动更新对应组件。该配置只在 tidb-operator v1.0 及以上版本才支持</td>
+<td align="left"><code>false</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.config</code></td>
+<td align="left">配置文件格式的 PD 的配置，请参考 <a href="https://github.com/pingcap/pd/blob/master/conf/config.toml"><code>pd/conf/config.toml</code></a> 查看默认 PD 配置文件（选择对应 PD 版本的 tag），可以参考 <a href="https://pingcap.com/docs-cn/v3.0/reference/configuration/pd-server/configuration-file">PD 配置文件描述</a>查看配置参数的具体介绍（请选择对应的文档版本），这里只需要<strong>按照配置文件中的格式修改配置</strong></td>
+<td align="left">TiDB Operator 版本 &lt;= v1.0.0-beta.3，默认值为：<br/><code>nil</code><br/>TiDB Operator 版本 &gt; v1.0.0-beta.3，默认值为：<br/><code>[log]</code><br/><code>level = "info"</code><br/><code>[replication]</code><br/><code>location-labels = ["region", "zone", "rack", "host"]</code><br/>配置示例：<br/>  <code>config:</code> |<br/>    <code>[log]</code><br/>    <code>level = "info"</code><br/>    <code>[replication]</code><br/>    <code>location-labels = ["region", "zone", "rack", "host"]</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.replicas</code></td>
+<td align="left">PD 的 Pod 数</td>
+<td align="left"><code>3</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.image</code></td>
+<td align="left">PD 镜像</td>
+<td align="left"><code>pingcap/pd:v3.0.0-rc.1</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.imagePullPolicy</code></td>
+<td align="left">PD 镜像的拉取策略</td>
+<td align="left"><code>IfNotPresent</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.logLevel</code></td>
+<td align="left">PD 日志级别<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>pd.config</code> 配置：<br/><code>[log]</code><br/><code>level = "info"</code></td>
+<td align="left"><code>info</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.storageClassName</code></td>
+<td align="left">PD 使用的 storageClass，storageClassName 指代一种由 Kubernetes 集群提供的存储类型，不同的类可能映射到服务质量级别、备份策略或集群管理员确定的任意策略。详细参考：<a href="https://kubernetes.io/docs/concepts/storage/storage-classes">storage-classes</a></td>
+<td align="left"><code>local-storage</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.maxStoreDownTime</code></td>
+<td align="left"><code>pd.maxStoreDownTime</code> 指一个 store 节点断开连接多长时间后状态会被标记为 <code>down</code>，当状态变为 <code>down</code> 后，store 节点开始迁移数据到其它 store 节点<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>pd.config</code> 配置：<br/><code>[schedule]</code><br/><code>max-store-down-time = "30m"</code></td>
+<td align="left"><code>30m</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.maxReplicas</code></td>
+<td align="left"><code>pd.maxReplicas</code> 是 TiDB 集群的数据的副本数<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>pd.config</code> 配置：<br/><code>[replication]</code><br/><code>max-replicas = 3</code></td>
+<td align="left"><code>3</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.resources.limits.cpu</code></td>
+<td align="left">每个 PD Pod 的 CPU 资源限额</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.resources.limits.memory</code></td>
+<td align="left">每个 PD Pod 的内存资源限额</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.resources.limits.storage</code></td>
+<td align="left">每个 PD Pod 的存储容量限额</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.resources.requests.cpu</code></td>
+<td align="left">每个 PD Pod 的 CPU 资源请求</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.resources.requests.memory</code></td>
+<td align="left">每个 PD Pod 的内存资源请求</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.resources.requests.storage</code></td>
+<td align="left">每个 PD Pod 的存储容量请求</td>
+<td align="left"><code>1Gi</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.affinity</code></td>
+<td align="left"><code>pd.affinity</code> 定义 PD 的调度规则和偏好，详细请参考：<a href="https://kubernetes.io/docs/concepts/configuration/assign-Pod-node/#affinity-and-anti-affinity">affinity-and-anti-affinity</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.nodeSelector</code></td>
+<td align="left"><code>pd.nodeSelector</code> 确保 PD Pods 只调度到以该键值对作为标签的节点，详情参考：<a href="https://kubernetes.io/docs/concepts/configuration/assign-Pod-node/#nodeselector">nodeselector</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.tolerations</code></td>
+<td align="left"><code>pd.tolerations</code> 应用于 PD Pods，允许 PD Pods 调度到含有指定 taints 的节点上，详情参考：<a href="https://kubernetes.io/docs/concepts/configuration/taint-and-toleration">taint-and-toleration</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>pd.annotations</code></td>
+<td align="left">为 PD Pods 添加特定的 <code>annotations</code></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.config</code></td>
+<td align="left">配置文件格式的 TiKV 的配置，请参考 <a href="https://github.com/tikv/tikv/blob/master/etc/config-template.toml"><code>tikv/etc/config-template.toml</code></a> 查看默认 TiKV 配置文件（选择对应 TiKV 版本的 tag），可以参考 <a href="https://pingcap.com/docs-cn/v3.0/reference/configuration/tikv-server/configuration-file/">TiKV 配置文件描述</a>查看配置参数的具体介绍（请选择对应的文档版本），这里只需要<strong>按照配置文件中的格式修改配置</strong><br/><br/>以下两个配置项需要显式配置：<br/><br/><code>[storage.block-cache]</code><br/>  <code>shared = true</code><br/>  <code>capacity = "1GB"</code><br/>推荐设置：<code>capacity</code> 设置为 <code>tikv.resources.limits.memory</code> 的 50%<br/><br/><code>[readpool.coprocessor]</code><br/>  <code>high-concurrency = 8</code><br/>  <code>normal-concurrency = 8</code><br/>  <code>low-concurrency = 8</code><br/>推荐设置：设置为 <code>tikv.resources.limits.cpu</code> 的 80%</td>
+<td align="left">TiDB Operator 版本 &lt;= v1.0.0-beta.3，默认值为：<br/><code>nil</code><br/>TiDB Operator 版本 &gt; v1.0.0-beta.3，默认值为：<br/><code>log-level = "info"</code><br/>配置示例：<br/>  <code>config:</code> |<br/>    <code>log-level = "info"</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.replicas</code></td>
+<td align="left">TiKV 的 Pod 数</td>
+<td align="left"><code>3</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.image</code></td>
+<td align="left">TiKV 的镜像</td>
+<td align="left"><code>pingcap/tikv:v3.0.0-rc.1</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.imagePullPolicy</code></td>
+<td align="left">TiKV 镜像的拉取策略</td>
+<td align="left"><code>IfNotPresent</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.logLevel</code></td>
+<td align="left">TiKV 的日志级别<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tikv.config</code> 配置：<br/><code>log-level = "info"</code></td>
+<td align="left"><code>info</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.storageClassName</code></td>
+<td align="left">TiKV 使用的 storageClass，storageClassName 指代一种由 Kubernetes 集群提供的存储类型，不同的类可能映射到服务质量级别、备份策略或集群管理员确定的任意策略。详细参考：<a href="https://kubernetes.io/docs/concepts/storage/storage-classes">storage-classes</a></td>
+<td align="left"><code>local-storage</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.syncLog</code></td>
+<td align="left">syncLog 指是否启用 raft 日志同步功能，启用该功能能保证在断电时数据不丢失<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tikv.config</code> 配置：<br/><code>[raftstore]</code><br/><code>sync-log = true</code></td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.grpcConcurrency</code></td>
+<td align="left">配置 gRPC server 线程池大小<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tikv.config</code> 配置：<br/><code>[server]</code><br/><code>grpc-concurrency = 4</code></td>
+<td align="left"><code>4</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.resources.limits.cpu</code></td>
+<td align="left">每个 TiKV Pod 的 CPU 资源限额</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.resources.limits.memory</code></td>
+<td align="left">每个 TiKV Pod 的内存资源限额</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.resources.limits.storage</code></td>
+<td align="left">每个 TiKV Pod 的存储容量限额</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.resources.requests.cpu</code></td>
+<td align="left">每个 TiKV Pod 的 CPU 资源请求</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.resources.requests.memory</code></td>
+<td align="left">每个 TiKV Pod 的内存资源请求</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.resources.requests.storage</code></td>
+<td align="left">每个 TiKV Pod 的存储容量请求</td>
+<td align="left"><code>10Gi</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.affinity</code></td>
+<td align="left"><code>tikv.affinity</code> 定义 TiKV 的调度规则和偏好，详细请参考：<a href="https://kubernetes.io/docs/concepts/configuration/assign-Pod-node/#affinity-and-anti-affinity">affinity-and-anti-affinity</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.nodeSelector</code></td>
+<td align="left"><code>tikv.nodeSelector</code>确保 TiKV Pods 只调度到以该键值对作为标签的节点，详情参考：<a href="https://kubernetes.io/docs/concepts/configuration/assign-Pod-node/#nodeselector">nodeselector</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.tolerations</code></td>
+<td align="left"><code>tikv.tolerations</code> 应用于 TiKV Pods，允许 TiKV Pods 调度到含有指定 taints 的节点上，详情参考：<a href="https://kubernetes.io/docs/concepts/configuration/taint-and-toleration">taint-and-toleration</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.annotations</code></td>
+<td align="left">为 TiKV Pods 添加特定的 <code>annotations</code></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.defaultcfBlockCacheSize</code></td>
+<td align="left">指定 block 缓存大小，block 缓存用于缓存未压缩的 block，较大的 block 缓存设置可以加快读取速度。一般推荐设置为 <code>tikv.resources.limits.memory</code> 的 30%-50%<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tikv.config</code> 配置：<br/><code>[rocksdb.defaultcf]</code><br/><code>block-cache-size = "1GB"</code><br/>从 TiKV v3.0.0 开始，不再需要配置 <code>[rocksdb.defaultcf].block-cache-size</code> 和 <code>[rocksdb.writecf].block-cache-size</code>，改为配置 <code>[storage.block-cache].capacity</code></td>
+<td align="left"><code>1GB</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.writecfBlockCacheSize</code></td>
+<td align="left">指定 writecf 的 block 缓存大小，一般推荐设置为 <code>tikv.resources.limits.memory</code> 的 10%-30%<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tikv.config</code> 配置：<br/><code>[rocksdb.writecf]</code><br/><code>block-cache-size = "256MB"</code><br/>从 TiKV v3.0.0 开始，不再需要配置 <code>[rocksdb.defaultcf].block-cache-size</code> 和 <code>[rocksdb.writecf].block-cache-size</code>，改为配置 <code>[storage.block-cache].capacity</code></td>
+<td align="left"><code>256MB</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.readpoolStorageConcurrency</code></td>
+<td align="left">TiKV 存储的高优先级/普通优先级/低优先级操作的线程池大小<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tikv.config</code> 配置：<br/><code>[readpool.storage]</code><br/><code>high-concurrency = 4</code><br/><code>normal-concurrency = 4</code><br/><code>low-concurrency = 4</code></td>
+<td align="left"><code>4</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.readpoolCoprocessorConcurrency</code></td>
+<td align="left">一般如果 <code>tikv.resources.limits.cpu</code> &gt; 8，则 <code>tikv.readpoolCoprocessorConcurrency</code> 设置为<code>tikv.resources.limits.cpu</code> * 0.8<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tikv.config</code> 配置：<br/><code>[readpool.coprocessor]</code><br/><code>high-concurrency = 8</code><br/><code>normal-concurrency = 8</code><br/><code>low-concurrency = 8</code></td>
+<td align="left"><code>8</code></td>
+</tr>
+<tr>
+<td align="left"><code>tikv.storageSchedulerWorkerPoolSize</code></td>
+<td align="left">TiKV 调度程序的工作池大小，应在重写情况下增加，同时应小于总 CPU 核心<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tikv.config</code> 配置：<br/><code>[storage]</code><br/><code>scheduler-worker-pool-size = 4</code></td>
+<td align="left"><code>4</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.config</code></td>
+<td align="left">配置文件格式的 TiDB 的配置，请参考<a href="https://github.com/pingcap/tidb/blob/master/config/config.toml.example">配置文件</a>查看默认 TiDB 配置文件（选择对应 TiDB 版本的 tag），可以参考 <a href="https://pingcap.com/docs-cn/v3.0/reference/configuration/tidb-server/configuration-file">TiDB 配置文件描述</a>查看配置参数的具体介绍（请选择对应的文档版本）。这里只需要<strong>按照配置文件中的格式修改配置</strong>。<br/><br/>以下配置项需要显式配置：<br/><br/><code>[performance]</code><br/>  <code>max-procs = 0</code><br/>推荐设置：<code>max-procs</code> 设置为 <code>tidb.resources.limits.cpu</code> 对应的核心数</td>
+<td align="left">TiDB Operator 版本 &lt;= v1.0.0-beta.3，默认值为：<br/><code>nil</code><br/>TiDB Operator 版本 &gt; v1.0.0-beta.3，默认值为：<br/><code>[log]</code><br/><code>level = "info"</code><br/>配置示例：<br/>  <code>config:</code> |<br/>    <code>[log]</code><br/>    <code>level = "info"</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.replicas</code></td>
+<td align="left">TiDB 的 Pod 数</td>
+<td align="left"><code>2</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.image</code></td>
+<td align="left">TiDB 的镜像</td>
+<td align="left"><code>pingcap/tidb:v3.0.0-rc.1</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.imagePullPolicy</code></td>
+<td align="left">TiDB 镜像的拉取策略</td>
+<td align="left"><code>IfNotPresent</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.logLevel</code></td>
+<td align="left">TiDB 的日志级别<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>[log]</code><br/><code>level = "info"</code></td>
+<td align="left"><code>info</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.resources.limits.cpu</code></td>
+<td align="left">每个 TiDB Pod 的 CPU 资源限额</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.resources.limits.memory</code></td>
+<td align="left">每个 TiDB Pod 的内存资源限额</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.resources.requests.cpu</code></td>
+<td align="left">每个 TiDB Pod 的 CPU 资源请求</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.resources.requests.memory</code></td>
+<td align="left">每个 TiDB Pod 的内存资源请求</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.passwordSecretName</code>| 存放 TiDB 用户名及密码的 Secret 的名字，该 Secret 可以使用以下命令创建机密：<code>kubectl create secret generic tidb secret--from literal=root=&lt;root password&gt;--namespace=&lt;namespace&gt;</code>，如果没有设置，则 TiDB 根密码为空</td>
+<td align="left"><code>nil</code></td>
+<td></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.initSql</code>| 在 TiDB 集群启动成功后，会执行的初始化脚本</td>
+<td align="left"><code>nil</code></td>
+<td></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.affinity</code></td>
+<td align="left"><code>tidb.affinity</code> 定义 TiDB 的调度规则和偏好，详细请参考：<a href="https://kubernetes.io/docs/concepts/configuration/assign-Pod-node/#affinity-and-anti-affinity">affinity-and-anti-affinity</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.nodeSelector</code></td>
+<td align="left"><code>tidb.nodeSelector</code>确保 TiDB Pods 只调度到以该键值对作为标签的节点，详情参考：<a href="https://kubernetes.io/docs/concepts/configuration/assign-Pod-node/#nodeselector">nodeselector</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.tolerations</code></td>
+<td align="left"><code>tidb.tolerations</code> 应用于 TiDB Pods，允许 TiDB Pods 调度到含有指定 taints 的节点上，详情参考：<a href="https://kubernetes.io/docs/concepts/configuration/taint-and-toleration">taint-and-toleration</a></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.annotations</code></td>
+<td align="left">为 TiDB Pods 添加特定的 <code>annotations</code></td>
+<td align="left"><code>{}</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.maxFailoverCount</code></td>
+<td align="left">TiDB 最大的故障转移数量，假设为 3 即最多支持同时 3 个 TiDB 实例故障转移</td>
+<td align="left"><code>3</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.service.type</code></td>
+<td align="left">TiDB 服务对外暴露类型</td>
+<td align="left"><code>NodePort</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.service.externalTrafficPolicy</code></td>
+<td align="left">表示此服务是否希望将外部流量路由到节点本地或集群范围的端点。有两个可用选项：<code>Cluster</code>（默认）和 <code>Local</code>。<code>Cluster</code> 隐藏了客户端源 IP，可能导致流量需要二次跳转到另一个节点，但具有良好的整体负载分布。<code>Local</code> 保留客户端源 IP 并避免 LoadBalancer 和 NodePort 类型服务流量的第二次跳转，但存在潜在的不均衡流量传播风险。详细参考：<a href="https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip">外部负载均衡器</a></td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.service.loadBalancerIP</code></td>
+<td align="left">指定 tidb 负载均衡 IP，某些云提供程序允许您指定loadBalancerIP。在这些情况下，将使用用户指定的loadBalancerIP创建负载平衡器。如果未指定loadBalancerIP字段，则将使用临时IP地址设置loadBalancer。如果指定loadBalancerIP但云提供程序不支持该功能，则将忽略您设置的loadbalancerIP字段</td>
+<td align="left"><code>nil</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.service.mysqlNodePort</code></td>
+<td align="left">TiDB 服务暴露的 mysql NodePort 端口</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.service.exposeStatus</code></td>
+<td align="left">TiDB 服务是否暴露状态端口</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.service.statusNodePort</code></td>
+<td align="left">指定 TiDB 服务的状态端口暴露的 <code>NodePort</code></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.separateSlowLog</code></td>
+<td align="left">是否以 sidecar 方式运行独立容器输出 TiDB 的 SlowLog</td>
+<td align="left">如果 TiDB Operator 版本 &lt;= v1.0.0-beta.3，默认值为 <code>false</code><br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，默认值为 <code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.slowLogTailer.image</code></td>
+<td align="left">TiDB 的 slowLogTailer 的镜像，slowLogTailer 是一个 sidecar 类型的容器，用于输出 TiDB 的 SlowLog，该配置仅在 <code>tidb.separateSlowLog</code>=<code>true</code> 时生效</td>
+<td align="left"><code>busybox:1.26.2</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.slowLogTailer.resources.limits.cpu</code></td>
+<td align="left">每个 TiDB Pod 的 slowLogTailer 的 CPU 资源限额</td>
+<td align="left"><code>100m</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.slowLogTailer.resources.limits.memory</code></td>
+<td align="left">每个 TiDB Pod 的 slowLogTailer 的内存资源限额</td>
+<td align="left"><code>50Mi</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.slowLogTailer.resources.requests.cpu</code></td>
+<td align="left">每个 TiDB Pod 的 slowLogTailer 的 CPU 资源请求</td>
+<td align="left"><code>20m</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.slowLogTailer.resources.requests.memory</code></td>
+<td align="left">每个 TiDB Pod 的 slowLogTailer 的内存资源请求</td>
+<td align="left"><code>5Mi</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.plugin.enable</code></td>
+<td align="left">是否启用 TiDB 插件功能</td>
+<td align="left"><code>false</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.plugin.directory</code></td>
+<td align="left">指定 TiDB 插件所在的目录</td>
+<td align="left"><code>/plugins</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.plugin.list</code></td>
+<td align="left">指定 TiDB 加载的插件列表，plugin ID 命名规则：插件名-版本，例如：‘conn_limit-1’</td>
+<td align="left"><code>[]</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.preparedPlanCacheEnabled</code></td>
+<td align="left">是否启用 TiDB 的 prepared plan 缓存<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>[prepared-plan-cache]</code><br/><code>enabled = false</code></td>
+<td align="left"><code>false</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.preparedPlanCacheCapacity</code></td>
+<td align="left">TiDB 的 prepared plan 缓存数量<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>[prepared-plan-cache]</code><br/><code>capacity = 100</code></td>
+<td align="left"><code>100</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.txnLocalLatchesEnabled</code></td>
+<td align="left">是否启用事务内存锁，当本地事务冲突比较多时建议开启<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>[txn-local-latches]</code><br/><code>enabled = false</code></td>
+<td align="left"><code>false</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.txnLocalLatchesCapacity</code></td>
+<td align="left">事务内存锁的容量，Hash 对应的 slot 数，会自动向上调整为 2 的指数倍。每个 slot 占 32 Bytes 内存。当写入数据的范围比较广时（如导数据），设置过小会导致变慢，性能下降。<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>[txn-local-latches]</code><br/><code>capacity = 10240000</code></td>
+<td align="left"><code>10240000</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.tokenLimit</code></td>
+<td align="left">TiDB 并发执行会话的限制<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>token-limit = 1000</code></td>
+<td align="left"><code>1000</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.memQuotaQuery</code></td>
+<td align="left">TiDB 查询的内存限额，默认 32GB<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>mem-quota-query = 34359738368</code></td>
+<td align="left"><code>34359738368</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.checkMb4ValueInUtf8</code></td>
+<td align="left">用于控制当字符集为 utf8 时是否检查 mb4 字符<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>check-mb4-value-in-utf8 = true</code></td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.treatOldVersionUtf8AsUtf8mb4</code></td>
+<td align="left">用于升级兼容性。设置为 <code>true</code> 将把旧版本的表/列的 <code>utf8</code> 字符集视为 <code>utf8mb4</code> 字符集<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>treat-old-version-utf8-as-utf8mb4 = true</code></td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.lease</code></td>
+<td align="left"><code>tidb.lease</code>是 TiDB Schema lease 的期限，对其更改是非常危险的，除非你明确知道可能产生的结果，否则不建议更改。<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>lease = "45s"</code></td>
+<td align="left"><code>45s</code></td>
+</tr>
+<tr>
+<td align="left"><code>tidb.maxProcs</code></td>
+<td align="left">最大可使用的 CPU 核数，0 代表机器/Pod 上的 CPU 数量<br/>如果 TiDB Operator 版本 &gt; v1.0.0-beta.3，请通过 <code>tidb.config</code> 配置：<br/><code>[performance]</code><br/><code>max-procs = 0</code></td>
+<td align="left"><code>0</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="heading-1">资源配置说明</h2>
+<p>部署前需要根据实际情况和需求，为 TiDB 集群各个组件配置资源，其中 PD、TiKV、TiDB 是 TiDB 集群的核心服务组件，在生产环境下它们的资源配置还需要按组件要求指定，具体参考：<a href="https://pingcap.com/docs-cn/v3.0/how-to/deploy/hardware-recommendations">资源配置推荐</a>。</p>
+<p>为了保证 TiDB 集群的组件在 Kubernetes 中合理的调度和稳定的运行，建议为其设置 Guaranteed 级别的 QoS，通过在配置资源时让 limits 等于 requests 来实现, 具体参考：<a href="https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/">配置 QoS</a>。</p>
+<p>如果使用 NUMA 架构的 CPU，为了获得更好的性能，需要在节点上开启 <code>Static</code> 的 CPU 管理策略。为了 TiDB 集群组件能独占相应的 CPU 资源，除了为其设置上述 Guaranteed 级别的 QoS 外，还需要保证 CPU 的配额必须是大于或等于 1 的整数。具体参考: <a href="https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies">CPU 管理策略</a>。</p>
+<h2 id="heading-2">容灾配置说明</h2>
+<p>TiDB 是分布式数据库，它的容灾需要做到在任一个物理拓扑节点发生故障时，不仅服务不受影响，还要保证数据也是完整和可用。下面分别具体说明这两种容灾的配置。</p>
+<h3 id="tidb-">TiDB 服务的容灾</h3>
+<p>TiDB 服务容灾本质上基于 Kubernetes 的调度功能来实现的，为了优化调度，TiDB Operator 提供了自定义的调度器，该调度器通过指定的调度算法能在 host 层面，保证 TiDB 服务的容灾，而且目前 TiDB Cluster 使用该调度器作为默认调度器，设置项是上述列表中的 <code>schedulerName</code> 配置项。</p>
+<p>其它层面的容灾（例如 rack，zone，region）是通过 Affinity 的 <code>PodAntiAffinity</code> 来保证，通过 <code>PodAntiAffinity</code> 能尽量避免同一组件的不同实例部署到同一个物理拓扑节点上，从而达到容灾的目的，Affinity 的使用参考：<a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity">Affinity &amp; AntiAffinity</a>。</p>
+<p>下面是一个典型的容灾设置例子：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">affinity:
+ podAntiAffinity:
+   preferredDuringSchedulingIgnoredDuringExecution:
+   <span style="color:#75715e"># this term works when the nodes have the label named region</span>
+   - weight: <span style="color:#ae81ff">10</span>
+     podAffinityTerm:
+       labelSelector:
+         matchLabels:
+           app.kubernetes.io/instance: &lt;release name&gt;
+           app.kubernetes.io/component: <span style="color:#e6db74">"pd"</span>
+       topologyKey: <span style="color:#e6db74">"region"</span>
+       namespaces:
+       - &lt;helm namespace&gt;
+   <span style="color:#75715e"># this term works when the nodes have the label named zone</span>
+   - weight: <span style="color:#ae81ff">20</span>
+     podAffinityTerm:
+       labelSelector:
+         matchLabels:
+           app.kubernetes.io/instance: &lt;release name&gt;
+           app.kubernetes.io/component: <span style="color:#e6db74">"pd"</span>
+       topologyKey: <span style="color:#e6db74">"zone"</span>
+       namespaces:
+       - &lt;helm namespace&gt;
+   <span style="color:#75715e"># this term works when the nodes have the label named rack</span>
+   - weight: <span style="color:#ae81ff">40</span>
+     podAffinityTerm:
+       labelSelector:
+         matchLabels:
+           app.kubernetes.io/instance: &lt;release name&gt;
+           app.kubernetes.io/component: <span style="color:#e6db74">"pd"</span>
+       topologyKey: <span style="color:#e6db74">"rack"</span>
+       namespaces:
+       - &lt;helm namespace&gt;
+   <span style="color:#75715e"># this term works when the nodes have the label named kubernetes.io/hostname</span>
+   - weight: <span style="color:#ae81ff">80</span>
+     podAffinityTerm:
+       labelSelector:
+         matchLabels:
+           app.kubernetes.io/instance: &lt;release name&gt;
+           app.kubernetes.io/component: <span style="color:#e6db74">"pd"</span>
+       topologyKey: <span style="color:#e6db74">"kubernetes.io/hostname"</span>
+       namespaces:
+       - &lt;helm namespace&gt;
+</code></pre></div><h3 id="heading-3">数据的容灾</h3>
+<p>在开始数据容灾配置前，首先请阅读<a href="https://pingcap.com/docs-cn/v3.0/how-to/deploy/geographic-redundancy/location-awareness">集群拓扑信息配置</a>。该文档描述了 TiDB 集群数据容灾的实现原理。</p>
+<p>在 Kubernetes 上支持数据容灾的功能，需要如下操作：</p>
+<ul>
+<li>
+<p>为 PD 设置拓扑位置 Label 集合</p>
+<p>用 Kubernetes 集群 Node 节点上描述拓扑位置的 Label 集合替换 <code>pd.config</code> 配置项中里的 <code>location-labels</code> 信息。</p>
+<blockquote>
+<p><strong>注意：</strong></p>
+<ul>
+<li>PD 版本 &lt; v3.0.9 不支持名字中带 <code>/</code> 的 Label。</li>
+<li>如果在 <code>location-labels</code> 中配置 <code>hostname</code>，TiDB Operator 会从 Node Label 中的 <code>kubernetes.io/hostname</code> 获取值。</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>为 TiKV 节点设置所在的 Node 节点的拓扑信息</p>
+<p>TiDB Operator 会自动为 TiKV 获取其所在 Node 节点的拓扑信息，并调用 PD 接口将这些信息设置为 TiKV 的 store labels 信息，这样 TiDB 集群就能基于这些信息来调度数据副本。</p>
+<p>如果当前 Kubernetes 集群的 Node 节点没有表示拓扑位置的 Label，或者已有的拓扑 Label 名字中带有 <code>/</code>，可以通过下面的命令手动给 Node 增加标签：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl label node &lt;nodeName&gt; region<span style="color:#f92672">=</span>&lt;regionName&gt; zone<span style="color:#f92672">=</span>&lt;zoneName&gt; rack<span style="color:#f92672">=</span>&lt;rackName&gt; kubernetes.io/hostname<span style="color:#f92672">=</span>&lt;hostName&gt;
+</code></pre></div><p>其中 <code>region</code>、<code>zone</code>、<code>rack</code>、<code>kubernetes.io/hostname</code> 只是举例，要添加的 Label 名字和数量可以任意定义，只要符合规范且和 <code>pd.config</code> 里的 <code>location-labels</code> 设置的 Labels 保持一致即可。</p>
+</li>
+</ul>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-tidb-operator/blob/release-1.0/zh/configure-a-tidb-cluster.md">"Kubernetes 上的 TiDB 集群配置"</a>
+    更新于
+    <span>May 15 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-tidb-operator/commit/6875da4cec28999e3fff43300352e70170d19dd5">
+        zh: fix a broken link (#286) (#287) <span class="hash">(6875da4)</span>
+</a>
+</div></div>
+<div class="sidebar-page sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-tidb-operator/edit/release-1.0/zh/configure-a-tidb-cluster.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    修改本文
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-tidb-operator/issues/new?body=File:%20[%2fzh%2fconfigure-a-tidb-cluster.md](https%3a%2f%2fpingcap.com%2fdocs-cn%2ftidb-in-kubernetes%2fv1.0%2fconfigure-a-tidb-cluster%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    反馈文档问题
+</a>
+<p class="toc-title">本页导航</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>产品</strong></h4>
+<ul>
+<li><a href="/docs-cn/v3.0/" onclick="trackViews('footer-product-tidb', 'docs-cn_view')">TiDB</a></li>
+<li><a href="/docs-cn/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs-cn/v3.0/roadmap/">TiDB 路线图</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>文档</strong></h4>
+<ul>
+<li><a href="/docs-cn/stable/how-to/get-started/deploy-tidb-from-docker-compose/">快速入门</a></li>
+<li><a href="/blog-cn/tidb-best-practice/">最佳实践</a></li>
+<li><a href="/docs-cn/stable/faq/tidb/">常见问题解答</a></li>
+<li><a href="/docs-cn/stable/reference/tools/user-guide/">TiDB 周边工具</a></li>
+<li><a href="/docs-cn/dev/releases/rn/">版本发布说明</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>资源</strong></h4>
+<ul>
+<li><a href="/blog-cn/">博客</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="https://book.tidb.io" target="_blank">TiDB in Action</a></li>
+<li><a href="https://university.pingcap.com/" onclick="trackViews('footer-source-university', 'pingcap-university_view')" target="_blank">PingCAP
+                    University</a></li>
+<li><a href="/solutions/intel/" onclick="trackViews('footer-resource-solutions', 'solutions_view')">联合解决方案</a></li>
+<li><a href="https://asktug.com/" onclick="trackViews('footer-resource-asktug', 'asktug_view')" target="_blank">Ask TUG</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>公司</strong></h4>
+<ul>
+<li><a href="/about-cn/">关于我们</a></li>
+<li><a href="/about-cn/recruit/join/" onclick="trackViews('footer-recruit-join', 'recruit-join_view')">招贤纳士</a>
+</li>
+<li><a href="/about-cn/news/">新闻报道</a></li>
+<li><a href="/privacy-policy/">隐私申明</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>联系我们</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg> Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg> Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg> Stack Overflow</a></li>
+<li id="wechat"><a class="wechat" href="javascript:void(0)"><svg height="17" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg> 微信公众号</a> <div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-pc"></div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 北京平凯星辰科技发展有限公司</p>
+<a class="copyright-btn-lang copyright-btn-en" href="/docs/tidb-in-kubernetes/v1.0" id="lang">English</a>
+<a class="prepared-num" href="http://www.beian.miit.gov.cn/">京 ICP 备 16046278 号 - 2</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

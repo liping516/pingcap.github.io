@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>Choosing the Right Database for Your Applications | TiDB</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="With so many databases on the market, choosing the right fit for your app is not an easy task. As a leading e-commerce platform in Southeast Asia and Taiwan, Shopee has an effective strategy for database selection. Learn from their experience." name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="Choosing the Right Database for Your Applications | TiDB" property="og:title"/>
+<meta content="With so many databases on the market, choosing the right fit for your app is not an easy task. As a leading e-commerce platform in Southeast Asia and Taiwan, Shopee has an effective strategy for database selection. Learn from their experience." property="og:description"/>
+<meta content="https://pingcap.com/success-stories/choosing-right-database-for-your-applications/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/blog/choosing-right-database-for-your-applications.png" property="og:image"/>
+<meta content="/images/blog/choosing-right-database-for-your-applications.png" property="og:image:secure_url"/><meta content="summary_large_image" name="twitter:card"/>
+<meta content="1200" name="og:image:width"/>
+<meta content="600" name="og:image:height"/><meta content="With so many databases on the market, choosing the right fit for your app is not an easy task. As a leading e-commerce platform in Southeast Asia and Taiwan, Shopee has an effective strategy for database selection. Learn from their experience." name="twitter:description"/>
+<meta content="Choosing the Right Database for Your Applications | TiDB" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/>
+<meta content="https://download.pingcap.com/images/blog/choosing-right-database-for-your-applications.png" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="en"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="a-en" href="/tidb-cloud/">Cloud</a></li>
+<li><a class="a-en" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector " id="docsTypeSelector">
+<a class="header-doc-nav" href="#">Docs</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a class="a-en" href="/success-stories">Success
+                    Stories</a></li>
+<li class="sel"><a class="a-en" href="/blog">Blog</a></li>
+<li><a class="link-download link-download-en" href="/download">Free Download</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs/stable/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="en" data-type="" id="search-input" name="q" placeholder="Search TiDB Docs" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li><a href="/tidb-cloud/">Cloud</a></li>
+<li><a class="tidb-academy" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector " id="docsTypeSelector">
+<p class="header-doc-nav">Docs</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/success-stories">Success Stories</a></li>
+<li class="sel"><a href="/blog">Blog</a></li>
+<li><a class="link-download" href="/download">Free Download</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc" style="margin-left: 0.75rem;">Subscribe to Blog</button></a>
+</div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/blog-cn" id="lang">中文</a>
+</div>
+</div>
+</nav>
+<div class="blog">
+<div class="blogArticle__container">
+<div class="archive"><div class="article-nav">
+<a href="/blog/#MySQL-Scalability">BLOG HOME</a> <span> &gt; </span>MySQL Scalability</div><div class="content markdown-body">
+<h1 class="title">Choosing the Right Database for Your Applications</h1>
+<ul class="blog-post-meta">
+<li class="meta-item">
+<img alt="Date icon" src="/images/svgs/icon-date.svg"/>Wed, Mar 11, 2020</li>
+<li class="meta-item">
+<img alt="Pen icon" src="/images/svgs/icon-writer.svg"/>Chunhui Liu, Chao Hong</li>
+</ul>
+<div class="blog-text"><p><strong>Industry:</strong> E-Commerce</p>
+<p><strong>Authors:</strong> Chunhui Liu and Chao Hong (Database Administrators at Shopee)</p>
+<p><img alt="Choosing right database for your applications" class="lazy" data-original="https://download.pingcap.com/images/blog/choosing-right-database-for-your-applications.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p><a href="https://en.wikipedia.org/wiki/Shopee">Shopee</a> is the leading e-commerce platform in Southeast Asia and Taiwan. It is a platform tailored for the region, providing customers with an easy, secure, and fast online shopping experience through strong payment and logistical support.</p>
+<p>As our business boomed, our team faced severe challenges in scaling our back-end system to meet the demand. Our <a href="https://pingcap.com/success-stories/tidb-in-shopee/">previous article</a> introduces how we use <a href="https://en.wikipedia.org/wiki/TiDB">TiDB</a>, an open-source, MySQL-compatible, <a href="https://en.wikipedia.org/wiki/Hybrid_transactional/analytical_processing_(HTAP)">hybrid transactional and analytical processing</a> (HTAP) database, to scale-out our system so that we can deliver better service for our users without worrying about database capacity.</p>
+<p>There are so many databases available in the market. How do you choose the right one? In this post, I'll share our thoughts with you. I hope this post can help you when you're comparing multiple databases and looking for the right fit for your application.</p>
+<p>In this article, I'll discuss:</p>
+<ul>
+<li><a href="#which-databases-are-we-using-at-shopee">Which databases are we using at Shopee?</a></li>
+<li><a href="#the-importance-of-database-selection">The importance of database selection</a></li>
+<li><a href="#our-database-selection-strategy">Our database selection strategy</a></li>
+<li><a href="#factors-to-consider-when-choosing-a-database">Factors to consider when choosing a database</a></li>
+<li><a href="#to-shard-or-not-to-shard">To shard or not to shard?</a></li>
+<li><a href="#lessons-learned-in-database-selection">Our lessons learned in database selection</a></li>
+<li><a href="#how-were-using-tidb-at-shopee">How we're using TiDB at Shopee</a></li>
+</ul>
+<h2 id="which-databases-are-we-using-at-shopee">Which databases are we using at Shopee?</h2>
+<p>At Shopee, we use these databases:</p>
+<ul>
+<li>MySQL and <a href="https://pingcap.com/docs/stable/">TiDB</a> are our relational databases. MySQL stores most of our data, and we are deploying more and more TiDB clusters.</li>
+<li><a href="https://en.wikipedia.org/wiki/Redis">Redis</a> is widely used in various Shopee applications.</li>
+<li>Some applications and teams also use other databases such as HBase and <a href="https://github.com/Qihoo360/pika">Pika</a>. But we won't discuss these databases in this article.</li>
+</ul>
+<h2 id="the-importance-of-database-selection">The importance of database selection</h2>
+<p>Our business is growing fast. This year, we're creating ten times as many databases per week than we did one or two years ago. Every year, the number of logical databases in the production environment grows by about three to five times. In 2019, this number increased more than five times.</p>
+<p>Before a database enters the production environment, database administrators (DBAs) and R&amp;D teams give a rough assessment of its physical and logical designs.</p>
+<p>According to our experience, if we make a wrong decision during the design phase, we'll spend a lot of time and energy rectifying it later. Therefore, we must formulate a concise and efficient database selection strategy to ensure that we can make a correct decision most of the time.</p>
+<h2 id="our-database-selection-strategy">Our database selection strategy</h2>
+<p>At Shopee, we use this general database selection strategy:</p>
+<ul>
+<li>We use MySQL by default, but we try to reduce terabyte-scale MySQL instances.</li>
+<li>Where possible, we try to use TiDB. We've used TiDB since 2018, and we especially recommend it in scenarios with large amounts of data that are not suitable for sharding.</li>
+<li>When necessary, we introduce Redis to smooth peak traffic in some relational databases. I'll explain that in detail later.</li>
+</ul>
+<h2 id="factors-to-consider-when-choosing-a-database">Factors to consider when choosing a database</h2>
+<p>When we're choosing a database from a variety of products, we ask ourselves:</p>
+<ul>
+<li>
+<p><strong>Will the data size for our new database exceed 1 TB in the coming 12–18 months?</strong></p>
+<p>If yes, we should consider MySQL sharding or TiDB.</p>
+</li>
+<li>
+<p><strong>Will a single MySQL table have more than 10 million rows or 10 GB of data?</strong></p>
+<p>If yes, we can use MySQL sharding or adopt TiDB to achieve <a href="https://pingcap.com/docs/stable/key-features/#horizontal-scalability">horizontal scalability</a> and avoid laborious sharding. That's because we found that when a single MySQL table contains over 10 million rows of data, or a single table occupies more than 10 GB of disk space, the database might be slower and difficult to maintain. For example, some SQL queries are difficult to optimize and online data definition language (DDL) becomes a big challenge.</p>
+</li>
+<li>
+<p><strong>Will the write queries per second (QPS) for a single MySQL node exceed 1,000 writes per second?</strong></p>
+<p>If yes, we can try the following approaches:</p>
+<ul>
+<li>
+<p>Apply MySQL sharding to distribute write traffic to multiple MySQL masters.</p>
+</li>
+<li>
+<p>Use TiDB to scatter writes to more nodes.</p>
+</li>
+<li>
+<p>Consider introducing Redis or message queues as the write cache to implement asynchronous writes.</p>
+<p>You might think that 1,000 writes per second is too low a threshold. We set it to 1,000 because:</p>
+</li>
+<li>
+<p>Before we put an application into production, our estimate might be inaccurate. In normal conditions, we have 1,000 writes per second. But when we're running a big sales promotion campaign, the write QPS may jump to 10,000 writes per second. It's better to set a conservative reference value.</p>
+</li>
+<li>
+<p>We allow the R&amp;D team to use large text fields. When the length of a single row increases to a certain point, the write performance for the master database and the replication performance for the slave database may be drastically slower. Thus, we can't expect a high write rate for a single node.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Does the application require that the 99th percentile response time be within one millisecond (ms)?</strong></p>
+<p>If yes, we'd better not directly read or write to the database. We can use Redis as a buffer layer. The front-end directly reads and writes to Redis to ensure high-speed I/O.</p>
+<p>Based on our experience with MySQL, in most scenarios, after we optimize the MySQL server options, table schema designs, SQL statements, and application code, the 99th percentile response time can be under 10 ms.</p>
+<p>TiDB's computing and storage layers are separated, and multiple components work together to execute SQL statements. Therefore, we expect the 99th percentile response time in TiDB to be about 100 ms.</p>
+</li>
+</ul>
+<h2 id="to-shard-or-not-to-shard">To shard or not to shard?</h2>
+<p>At Shopee, we have a list with dozens of checkpoints to help us assess a new database design, among which “To shard or not to shard” is an important one. For a long time, MySQL sharding was the only way for us to horizontally scale a database. After we introduced TiDB to Shopee, we got a new “no sharding” option.</p>
+<p>According to our experience, in some scenarios, MySQL sharding has more cons than pros. We have to bear extra costs for daily development, operations, and maintenance. During the database selection phase, DBAs and R&amp;Ds need to identify the following scenarios and find specific ways to solve problems:</p>
+<ul>
+<li>
+<p><strong>When we cannot accurately estimate a database's capacity</strong></p>
+<p>For example, the size of incremental data for an online log database in the last three months exceeds that in the past three years. If we implement sharding, we need to reshard this kind of database again and again. Each sharding process is complex and takes a lot of effort.</p>
+<p>According to our experience, TiDB is an ideal solution to log storage. Currently, at Shopee, it's a common practice to store logs in TiDB.</p>
+</li>
+<li>
+<p><strong>When we use a database to run multi-dimensional complex queries</strong></p>
+<p>Take an e-commerce order database as an example. Each subsystem needs to filter data by buyer, seller, order status, and payment method. If we shard by buyer, it will be difficult to query the sellers’ information, and vice versa.</p>
+<p>On one hand, we've created separate heterogeneous index databases for the most significant query dimensions. On the other hand, we've implemented order aggregation tables on TiDB to aggregate order data scattered among various shards into a single TiDB table. This lets complicated SQL queries that need a full table scan directly run on TiDB's aggregation table.</p>
+</li>
+<li>
+<p><strong>When data is unevenly distributed in a database</strong></p>
+<p>For social application data such as “Like” and “Follow,” if we shard the database by user, data might be unevenly distributed. Data volume for a minority of shards might be significantly higher than that for other shards. These shards with large amounts of data are also hotspots for reads and writes. This easily incurs performance bottlenecks.</p>
+<p>A common practice is resharding: slicing data into more partitions to reduce each shard's data size and read-write traffic.</p>
+<p>Recently, we've begun to migrate some data to TiDB. Theoretically, if TiDB tables’ primary keys are sparsely scattered, hot data could be evenly distributed among TiKV <a href="https://pingcap.com/docs/dev/glossary/#regionpeerraft-group">Regions</a> (the basic unit for data storage in TiKV).<br/>
+On the whole, MySQL sharding could solve the horizontal scaling issue for databases, but it leads to some pain points in development, operations, and maintenance. We attempt to mitigate and solve problems under the MySQL sharding framework. Meanwhile, we try to establish TiDB-based solutions in which we don't have to shard a database. In this respect, we've made progress.</p>
+</li>
+</ul>
+<h2 id="lessons-learned-in-database-selection">Lessons learned in database selection</h2>
+<p>So far, I've described Shopee's basic strategy for database selection and related critical metrics. In this section, I'll share with you what we've learned.</p>
+<h3 id="using-mysql-as-an-in-memory-database">Using MySQL as an in-memory database</h3>
+<p>At Shopee, we sometimes use MySQL as an in-memory database. After an application comes into the production environment, the R&amp;D team may first focus on the application logic, while the code of the database access layer might not be optimal.</p>
+<p>Therefore, during the early phase of a project, slow queries and bursty high-frequency reads and writes are common issues. To address these issues, we try to ensure that the memory space is large enough to load all hot data into the MySQL buffer pool. This helps mitigate some application performance issues.</p>
+<p>According to our statistics, 80% of Shopee's production databases have less than 50 GB of data. Because the memory size of our database servers is larger than 50 GB, we can get through the application trial-and-error period. When we enter the data-outburst phase, we can ask the R&amp;D team to optimize the database.</p>
+<h3 id="reducing-terabyte-scale-databases">Reducing terabyte-scale databases</h3>
+<p>Of all our production databases, 2.5% have more than 1 TB of data. The average data size of these terabyte-scale databases is 2 TB. The largest has more than 4 TB of data. The DBA's first priority is continually reducing the data volume of those terabyte-scale databases.</p>
+<p>To tackle the soaring data size for a database, we can try MySQL sharding and TiDB. We can also archive old data and upgrade hardware resources.</p>
+<h4 id="archiving-old-data">Archiving old data</h4>
+<p>Old data occupies a lot of disk space, but they're not read or written frequently. It means that they're probably not “hot data.” If the application owner lets us, we usually archive old data to a separate MySQL instance. The application needs to migrate reads and writes to the new instance. The new instance stores old data by year or month in different tables to avoid a single table being too large. For the new instance, we can also enable InnoDB transparent page compression to decrease disk usage.</p>
+<p>TiDB is a good choice for data archiving. Theoretically, a TiDB cluster can infinitely scale out, and users don't need to worry about limited disk capacity. TiDB features elastic horizontal scalability in both the computing and storage layers. Therefore, we can gradually add servers according to the data growth and application read and write traffic. This helps ensure efficient hardware usage and prevents many resources from being idle in the early production stage of an archiving database.</p>
+<h4 id="scaling-up">Scaling up</h4>
+<p>You may wonder what happens when MySQL's data size hits 1 TB, and disk space is scarce. Can we double the disk space and increase the memory capacity to win more time for engineers to shard a database?</p>
+<p>Actually, when a database has terabyte-scale data, it might be difficult to implement database sharding for an application that has been there for a long time. If it's possible to archive old data to maintain the data volume at a stable level (but the database still stores terabytes of data), we can also upgrade hardware to improve database performance.</p>
+<h3 id="using-redis-to-smooth-peak-traffic">Using Redis to smooth peak traffic</h3>
+<p>We have two ways to use Redis to handle high concurrent reads and writes:</p>
+<ul>
+<li>Writing to the cache and then the database</li>
+<li>Writing to the database and then the cache</li>
+</ul>
+<h4 id="writing-to-the-cache-and-then-the-database">Writing to the cache and then the database</h4>
+<p>The application front-end directly reads and writes to Redis. The application back-end smoothly and asynchronously persists data to MySQL or TiDB. In this case, MySQL and TiDB serve as the persistent layer for the Redis data. When we're designing a system, if we predict high concurrent reads and writes in the production environment, it works to use Redis as a buffer layer.</p>
+<p>For some social-related applications at Shopee, their peak traffic during a big promotion campaign is dozens of or even hundreds of times higher than usual. These applications are typical performance-critical applications. If the R&amp;D team doesn't anticipate it and the application still directly reads and writes to the database, the database will crash when the traffic surges in the promotion campaign. In this scenario, Redis is an ideal solution to alleviate the back-end database's peak traffic.</p>
+<p>What if the whole Redis cluster goes down? We have two solutions:</p>
+<ul>
+<li>Make the application directly read and write to the database. This may affect the performance, but it keeps the integrity of most data. Some data-critical applications tend to adopt this solution.</li>
+<li>Switch traffic to a new Redis cluster to resume the service and then start to accumulate data. Also, it's possible to run another application to load some old data from the database to Redis. Some applications have high concurrent operations but can tolerate data loss. They can adopt this solution.</li>
+</ul>
+<h4 id="writing-to-the-database-and-then-the-cache">Writing to the database and then the cache</h4>
+<p>We still use the application to read and write to the database. We can use Shopee's Data Event Center (DEC), a middleware that continuously parses the MySQL binlog, reorganizes results, and then writes to Redis. This way, intensive read-only traffic could be moved to Redis. This greatly reduces the load on the database.</p>
+<p>When we rebuild data into Redis, we can customize data structures for specific query patterns. SQL is not suitable for implementing some queries. Sometimes, using Redis to run these queries is more efficient.</p>
+<p>In addition, compared with the application writing data to the database and Redis simultaneously, rebuilding data in Redis by parsing the MySQL binlog is more beneficial. Its application implementation is easy, so developers don't need to be aware of the data replication logic from the database to Redis.</p>
+<p>But its shortcoming is write latency. Data is written to the MySQL master and then sent to Redis. In this process, there may be dozens of milliseconds of latency. If we want to use Redis this way, we need to know whether the application accepts such latency.</p>
+<p>When we query new orders in real time, we usually avoid high-frequency read-only queries on MySQL masters by this way. To avoid the impact of slave replication delays, we had to route queries for some critical columns of Shopee order tables to MySQL masters. In a big promotion campaign, the master might be overwhelmed. Therefore, we changed our approach and first wrote new order data to MySQL and then transformed binlog parsing results to Redis. This way, we effectively relieved the pressure on MySQL masters.</p>
+<h3 id="refactoring-data-structures-and-code-instead-of-direct-migration">Refactoring data structures and code instead of direct migration</h3>
+<p>When developers migrate data from MySQL to TiDB, DBAs often remind developers to adapt data structures and code to TiDB.</p>
+<p>Here is an example. A system was previously implemented with MySQL sharding. This solution equally divided all data into 1,000 tables. After we migrated to TiDB, we stopped sharding and merged these tables into a single table.</p>
+<p>After we finished migration and the application resumed services, we found that an SQL query's performance jittered severely. In high concurrent traffic, this query even led to the entire TiDB cluster hanging.</p>
+<p>We analyzed this query and found that:</p>
+<ul>
+<li>
+<p>The query ran quite frequently. It took up 90% of all the read-only queries at peak time.</p>
+</li>
+<li>
+<p>The query was a complicated SQL query which needed a full table scan. It was difficult to optimize the query by adding an index. Before migrating to TiDB, MySQL had 1,000 tables. When we executed the query, only one small table was scanned, and we had more than 20 MySQL slaves to serve the query. Even so, as the data size increased and the hot data volume exceeded memory size, all MySQL slaves were overwhelmed.</p>
+<p>After data was migrated to TiDB and 1,000 tables merged into one, the query had to scan a much bigger table. Large amounts of intermediate result sets were passed from TiKV nodes to SQL nodes. Thus, the performance was undesirable.</p>
+</li>
+</ul>
+<p>Based on the analysis above, the R&amp;D team introduced Redis. When they transformed binlog parsing results to Redis, they customized a data structure for the query. They switched 90% of the read-only queries to Redis. As a result, the query became faster and more stable, and TiDB's storage and computing nodes were remarkably reduced.</p>
+<p>TiDB is <a href="https://pingcap.com/docs/stable/key-features/#mysql-compatible-syntax">highly compatible with the MySQL syntax</a>. This eases the migration from MySQL to TiDB. But TiDB is a new database, and its implementation is totally different from MySQL's. So we need to work out a customized solution according to TiDB's characteristics and the specific application scenarios.</p>
+<h2 id="how-were-using-tidb-at-shopee">How we're using TiDB at Shopee</h2>
+<p><a href="https://pingcap.com/docs/stable/overview/">TiDB</a> is an open-source NewSQL database that supports HTAP workloads. It's MySQL compatible and features horizontal scalability, strong consistency, and high availability. See <a href="https://pingcap.com/docs/stable/overview/">its architecture</a>.</p>
+<p>This section gives an overview of the TiDB cluster status at Shopee and the scenarios in which we use TiDB.</p>
+<h3 id="cluster-status">Cluster status</h3>
+<ul>
+<li>By the end of 2019, Shopee had deployed 20+ TiDB clusters in the production environment. There are 400+ nodes.</li>
+<li>The data size is 200+ TB.</li>
+<li>We mainly use <a href="https://pingcap.com/docs/stable/releases/2.1ga/">TiDB 2.1</a> in the production environment and are beginning to try <a href="https://pingcap.com/docs/stable/releases/3.0-ga/">TiDB 3.0</a> in some applications.</li>
+<li>The largest cluster has 40+ nodes, with about 30 TB of data.</li>
+<li>These TiDB clusters run in multiple systems like users, items, orders, and risk control.</li>
+</ul>
+<h3 id="application-scenarios">Application scenarios</h3>
+<p>At Shopee, we use TiDB in three scenarios:</p>
+<ul>
+<li>
+<p>Log storage</p>
+<ul>
+<li>Use cases: audit log and risk control system</li>
+<li>The front-end application writes log data to <a href="https://kafka.apache.org/">Kafka</a>. A back-end application asynchronously consumes Kafka messages and transforms them into TiDB. Applications like admin back-end websites can directly read logs from TiDB.</li>
+<li>We can add storage and computing nodes as needed. The operations and maintenance are easier than MySQL sharding.</li>
+</ul>
+</li>
+<li>
+<p>Data aggregation for MySQL sharding</p>
+<ul>
+<li>Use cases: order data aggregation and item data aggregation</li>
+<li>Application data is written to MySQL shards. We developed a middleware called Data Event Center (DEC) to parse the MySQL binlog and asynchronously replicate data to TiDB. Applications such as  business intelligence (BI) and admin back-end systems run complex queries on TiDB. They don't need to consider sharding rules and directly read aggregation tables in TiDB.</li>
+</ul>
+</li>
+<li>
+<p>Applications directly reading and writing to TiDB</p>
+<ul>
+<li>Use case: Shopee chat system</li>
+<li>The application directly reads and writes to TiDB. We don't need sharding. This makes it easier to implement applications. We have setup <a href="https://pingcap.com/docs/stable/reference/tidb-binlog/overview/">TiDB Binlog</a> components for some clusters and parsed binlog to Kafka. Then, other applications can subscribe to the data changes.</li>
+</ul>
+</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>This post covered Shopee's thoughts on how to select a relational database and our experience using MySQL, TiDB, and Redis.</p>
+<p>In brief, if your data size is small and your application is in its early stages, MySQL is a good choice for you. You also don't need to compromise your application design for sharding. That's because as your business develops and data volume grows, you can smoothly migrate from MySQL to TiDB. Your application will be horizontally scalable while application development is still flexible. Meanwhile, you can utilize Redis to speed up queries and relieve the pressure on the database, so that you can focus more on throughput and strong consistency.</p>
+<p>We chose TiDB because of its open-source, horizontally-scalable, and MySQL- compatible features. In the past two years, we've witnessed TiDB's fast development and notable progress. TiDB is one of the most important database infrastructures at Shopee, and we're using it in more and more scenarios. In the future, TiDB will serve more traffic for Shopee.</p>
+<p>We would like to thank PingCAP members and the TiDB community for building TiDB and providing helpful support for us.</p>
+<h2 id="about-shopee">About Shopee</h2>
+<p>Shopee is the leading e-commerce platform in Southeast Asia and Taiwan. It was launched in 7 markets in 2015 to connect consumers, sellers, and businesses in the region.</p>
+<p>Shopee offers an easy, secure, and engaging experience that is enjoyed by millions of people daily. It offers a wide product assortment, supported by integrated payments and logistics, as well as popular entertainment features tailored for each market. Shopee is also a key contributor to the region's digital economy with a firm commitment to helping brands and entrepreneurs succeed in e-commerce.</p>
+<p>Shopee is a part of Sea Limited (NYSE:SE), a leading global consumer internet company. In addition to Shopee, Sea's other core businesses include its digital entertainment arm, Garena, and digital financial services arm, SeaMoney. Sea's mission is to better the lives of consumers and small businesses with technology.</p>
+</div>
+</div>
+<div class="article-toc"></div><div class="ssba-wrap">
+<div class="ssba">
+<a class="ssba_twitter_share" data-site="" href="http://twitter.com/share?url=https%3a%2f%2fpingcap.com%2fsuccess-stories%2fchoosing-right-database-for-your-applications%2f" target="_blank">
+<img alt="Twitter icon" src="/images/svgs/twitter-icon.svg"/>
+</a>
+<a class="ssba_reddit_share" data-site="reddit" href="http://reddit.com/submit?url=https%3a%2f%2fpingcap.com%2fsuccess-stories%2fchoosing-right-database-for-your-applications%2f&amp;title=Choosing%20the%20Right%20Database%20for%20Your%20Applications" target="_blank">
+<img alt="Reddit icon" src="/images/svgs/reddit-icon.svg"/>
+</a>
+<a class="ssba_facebook_share" data-site="" href="http://www.facebook.com/sharer.php?u=https%3a%2f%2fpingcap.com%2fsuccess-stories%2fchoosing-right-database-for-your-applications%2f" target="_blank">
+<img alt="Fackbook icon" src="/images/svgs/facebook-icon.svg"/>
+</a>
+<a class="ssba_linkedin_share" data-site="linkedin" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fpingcap.com%2fsuccess-stories%2fchoosing-right-database-for-your-applications%2f" target="_blank">
+<img alt="Linkedin icon" src="/images/svgs/linkedin-icon.svg"/>
+</a>
+<a class="ssba_hackernews_share" data-site="hackernews" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fpingcap.com%2fsuccess-stories%2fchoosing-right-database-for-your-applications%2f&amp;t=Choosing%20the%20Right%20Database%20for%20Your%20Applications" target="_blank">
+<img alt="Hacker News icon" src="/images/svgs/hacker-news-icon.svg"/>
+</a>
+</div>
+</div>
+<div class="trackable-btns">
+<a href="/download" onclick="trackViews('Choosing the Right Database for Your Applications', 'download-tidb-btn-bottom')"><button>Download
+                        TiDB</button></a>
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm" onclick="trackViews('Choosing the Right Database for Your Applications', 'subscribe-blog-btn-bottom')"><button>Subscribe to
+                        Blog</button></a>
+</div>
+</div>
+<div class="sidebar-page">
+<div class="sticky-sidebar">
+<p class="toc-title">What’s on this page</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Product</strong></h4>
+<ul>
+<li><a href="/docs/v3.0/">TiDB</a></li>
+<li><a href="/docs/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs/v3.0/roadmap/">Roadmap</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Docs</strong></h4>
+<ul>
+<li><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">Quick Start</a></li>
+<li><a href="/blog/2017-07-24-tidbbestpractice/">Best Practices</a></li>
+<li><a href="/docs/stable/faq/tidb/">FAQ</a></li>
+<li><a href="/docs/stable/reference/tools/user-guide/">TiDB Tools</a></li>
+<li><a href="/docs/dev/releases/rn/">Release Notes</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Resources</strong></h4>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/weekly/">Monthly</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="/community">TiDB Community</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Company</strong></h4>
+<ul>
+<li><a href="/about/">About</a></li>
+<li><a href="https://angel.co/pingcap-1/jobs" target="_blank">Careers</a></li>
+<li><a href="/news/">News</a></li>
+<li><a href="/contact-us/">Contact Us</a></li>
+<li><a href="/en/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/terms-of-service/">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Connect</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg>Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg>Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg>Stack Overflow</a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc">Subscribe to Blog</button></a>
+</div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 PingCAP. All Rights Reserved.</p>
+<a class="copyright-btn-lang" href="/blog-cn" id="lang">中文</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

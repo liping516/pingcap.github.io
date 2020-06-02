@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>TiDB in Kubernetes Sysbench Performance Test | TiDB Documentation</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="Learn the Sysbench performance test of TiDB in Kubernetes." name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="TiDB in Kubernetes Sysbench Performance Test | TiDB Documentation" property="og:title"/>
+<meta content="Learn the Sysbench performance test of TiDB in Kubernetes." property="og:description"/>
+<meta content="https://pingcap.com/docs/tidb-in-kubernetes/stable/benchmark-sysbench/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="Learn the Sysbench performance test of TiDB in Kubernetes." name="twitter:description"/>
+<meta content="TiDB in Kubernetes Sysbench Performance Test | TiDB Documentation" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="en"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="a-en" href="/tidb-cloud/">Cloud</a></li>
+<li><a class="a-en" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">Docs</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a class="a-en" href="/success-stories">Success
+                    Stories</a></li>
+<li><a class="a-en" href="/blog">Blog</a></li>
+<li><a class="link-download link-download-en" href="/download">Free Download</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs/tidb-in-kubernetes/stable/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="en" data-type="/tidb-in-kubernetes/" id="search-input" name="q" placeholder="Search TiDB Docs" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li><a href="/tidb-cloud/">Cloud</a></li>
+<li><a class="tidb-academy" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">Docs</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/success-stories">Success Stories</a></li>
+<li><a href="/blog">Blog</a></li>
+<li><a class="link-download" href="/download">Free Download</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc" style="margin-left: 0.75rem;">Subscribe to Blog</button></a>
+</div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs-cn/" id="lang">中文</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB in Kubernetes Documentation </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">v1.1</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs/tidb-in-kubernetes/stable/benchmark-sysbench/">v1.1 (stable)</a>
+<a class="dropdown-item " href="
+                /docs/tidb-in-kubernetes/v1.0/benchmark-sysbench/">v1.0</a>
+<a class="dropdown-item " href="
+                /docs/tidb-in-kubernetes/dev/benchmark-sysbench/">dev</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>Introduction</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/tidb-operator-overview/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/notes-tidb-operator-v1.1/">
+<span>TiDB Operator v1.1 Notice</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Get Started</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-from-kubernetes-kind/">
+<span>kind</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-from-kubernetes-gke/">
+<span>GKE</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-from-kubernetes-minikube/">
+<span>Minikube</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Deploy</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>Deploy TiDB Cluster</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-on-aws-eks/">
+<span>On AWS EKS</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-on-gcp-gke/">
+<span>On GCP GKE</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-on-alibaba-cloud/">
+<span>On Alibaba Cloud ACK</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>On Self-managed Kubernetes</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/prerequisites/">
+<span>Prerequisites</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-storage-class/">
+<span>Configure Storage Class</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-operator/">
+<span>Deploy TiDB Operator</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-a-tidb-cluster/">
+<span>Configure Resource and Disaster Recovery</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-cluster-using-tidbcluster/">
+<span>Configure TiDB Cluster Using TidbCluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-on-general-kubernetes/">
+<span>Deploy TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/initialize-a-cluster/">
+<span>Initialize TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/access-tidb/">
+<span>Access TiDB Cluster</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tiflash/">
+<span>Deploy TiFlash</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-ticdc/">
+<span>Deploy TiCDC</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-binlog/">
+<span>Deploy TiDB Binlog</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Deploy Monitoring</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/monitor-a-tidb-cluster/">
+<span>Monitor Kubernetes and TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/monitor-using-tidbmonitor/">
+<span>Monitor TiDB Cluster Using TidbMonitor</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/access-dashboard/">
+<span>Access TiDB Dashboard</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Secure</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/enable-tls-for-mysql-client/">
+<span>Enable TLS for the MySQL Client</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/enable-tls-between-components/">
+<span>Enable TLS between TiDB Components</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Operate</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/upgrade-a-tidb-cluster/">
+<span>Upgrade TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/upgrade-tidb-operator/">
+<span>Upgrade TiDB Operator</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Scale TiDB Cluster</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/scale-a-tidb-cluster/">
+<span>Manually Scale</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/enable-tidb-cluster-auto-scaling/">
+<span>Automatically Scale</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Backup and Restore</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/backup-and-restore-using-helm-charts/">
+<span>Use Helm Charts</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Use CRDs</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/backup-to-gcs/">
+<span>Back up Data to GCS Using Mydumper</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restore-from-gcs/">
+<span>Restore Data from GCS Using TiDB Lightning</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/backup-to-s3/">
+<span>Back up Data to S3-Compatible Storage Using Mydumper</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restore-from-s3/">
+<span>Restore Data from S3-Compatible Storage Using TiDB Lightning</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/backup-to-aws-s3-using-br/">
+<span>Back up Data to S3-Compatible Storage Using BR</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restore-from-aws-s3-using-br/">
+<span>Restore Data from S3-Compatible Storage Using BR</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restart-a-tidb-cluster/">
+<span>Restart a TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/maintain-a-kubernetes-node/">
+<span>Maintain a Kubernetes Node</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/collect-tidb-logs/">
+<span>Collect TiDB Logs</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/use-auto-failover/">
+<span>Enable Automatic Failover</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/pd-recover/">
+<span>Recover the PD Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/destroy-a-tidb-cluster/">
+<span>Destroy a TiDB Cluster</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restore-data-using-tidb-lightning/">
+<span>Import Data</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/troubleshoot/">
+<span>Troubleshoot</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/faq/">
+<span>FAQs</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Reference</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>Architecture</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/tidb-scheduler/">
+<span>TiDB Scheduler</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/advanced-statefulset/">
+<span>Advanced StatefulSet Controller</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/enable-admission-webhook/">
+<span>Admission Controller</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/benchmark-sysbench/">
+<span>Sysbench Performance Test</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://github.com/pingcap/docs-tidb-operator/blob/master/en/api-references.md">
+<span>API References</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Tools</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/use-tkctl/">
+<span>tkctl</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/tidb-toolkit/">
+<span>TiDB Toolkit</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Configure</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-tidb-binlog-drainer/">
+<span>Configure tidb-drainer Chart</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/tidb-cluster-chart-config/">
+<span>Configure tidb-cluster Chart</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-backup/">
+<span>Configure tidb-backup Chart</span>
+</a>
+</li></ul>
+</li></ul>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="tidb-in-kubernetes-sysbench-performance-test">TiDB in Kubernetes Sysbench Performance Test</h1>
+<p>Since the release of <a href="https://pingcap.com/blog/database-cluster-deployment-and-management-made-easy-with-kubernetes/">TiDB Operator GA</a>, more users begin to deploy and manage the TiDB cluster in Kubernetes using TiDB Operator. In this report, an in-depth and comprehensive test of TiDB has been conducted on GKE, which offers insight into the influencing factors that affects the performance of TiDB in Kubernetes.</p>
+<h2 id="test-purpose">Test purpose</h2>
+<ul>
+<li>To test the performance of TiDB on a typical public cloud platform</li>
+<li>To test the influences that the public cloud platform, network, CPU and different Pod networks have on the performance of TiDB</li>
+</ul>
+<h2 id="test-environment">Test environment</h2>
+<h3 id="version-and-configuration">Version and configuration</h3>
+<p>In this test:</p>
+<ul>
+<li>TiDB 3.0.1 and TiDB Operator 1.0.0 are used.</li>
+<li>Three instances are deployed for PD, TiDB and TiKV respectively.</li>
+<li>Each component is configured as below. Unconfigured components use the default values.</li>
+</ul>
+<p>PD:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[<span style="color:#a6e22e">log</span>]
+<span style="color:#a6e22e">level</span> = <span style="color:#e6db74">"info"</span>
+[<span style="color:#a6e22e">replication</span>]
+<span style="color:#a6e22e">location</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">labels</span> = [<span style="color:#e6db74">"region"</span>, <span style="color:#e6db74">"zone"</span>, <span style="color:#e6db74">"rack"</span>, <span style="color:#e6db74">"host"</span>]
+</code></pre></div><p>TiDB:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[<span style="color:#a6e22e">log</span>]
+<span style="color:#a6e22e">level</span> = <span style="color:#e6db74">"error"</span>
+[<span style="color:#a6e22e">prepared</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">plan</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">cache</span>]
+<span style="color:#a6e22e">enabled</span> = <span style="color:#66d9ef">true</span>
+[<span style="color:#a6e22e">tikv</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">client</span>]
+<span style="color:#a6e22e">max</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">batch</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">wait</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">time</span> = <span style="color:#ae81ff">2000000</span>
+</code></pre></div><p>TiKV:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#a6e22e">log</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">level</span> = <span style="color:#e6db74">"error"</span>
+[<span style="color:#a6e22e">server</span>]
+<span style="color:#a6e22e">status</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">addr</span> = <span style="color:#e6db74">"0.0.0.0:20180"</span>
+<span style="color:#a6e22e">grpc</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">concurrency</span> = <span style="color:#ae81ff">6</span>
+[<span style="color:#a6e22e">readpool</span>.<span style="color:#a6e22e">storage</span>]
+<span style="color:#a6e22e">normal</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">concurrency</span> = <span style="color:#ae81ff">10</span>
+[<span style="color:#a6e22e">rocksdb</span>.<span style="color:#a6e22e">defaultcf</span>]
+<span style="color:#a6e22e">block</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">cache</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">size</span> = <span style="color:#e6db74">"14GB"</span>
+[<span style="color:#a6e22e">rocksdb</span>.<span style="color:#a6e22e">writecf</span>]
+<span style="color:#a6e22e">block</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">cache</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">size</span> = <span style="color:#e6db74">"8GB"</span>
+[<span style="color:#a6e22e">rocksdb</span>.<span style="color:#a6e22e">lockcf</span>]
+<span style="color:#a6e22e">block</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">cache</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">size</span> = <span style="color:#e6db74">"1GB"</span>
+[<span style="color:#a6e22e">raftstore</span>]
+<span style="color:#a6e22e">apply</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">pool</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">size</span> = <span style="color:#ae81ff">3</span>
+<span style="color:#a6e22e">store</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">pool</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">size</span> = <span style="color:#ae81ff">3</span>
+</code></pre></div><h3 id="tidb-parameter-configuration">TiDB parameter configuration</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">set global tidb_hashagg_final_concurrency=1;
+set global tidb_hashagg_partial_concurrency=1;
+set global tidb_disable_txn_auto_retry=0;
+</code></pre></div><h3 id="hardware-recommendations">Hardware recommendations</h3>
+<h4 id="machine-types">Machine types</h4>
+<p>For the test in single AZ (Available Zone), the following machine types are chosen:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Component</th>
+<th align="left">Instance type</th>
+<th align="left">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">PD</td>
+<td align="left">n1-standard-4</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">TiKV</td>
+<td align="left">c2-standard-16</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">TiDB</td>
+<td align="left">c2-standard-16</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">Sysbench</td>
+<td align="left">c2-standard-30</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>For the test (2019.08) where the result in multiple Azs is compared with that in single AZ, the c2 machine is not simultaneously available in three AZs within the same GCP Region, so the following machine types are chosen:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Component</th>
+<th align="left">Instance type</th>
+<th align="left">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">PD</td>
+<td align="left">n1-standard-4</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">TiKV</td>
+<td align="left">n1-standard-16</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">TiDB</td>
+<td align="left">n1-standard-16</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">Sysbench</td>
+<td align="left">n1-standard-16</td>
+<td align="left">3</td>
+</tr>
+</tbody>
+</table>
+<p>Sysbench, the pressure test platform, has a high demand on CPU in the high concurrency read test. Therefore, it is recommended that you use machines with high configuration and multiple cores so that the test platform does not become the bottleneck.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>The usable machine types vary among GCP Regions. In the test, disk also performs differently. Therefore, only the machines in us-central1 are applied for test.</p>
+</blockquote>
+<h4 id="disk">Disk</h4>
+<p>The NVMe disks on GKE are still in the Alpha phase, so it requires special application to use them and is not for general usage. In this test, the iSCSI interface type is used for all local SSD disks. With reference to the <a href="https://cloud.google.com/compute/docs/disks/performance#optimize_local_ssd">official recommendations</a>, the <code>discard,nobarrier</code> option has been added to the mounting parameter. Below is a complete example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sudo mount -o defaults,nodelalloc,noatime,discard,nobarrier /dev/[LOCAL_SSD_ID] /mnt/disks/[MNT_DIR]
+</code></pre></div><h4 id="network">Network</h4>
+<p>GKE uses a more scalable and powerful <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips">VPC-Native</a> mode as its network mode. In the performance comparison, TiDB is tested with Kubernetes Pod and Host respectively.</p>
+<h4 id="cpu">CPU</h4>
+<ul>
+<li>In the test on single AZ cluster, the c2-standard-16 machine mode is chosen for TiDB/TiKV.</li>
+<li>In the comparison test on single AZ cluster and on multiple AZs cluster, the c2-standard-16 machine type cannot be simultaneously adopted in three AZs within the same GCP Region, so n1-standard-16 machine type is chosen.</li>
+</ul>
+<h3 id="operation-system-and-parameters">Operation system and parameters</h3>
+<p>GKE supports two operating systems: COS (Container Optimized OS) and Ubuntu. The Point Select test is conducted on both systems and the results are compared. Other tests are only conducted on Ubuntu.</p>
+<p>The core is configured as below:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">sysctl net.core.somaxconn<span style="color:#f92672">=</span><span style="color:#ae81ff">32768</span>
+sysctl vm.swappiness<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+sysctl net.ipv4.tcp_syncookies<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</code></pre></div><p>The maximum number of files is configured as <code>1000000</code>.</p>
+<h3 id="sysbench-version-and-operating-parameters">Sysbench version and operating parameters</h3>
+<p>In this test, the version of sysbench is 1.0.17.</p>
+<p>Before the test, the <code>prewarm</code> command of <code>oltp_common</code> is used to warm up data.</p>
+<h4 id="initialization">Initialization</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">sysbench <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-host<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>tidb_host<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-port<span style="color:#f92672">=</span><span style="color:#ae81ff">4000</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-user<span style="color:#f92672">=</span>root <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-db<span style="color:#f92672">=</span>sbtest <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --time<span style="color:#f92672">=</span><span style="color:#ae81ff">600</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --threads<span style="color:#f92672">=</span><span style="color:#ae81ff">16</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --report-interval<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --db-driver<span style="color:#f92672">=</span>mysql <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --rand-type<span style="color:#f92672">=</span>uniform <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --rand-seed<span style="color:#f92672">=</span>$RANDOM <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --tables<span style="color:#f92672">=</span><span style="color:#ae81ff">16</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --table-size<span style="color:#f92672">=</span><span style="color:#ae81ff">10000000</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  oltp_common <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  prepare
+</code></pre></div><p><code>${tidb_host}</code> is the address of TiDB database, which is specified according to actual test needs. For example, Pod IP, Service domain name, Host IP, and Load Balancer IP (the same below).</p>
+<h4 id="warming-up">Warming-up</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">sysbench <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-host<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>tidb_host<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-port<span style="color:#f92672">=</span><span style="color:#ae81ff">4000</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-user<span style="color:#f92672">=</span>root <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-db<span style="color:#f92672">=</span>sbtest <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --time<span style="color:#f92672">=</span><span style="color:#ae81ff">600</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --threads<span style="color:#f92672">=</span><span style="color:#ae81ff">16</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --report-interval<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --db-driver<span style="color:#f92672">=</span>mysql <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --rand-type<span style="color:#f92672">=</span>uniform <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --rand-seed<span style="color:#f92672">=</span>$RANDOM <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --tables<span style="color:#f92672">=</span><span style="color:#ae81ff">16</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --table-size<span style="color:#f92672">=</span><span style="color:#ae81ff">10000000</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  oltp_common <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  prewarm
+</code></pre></div><h4 id="pressure-test">Pressure test</h4>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">sysbench <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-host<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>tidb_host<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-port<span style="color:#f92672">=</span><span style="color:#ae81ff">4000</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-user<span style="color:#f92672">=</span>root <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --mysql-db<span style="color:#f92672">=</span>sbtest <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --time<span style="color:#f92672">=</span><span style="color:#ae81ff">600</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --threads<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>threads<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --report-interval<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --db-driver<span style="color:#f92672">=</span>mysql <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --rand-type<span style="color:#f92672">=</span>uniform <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --rand-seed<span style="color:#f92672">=</span>$RANDOM <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --tables<span style="color:#f92672">=</span><span style="color:#ae81ff">16</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --table-size<span style="color:#f92672">=</span><span style="color:#ae81ff">10000000</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">${</span>test<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  run
+</code></pre></div><p><code>${test}</code> is the test case of sysbench. In this test, <code>oltp_point_select</code>, <code>oltp_update_index</code>, <code>oltp_update_no_index</code>, and <code>oltp_read_write</code> are chosen as <code>${test}</code>.</p>
+<h2 id="test-report">Test report</h2>
+<h3 id="in-single-az">In single AZ</h3>
+<h4 id="pod-network-vs-host-network">Pod Network vs Host Network</h4>
+<p>Kubernetes allows Pods to run in Host network mode. This way of deployment is suitable when a TiDB instance occupies the whole machine without causing any Pod conflict. The Point Select test is conducted in both modes respectively.</p>
+<p>In this test, the operating system is COS.</p>
+<p>Pod Network:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">246386.44</td>
+<td align="left">0.95</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">346557.39</td>
+<td align="left">1.55</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">396715.66</td>
+<td align="left">2.86</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">407437.96</td>
+<td align="left">4.18</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">415138.00</td>
+<td align="left">5.47</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">419034.43</td>
+<td align="left">6.91</td>
+</tr>
+</tbody>
+</table>
+<p>Host Network:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">255981.11</td>
+<td align="left">1.06</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">366482.22</td>
+<td align="left">1.50</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">421279.84</td>
+<td align="left">2.71</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">438730.81</td>
+<td align="left">3.96</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">441084.13</td>
+<td align="left">5.28</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">447659.15</td>
+<td align="left">6.67</td>
+</tr>
+</tbody>
+</table>
+<p>QPS comparison:</p>
+<p><img alt="Pod vs Host Network" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/pod-vs-host-network-qps.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>Latency comparison:</p>
+<p><img alt="Pod vs Host Network" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/pod-vs-host-network-latency.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>From the images above, the performance in Host network mode is slightly better than that in Pod network.</p>
+<h4 id="ubuntu-vs-cos">Ubuntu vs COS</h4>
+<p>GKE provides <a href="https://cloud.google.com/kubernetes-engine/docs/concepts/node-images">Ubuntu and COS</a> for each node. In this test, the Point Select test of TiDB is conducted on both systems.</p>
+<p>The network mode is Host.</p>
+<p>COS:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">255981.11</td>
+<td align="left">1.06</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">366482.22</td>
+<td align="left">1.50</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">421279.84</td>
+<td align="left">2.71</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">438730.81</td>
+<td align="left">3.96</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">441084.13</td>
+<td align="left">5.28</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">447659.15</td>
+<td align="left">6.67</td>
+</tr>
+</tbody>
+</table>
+<p>Ubuntu:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">290690.51</td>
+<td align="left">0.74</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">422941.17</td>
+<td align="left">1.10</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">476663.44</td>
+<td align="left">2.14</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">484405.99</td>
+<td align="left">3.25</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">489220.93</td>
+<td align="left">4.33</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">489988.97</td>
+<td align="left">5.47</td>
+</tr>
+</tbody>
+</table>
+<p>QPS comparison:</p>
+<p><img alt="COS vs Ubuntu" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/cos-vs-ubuntu-qps.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>Latency comparison:</p>
+<p><img alt="COS vs Ubuntu" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/cos-vs-ubuntu-latency.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>From the images above, TiDB performs better on Ubuntu than on COS in the Point Select test.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>This test is conducted only for the single test case and indicates that the performance might be affected by different operating systems, different optimization and default settings. Therefore, PingCAP makes no recommendation for the operating system.</li>
+<li>COS is officially recommended by GKE, because it is optimized for containers and improved substantially on security and disk performance.</li>
+</ul>
+</blockquote>
+<h4 id="kubernetes-service-vs-gcp-loadbalancer">Kubernetes Service vs GCP LoadBalancer</h4>
+<p>After TiDB is deployed on Kubernetes, there are two ways of accessing TiDB: via Kubernetes Service inside the cluster, or via Load Balancer IP outside the cluster. TiDB is tested in both ways.</p>
+<p>In this test, the operating system is Ubuntu and the network mode is Host.</p>
+<p>Service:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">290690.51</td>
+<td align="left">0.74</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">422941.17</td>
+<td align="left">1.10</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">476663.44</td>
+<td align="left">2.14</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">484405.99</td>
+<td align="left">3.25</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">489220.93</td>
+<td align="left">4.33</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">489988.97</td>
+<td align="left">5.47</td>
+</tr>
+</tbody>
+</table>
+<p>Load Balancer:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">255981.11</td>
+<td align="left">1.06</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">366482.22</td>
+<td align="left">1.50</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">421279.84</td>
+<td align="left">2.71</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">438730.81</td>
+<td align="left">3.96</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">441084.13</td>
+<td align="left">5.28</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">447659.15</td>
+<td align="left">6.67</td>
+</tr>
+</tbody>
+</table>
+<p>QPS comparison:</p>
+<p><img alt="Service vs Load Balancer" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/service-vs-load-balancer-qps.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>Latency comparison:</p>
+<p><img alt="Service vs Load Balancer" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/service-vs-load-balancer-latency.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>From the images above, TiDB performs better when accessed via Kubernetes Service than accessed via GCP Load Balancer in the Point Select test.</p>
+<h4 id="n1-standard-16-vs-c2-standard-16">n1-standard-16 vs c2-standard-16</h4>
+<p>In the Point Select read test, TiDB's CPU usage exceeds 1400% (16 cores) while TiKV's CPU usage is about 1000% (16 cores).</p>
+<p>The test compares the TiDB performance on general machine types with that on machines which are optimized for computing. In this performance comparison, the frequency of n1-stadnard-16 is about 2.3G, and the frequency of c2-standard-16 is about 3.1G.</p>
+<p>In this test, the operating system is Ubuntu and the Pod network is Host. TiDB is accessed via Kubernetes Service.</p>
+<p>n1-standard-16:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">203879.49</td>
+<td align="left">1.37</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">272175.71</td>
+<td align="left">2.3</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">287805.13</td>
+<td align="left">4.1</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">295871.31</td>
+<td align="left">6.21</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">294765.83</td>
+<td align="left">8.43</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">298619.31</td>
+<td align="left">10.27</td>
+</tr>
+</tbody>
+</table>
+<p>c2-standard-16:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">290690.51</td>
+<td align="left">0.74</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">422941.17</td>
+<td align="left">1.10</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">476663.44</td>
+<td align="left">2.14</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">484405.99</td>
+<td align="left">3.25</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">489220.93</td>
+<td align="left">4.33</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">489988.97</td>
+<td align="left">5.47</td>
+</tr>
+</tbody>
+</table>
+<p>QPS comparison:</p>
+<p><img alt="n1-standard-16 vs c2-standard-16" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/n1-standard-16-vs-c2-standard-16-qps.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>Latency comparison:</p>
+<p><img alt="n1-standard-16 vs c2-standard-16" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/n1-standard-16-vs-c2-standard-16-latency.png" src="/images/svgs/loader-spinner.svg"/></p>
+<h3 id="oltp-and-other-tests">OLTP and other tests</h3>
+<p>The Point Select test is conducted on different operating systems and in different network modes, and the test results are compared. In addition, other tests in the OLTP test set are also conducted on Ubuntu in Host network mode where the TiDB cluster is accessed via Kubernetes Service.</p>
+<h4 id="oltp-update-index">OLTP Update Index</h4>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">6726.59</td>
+<td align="left">30.26</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">11067.55</td>
+<td align="left">36.24</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">17358.46</td>
+<td align="left">48.34</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">21025.23</td>
+<td align="left">64.47</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">22121.87</td>
+<td align="left">90.78</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">22650.13</td>
+<td align="left">118.92</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="OLTP Update Index" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/oltp-update-index-qps.png" src="/images/svgs/loader-spinner.svg"/>
+<img alt="OLTP Update Index" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/oltp-update-index-latency.png" src="/images/svgs/loader-spinner.svg"/></p>
+<h4 id="oltp-update-non-index">OLTP Update Non Index</h4>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">9230.60</td>
+<td align="left">23.95</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">16543.63</td>
+<td align="left">54.83</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">23551.01</td>
+<td align="left">61.08</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">31100.10</td>
+<td align="left">65.65</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">33942.60</td>
+<td align="left">54.83</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">42603.13</td>
+<td align="left">125.52</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="OLTP Update No Index" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/oltp-update-no-index-qps.png" src="/images/svgs/loader-spinner.svg"/>
+<img alt="OLTP Update No Index" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/oltp-update-no-index-latency.png" src="/images/svgs/loader-spinner.svg"/></p>
+<h4 id="oltp-read-write">OLTP Read Write</h4>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">60732.84</td>
+<td align="left">69.29</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">91005.98</td>
+<td align="left">90.78</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">110517.67</td>
+<td align="left">167.44</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">119866.38</td>
+<td align="left">235.74</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">125615.89</td>
+<td align="left">282.25</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">128501.34</td>
+<td align="left">344.082</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="OLTP Read Write" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/oltp-read-write-qps.png" src="/images/svgs/loader-spinner.svg"/>
+<img alt="OLTP Read Write" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/oltp-read-write-latency.png" src="/images/svgs/loader-spinner.svg"/></p>
+<h3 id="performance-comparison-between-single-az-and-multiple-azs">Performance comparison between single AZ and multiple AZs</h3>
+<p>The network latency on communication across multiple AZs in GCP is slightly higher than that within the same zone. In this test, machines of the same configuration are used in different deployment plans under the same standard. The purpose is to learn how the latency across multiple AZs might affect the performance of TiDB.</p>
+<p>Single AZ:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">203879.49</td>
+<td align="left">1.37</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">272175.71</td>
+<td align="left">2.30</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">287805.13</td>
+<td align="left">4.10</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">295871.31</td>
+<td align="left">6.21</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">294765.83</td>
+<td align="left">8.43</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">298619.31</td>
+<td align="left">10.27</td>
+</tr>
+</tbody>
+</table>
+<p>Multiple AZs:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Threads</th>
+<th align="left">QPS</th>
+<th align="left">95% latency(ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">150</td>
+<td align="left">141027.10</td>
+<td align="left">1.93</td>
+</tr>
+<tr>
+<td align="left">300</td>
+<td align="left">220205.85</td>
+<td align="left">2.91</td>
+</tr>
+<tr>
+<td align="left">600</td>
+<td align="left">250464.34</td>
+<td align="left">5.47</td>
+</tr>
+<tr>
+<td align="left">900</td>
+<td align="left">257717.41</td>
+<td align="left">7.70</td>
+</tr>
+<tr>
+<td align="left">1200</td>
+<td align="left">258835.24</td>
+<td align="left">10.09</td>
+</tr>
+<tr>
+<td align="left">1500</td>
+<td align="left">280114.00</td>
+<td align="left">12.75</td>
+</tr>
+</tbody>
+</table>
+<p>QPS comparison:</p>
+<p><img alt="Single Zonal vs Regional" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/single-zonal-vs-regional-qps.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>Latency comparison:</p>
+<p><img alt="Single Zonal vs Regional" class="lazy" data-original="https://download.pingcap.com/images/tidb-in-kubernetes/single-zonal-vs-regional-latency.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>From the images above, the impact of network latency goes down as the concurrency pressure increases. In this situation, the extra network latency is no longer the main bottleneck of performance.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This is a test of TiDB using sysbench running in Kubernetes deployed on a typical public cloud platform. The purpose is to learn how different factors might affect the performance of TiDB. On the whole, these influencing factors include the following items:</p>
+<ul>
+<li>In the VPC-Native mode, TiDB performs slightly better in Host network than in Pod network. (The difference, ~7%, is measured in QPS. Performance differences caused by the factors below are also measured by QPS.)</li>
+<li>In Host network, TiDB performs better (~9%) in the read test on Ubuntu provided by GCP than on COS.</li>
+<li>The TiDB performance is slightly lower (~5%) if it is accessed outside the cluster via Load Balancer.</li>
+<li>Increased latency among nodes in multiple AZs has a certain impact on the TiDB performance (30% ~ 6%; the impact diminishes as the concurrent number increases).</li>
+<li>The QPS performance is greatly improved (50% ~ 60%) if the Point Select read test is conducted on machines of computing type (compared with general types), because the test mainly consumes CPU resources.</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>
+<p>The factors above might change over time. The TiDB performance might varies on different cloud platforms. In the future, more tests will be conducted on more dimensions.</p>
+</li>
+<li>
+<p>The sysbench test case cannot fully represent the actual business scenarios. It is recommended that you simulate the actual business for test and make consideration based on all the costs behind (machines, difference between operating systems, the limit of Host network, and so on).</p>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-tidb-operator/blob/release-1.1/en/benchmark-sysbench.md">"TiDB in Kubernetes Sysbench Performance Test"</a>
+    was last updated
+    <span>Apr 16 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-tidb-operator/commit/5453971d45c4d540fd15fedcc80182b70ef06ac4">
+        cherry pick #194 to release-1.1 (#195) <span class="hash">(5453971)</span>
+</a>
+</div></div>
+<div class="sidebar-page">
+<div class="sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-tidb-operator/edit/release-1.1/en/benchmark-sysbench.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    Edit this page
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-tidb-operator/issues/new?body=File:%20[%2fen%2fbenchmark-sysbench.md](https%3a%2f%2fpingcap.com%2fdocs%2ftidb-in-kubernetes%2fv1.1%2fbenchmark-sysbench%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    Request docs changes
+</a>
+<p class="toc-title">What’s on this page</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Product</strong></h4>
+<ul>
+<li><a href="/docs/v3.0/">TiDB</a></li>
+<li><a href="/docs/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs/v3.0/roadmap/">Roadmap</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Docs</strong></h4>
+<ul>
+<li><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">Quick Start</a></li>
+<li><a href="/blog/2017-07-24-tidbbestpractice/">Best Practices</a></li>
+<li><a href="/docs/stable/faq/tidb/">FAQ</a></li>
+<li><a href="/docs/stable/reference/tools/user-guide/">TiDB Tools</a></li>
+<li><a href="/docs/dev/releases/rn/">Release Notes</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Resources</strong></h4>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/weekly/">Monthly</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="/community">TiDB Community</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Company</strong></h4>
+<ul>
+<li><a href="/about/">About</a></li>
+<li><a href="https://angel.co/pingcap-1/jobs" target="_blank">Careers</a></li>
+<li><a href="/news/">News</a></li>
+<li><a href="/contact-us/">Contact Us</a></li>
+<li><a href="/en/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/terms-of-service/">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Connect</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg>Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg>Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg>Stack Overflow</a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc">Subscribe to Blog</button></a>
+</div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 PingCAP. All Rights Reserved.</p>
+<a class="copyright-btn-lang" href="/docs-cn/tidb-in-kubernetes/stable" id="lang">中文</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

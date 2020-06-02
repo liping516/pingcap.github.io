@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>TiDB 3.0 GA Release Notes | TiDB 官方用户文档</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="TiDB 3.0 GA Release Notes | TiDB 官方用户文档" property="og:title"/>
+<meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" property="og:description"/>
+<meta content="https://pingcap.com/docs-cn/v3.0/releases/release-3.0-ga/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" name="twitter:description"/>
+<meta content="TiDB 3.0 GA Release Notes | TiDB 官方用户文档" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script><link rel="canonical" href="https://pingcap.com/docs-cn/stable/releases/release-3.0-ga" /></head> <body data-lang="cn"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/index.html"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP
+                            University</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">文档</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs-cn/v3.0/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="cn" data-type="" id="search-input" name="q" placeholder="搜索 TiDB 文档" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">文档</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP University</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social social-cn ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+<li id="wechat-mobile"><a class="wechat" href="javascript:void(0)"><svg height="18" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg></a><div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-mobile"></div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs/" id="lang">English</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB 文档 </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">v3.0</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs-cn/stable/releases/release-3.0-ga/">v4.0 (stable)</a>
+<a class="dropdown-item " href="
+                /docs-cn/dev/releases/release-3.0-ga/">dev</a>
+<a class="dropdown-item " href="
+                /docs-cn/v3.1/releases/release-3.0-ga/">v3.1</a>
+<a class="dropdown-item " href="
+                /docs-cn/v3.0/releases/release-3.0-ga/">v3.0</a>
+<a class="dropdown-item " href="
+                /docs-cn/v2.1/releases/release-3.0-ga/">v2.1</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>关于 TiDB</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/overview/">
+<span>TiDB 简介</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Benchmark 测试</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/benchmark-tidb-using-sysbench/">
+<span>如何用 Sysbench 测试 TiDB</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/benchmark-tidb-using-tpcc/">
+<span>如何对 TiDB 进行 TPC-C 测试</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/v3.0-performance-benchmarking-with-sysbench/">
+<span>Sysbench 性能对比 - v3.0 对比 v2.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/v3.0-performance-benchmarking-with-tpcc/">
+<span>TPC-C 性能对比 - v3.0 对比 v2.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/online-workloads-and-add-index-operations/">
+<span class="has-code">线上负载与 `Add Index` 相互影响测试</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>主要概念</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/architecture/">
+<span>整体架构</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>核心特性</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/key-features/#%e6%b0%b4%e5%b9%b3%e6%89%a9%e5%b1%95">
+<span>水平扩展</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/key-features/#%e9%ab%98%e5%8f%af%e7%94%a8">
+<span>高可用</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>操作指南</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>快速上手</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>创建集群</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/dev/how-to/get-started/deploy-tidb-from-docker-compose/">
+<span>使用 Docker Compose 部署 TiDB 集群</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/basic-sql-operations/">
+<span>SQL 基本操作</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/read-historical-data/">
+<span>读取历史数据</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/get-started-with-tidb-binlog/">
+<span>TiDB Binlog 教程</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/tidb-data-migration/stable/get-started/">
+<span>TiDB Data Migration 教程</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/get-started-with-tidb-lightning/">
+<span>TiDB Lightning 教程</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/get-started-with-tispark/">
+<span>TiSpark 教程</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>部署</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/hardware-and-software-requirements/">
+<span>软硬件环境需求</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>集群部署方式</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/online-deployment-using-ansible/">
+<span>使用 Ansible 部署（推荐）</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/offline-deployment-using-ansible/">
+<span>使用 Ansible 离线部署</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>跨地域冗余</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/geo-redundancy-deployment/">
+<span>跨数据中心部署方案</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/location-awareness/">
+<span>配置集群拓扑</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/tidb-data-migration/stable/deploy-a-dm-cluster-using-ansible/">
+<span>使用 Ansible 部署 DM 集群</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>配置</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/configure-time-zone/">
+<span>时区</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/configure-memory-usage/">
+<span>内存控制</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>安全</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>安全传输层协议 (TLS)</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/encrypted-connections-with-tls-protocols/">
+<span>为 MySQL 客户端开启 TLS</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/enable-tls-between-components/">
+<span>为 TiDB 组件间开启 TLS</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/generate-self-signed-certificates/">
+<span>生成自签名证书</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>监控</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-monitoring-framework/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/monitor-a-tidb-cluster/">
+<span>监控 TiDB 集群</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>迁移</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/ecosystem-tool-user-guide/">
+<span>迁移工具使用指南</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>从 MySQL 迁移</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/migrate-from-aurora-mysql-database/">
+<span>以 Amazon Aurora MySQL 为例</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/migrate-from-csv-using-tidb-lightning/">
+<span>从 CSV 迁移</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>运维</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/maintain-tidb-using-ansible/">
+<span>Ansible 常见运维操作</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/backup-and-restore-using-mydumper-lightning/">
+<span>备份与恢复</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>定位异常查询</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/identify-slow-queries/">
+<span>定位慢查询</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/identify-expensive-queries/">
+<span>定位消耗系统资源多的查询</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>扩容缩容</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/scale-tidb-using-ansible/">
+<span>使用 Ansible 扩容缩容</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>升级</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/upgrade-tidb-using-ansible/">
+<span>升级至 TiDB 3.0</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>故障诊断</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-troubleshooting-map/">
+<span>TiDB 集群问题导图</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/troubleshoot-tidb-cluster/">
+<span>集群配置诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/troubleshoot-tidb-lightning/">
+<span>TiDB Lightning 故障诊断</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>参考手册</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>SQL</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/mysql-compatibility/">
+<span>与 MySQL 兼容性对比</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>SQL 语言结构</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/literal-values/">
+<span>字面值</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/schema-object-names/">
+<span>Schema 对象名</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/keywords-and-reserved-words/">
+<span>关键字和保留字</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/user-defined-variables/">
+<span>用户自定义变量</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/expression-syntax/">
+<span>表达式语法</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/comment-syntax/">
+<span>注释语法</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>数据类型</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-default-values/">
+<span>默认值</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>数值类型</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#bit-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BIT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#boolean-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BOOL|BOOLEAN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#tinyint-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TINYINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#smallint-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`SMALLINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#mediumint-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`MEDIUMINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#integer-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`INT|INTEGER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#bigint-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BIGINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#float-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`FLOAT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#double-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`DOUBLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#decimal-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`DECIMAL`</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>日期和时间类型</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#date-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`DATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#time-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TIME`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#datetime-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`DATETIME`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#timestamp-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TIMESTAMP`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#year-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`YEAR`</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>字符串类型</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#char-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`CHAR`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#varchar-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`VARCHAR`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#text-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#tinytext-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TINYTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#mediumtext-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`MEDIUMTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#longtext-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`LONGTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#binary-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BINARY`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#varbinary-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`VARBINARY`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#blob-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#tinyblob-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TINYBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#mediumblob-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`MEDIUMBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#longblob-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`LONGBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#enum-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`ENUM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#set-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`SET`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-json/">
+<span>JSON 类型</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>函数与操作符</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/functions-and-operators-overview/">
+<span>函数与操作符概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/type-conversion-in-expression-evaluation/">
+<span>表达式求值的类型转换</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/operators/">
+<span>操作符</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/control-flow-functions/">
+<span>控制流程函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/string-functions/">
+<span>字符串函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/numeric-functions-and-operators/">
+<span>数值函数与操作符</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/date-and-time-functions/">
+<span>日期和时间函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/bit-functions-and-operators/">
+<span>位函数和操作符</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/cast-functions-and-operators/">
+<span>Cast 函数和操作符</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/encryption-and-compression-functions/">
+<span>加密和压缩函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/information-functions/">
+<span>信息函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/json-functions/">
+<span>JSON 函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/aggregate-group-by-functions/">
+<span>GROUP BY 聚合函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/window-functions/">
+<span>窗口函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/miscellaneous-functions/">
+<span>其它函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/precision-math/">
+<span>精度数学</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/expressions-pushed-down/">
+<span>下推到 TiKV 的表达式列表</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>SQL 语句</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-add-column/">
+<span class="has-code">`ADD COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-add-index/">
+<span class="has-code">`ADD INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-admin/">
+<span class="has-code">`ADMIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-alter-database/">
+<span class="has-code">`ALTER DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-alter-table/">
+<span class="has-code">`ALTER TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-alter-user/">
+<span class="has-code">`ALTER USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-analyze-table/">
+<span class="has-code">`ANALYZE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-begin/">
+<span class="has-code">`BEGIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-commit/">
+<span class="has-code">`COMMIT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-database/">
+<span class="has-code">`CREATE DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-index/">
+<span class="has-code">`CREATE INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-table-like/">
+<span class="has-code">`CREATE TABLE LIKE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-table/">
+<span class="has-code">`CREATE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-user/">
+<span class="has-code">`CREATE USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-view/">
+<span class="has-code">`CREATE VIEW`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-deallocate/">
+<span class="has-code">`DEALLOCATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-delete/">
+<span class="has-code">`DELETE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-desc/">
+<span class="has-code">`DESC`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-describe/">
+<span class="has-code">`DESCRIBE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-do/">
+<span class="has-code">`DO`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-column/">
+<span class="has-code">`DROP COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-database/">
+<span class="has-code">`DROP DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-index/">
+<span class="has-code">`DROP INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-table/">
+<span class="has-code">`DROP TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-user/">
+<span class="has-code">`DROP USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-view/">
+<span class="has-code">`DROP VIEW`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-execute/">
+<span class="has-code">`EXECUTE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-explain-analyze/">
+<span class="has-code">`EXPLAIN ANALYZE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-explain/">
+<span class="has-code">`EXPLAIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-flush-privileges/">
+<span class="has-code">`FLUSH PRIVILEGES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-flush-status/">
+<span class="has-code">`FLUSH STATUS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-flush-tables/">
+<span class="has-code">`FLUSH TABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-grant-privileges/">
+<span class="has-code">`GRANT &lt;privileges&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-insert/">
+<span class="has-code">`INSERT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-kill/">
+<span class="has-code">`KILL [TIDB]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-load-data/">
+<span class="has-code">`LOAD DATA`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-modify-column/">
+<span class="has-code">`MODIFY COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-prepare/">
+<span class="has-code">`PREPARE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-recover-table/">
+<span class="has-code">`RECOVER TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-rename-index/">
+<span class="has-code">`RENAME INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-rename-table/">
+<span class="has-code">`RENAME TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-replace/">
+<span class="has-code">`REPLACE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-revoke-privileges/">
+<span class="has-code">`REVOKE &lt;privileges&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-rollback/">
+<span class="has-code">`ROLLBACK`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-select/">
+<span class="has-code">`SELECT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-set-names/">
+<span class="has-code">`SET [NAMES|CHARACTER SET]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-set-password/">
+<span class="has-code">`SET PASSWORD`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-set-transaction/">
+<span class="has-code">`SET TRANSACTION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-set-variable/">
+<span class="has-code">`SET [GLOBAL|SESSION] &lt;variable&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-character-set/">
+<span class="has-code">`SHOW CHARACTER SET`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-collation/">
+<span class="has-code">`SHOW COLLATION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-columns-from/">
+<span class="has-code">`SHOW [FULL] COLUMNS FROM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-create-table/">
+<span class="has-code">`SHOW CREATE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-create-user/">
+<span class="has-code">`SHOW CREATE USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-databases/">
+<span class="has-code">`SHOW DATABASES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-engines/">
+<span class="has-code">`SHOW ENGINES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-errors/">
+<span class="has-code">`SHOW ERRORS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-fields-from/">
+<span class="has-code">`SHOW [FULL] FIELDS FROM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-grants/">
+<span class="has-code">`SHOW GRANTS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-indexes/">
+<span class="has-code">`SHOW INDEXES [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-index/">
+<span class="has-code">`SHOW INDEX [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-keys/">
+<span class="has-code">`SHOW KEYS [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-privileges/">
+<span class="has-code">`SHOW PRIVILEGES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-processlist/">
+<span class="has-code">`SHOW [FULL] PROCESSSLIST`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-schemas/">
+<span class="has-code">`SHOW SCHEMAS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-tables/">
+<span class="has-code">`SHOW [FULL] TABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-table-regions/">
+<span class="has-code">`SHOW TABLE REGIONS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-table-status/">
+<span class="has-code">`SHOW TABLE STATUS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-variables/">
+<span class="has-code">`SHOW [GLOBAL|SESSION] VARIABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-warnings/">
+<span class="has-code">`SHOW WARNINGS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-split-region/">
+<span class="has-code">`SPLIT REGION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-start-transaction/">
+<span class="has-code">`START TRANSACTION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-trace/">
+<span class="has-code">`TRACE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-truncate/">
+<span class="has-code">`TRUNCATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-update/">
+<span class="has-code">`UPDATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-use/">
+<span class="has-code">`USE`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/constraints/">
+<span>约束</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/generated-columns/">
+<span>生成列</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/partitioned-table/">
+<span>分区表</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/character-set-and-collation/">
+<span>字符集</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-mode/">
+<span>SQL 模式</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/views/">
+<span>视图</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>配置</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>tidb-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/system-variables/">
+<span>MySQL 系统变量</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-specific-system-variables/">
+<span>TiDB 特定系统变量</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/command-line-flags-for-tidb-configuration/">
+<span>配置参数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-configuration-file/">
+<span>配置文件描述</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>pd-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/command-line-flags-for-pd-configuration/">
+<span>配置参数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/pd-configuration-file/">
+<span>配置文件描述</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>tikv-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/command-line-flags-for-tikv-configuration/">
+<span>配置参数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tikv-configuration-file/">
+<span>配置文件描述</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>安全</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/security-compatibility-with-mysql/">
+<span>与 MySQL 的安全特性差异</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/privilege-management/">
+<span>TiDB 数据库权限管理</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/user-account-management/">
+<span>TiDB 用户账户管理</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/role-based-access-control/">
+<span>基于角色的访问控制</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/certificate-authentication/">
+<span>TiDB 证书鉴权使用指南</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>事务</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/transaction-overview/">
+<span>事务概览</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/transaction-isolation-levels/">
+<span>隔离级别</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/optimistic-transaction/">
+<span>乐观事务</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/pessimistic-transaction/">
+<span>悲观事务</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>系统数据库</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/system-tables/system-table-overview/">
+<span class="has-code">`mysql`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/system-tables/system-table-information-schema/">
+<span class="has-code">`information_schema`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/error-codes/">
+<span>错误码</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/connectors-and-apis/">
+<span>支持的连接器和 API</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>垃圾回收 (GC)</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/garbage-collection-overview/">
+<span>GC 机制简介</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/garbage-collection-configuration/">
+<span>GC 配置</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>性能调优</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-optimization-concepts/">
+<span>SQL 优化流程</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/query-execution-plan/">
+<span>理解 TiDB 执行计划</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/execution-plan-binding/">
+<span>执行计划绑定</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/statistics/">
+<span>统计信息概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/optimizer-hints/">
+<span>Optimizer Hints</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/check-cluster-status-using-sql-statements/">
+<span>使用 SQL 语句检查 TiDB 集群状态</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/statement-summary-tables/">
+<span>Statement Summary Table</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tune-tikv-performance/">
+<span>TiKV 调优</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/blog-cn/tidb-best-practice/">
+<span>TiDB 最佳实践</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>监控指标</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/grafana-overview-dashboard/">
+<span>Overview 面板</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/grafana-tidb-dashboard/">
+<span>TiDB 面板</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/grafana-pd-dashboard/">
+<span>PD 面板</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/grafana-tikv-dashboard/">
+<span>TiKV 面板</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/alert-rules/">
+<span>报警规则</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>最佳实践</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/haproxy-best-practices/">
+<span>HAProxy 最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/java-app-best-practices/">
+<span>Java 应用开发最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/high-concurrency-best-practices/">
+<span>高并发写入场景最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/grafana-monitor-best-practices/">
+<span>Grafana 监控最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/pd-scheduling-best-practices/">
+<span>PD 调度策略最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/massive-regions-best-practices/">
+<span>海量 Region 集群调优最佳实践</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tispark-overview/">
+<span>TiSpark 使用指南</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>TiDB Binlog</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/deploy-tidb-binlog/">
+<span>部署使用</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/maintain-tidb-binlog-cluster/">
+<span>运维管理</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>配置说明</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-configuration-file/#pump">
+<span>Pump</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-configuration-file/#drainer">
+<span>Drainer</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/upgrade-tidb-binlog/">
+<span>版本升级</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/monitor-tidb-binlog-cluster/">
+<span>监控告警</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-reparo/">
+<span>增量恢复</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/binlog-slave-client/">
+<span>Kafka 自定义开发</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-relay-log/">
+<span>TiDB Binlog Relay Log</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/bidirectional-replication-between-tidb-clusters/">
+<span>集群间双向同步</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-glossary/">
+<span>术语表</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>故障诊断</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/troubleshoot-tidb-binlog/">
+<span>故障诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/handle-tidb-binlog-errors/">
+<span>常见错误修复</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-faq/">
+<span>FAQ</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>周边工具</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/ecosystem-tool-user-guide/">
+<span>工具使用指南</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/mydumper-overview/">
+<span>Mydumper</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/loader-overview/">
+<span>Loader</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/syncer-overview/">
+<span>Syncer</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/tidb-data-migration/stable/">
+<span>Data Migration</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>TiDB Lightning</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/deploy-tidb-lightning/">
+<span>部署执行</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-configuration/">
+<span>参数说明</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-checkpoints/">
+<span>断点续传</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-table-filter/">
+<span>表库过滤</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/migrate-from-csv-using-tidb-lightning/">
+<span>CSV 支持</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-tidb-backend/">
+<span>TiDB-backend</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-web-interface/">
+<span>Web 界面</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/monitor-tidb-lightning/">
+<span>监控告警</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/troubleshoot-tidb-lightning/">
+<span>故障诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-faq/">
+<span>FAQ</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-glossary/">
+<span>术语表</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>sync-diff-inspector</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/sync-diff-inspector/sync-diff-inspector-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sync-diff-inspector/route-diff/">
+<span>不同库名或表名的数据校验</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sync-diff-inspector/shard-diff/">
+<span>分库分表场景下的数据校验</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sync-diff-inspector/upstream-downstream-diff/">
+<span>TiDB 主从集群的数据校验</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/pd-control/">
+<span>PD Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/pd-recover/">
+<span>PD Recover</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tikv-control/">
+<span>TiKV Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-control/">
+<span>TiDB Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/download-ecosystem-tools/">
+<span>工具下载</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/tidb-in-kubernetes/stable/">
+<span>TiDB in Kubernetes</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>常见问题 (FAQ)</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/faq/tidb-faq/">
+<span>TiDB FAQ</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-faq/">
+<span>TiDB Lightning FAQ</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/faq/upgrade-faq/">
+<span>升级 FAQ</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>技术支持</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/support/">
+<span>支持渠道</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/report-issue/">
+<span>反馈问题</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>贡献</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/contribute/#%e6%88%90%e4%b8%ba-tidb-%e7%9a%84%e8%b4%a1%e7%8c%ae%e8%80%85">
+<span>贡献代码</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/contribute/#%e6%94%b9%e8%bf%9b%e6%96%87%e6%a1%a3">
+<span>改进文档</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/roadmap/">
+<span>TiDB 路线图</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>版本发布历史</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>v3.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.14/">
+<span>3.0.14</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.13/">
+<span>3.0.13</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.12/">
+<span>3.0.12</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.11/">
+<span>3.0.11</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.10/">
+<span>3.0.10</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.9/">
+<span>3.0.9</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.8/">
+<span>3.0.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.7/">
+<span>3.0.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.6/">
+<span>3.0.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.5/">
+<span>3.0.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.4/">
+<span>3.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.3/">
+<span>3.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.2/">
+<span>3.0.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.1/">
+<span>3.0.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0-ga/">
+<span>3.0 GA</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.0-rc.3/">
+<span>3.0.0-rc.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.0-rc.2/">
+<span>3.0.0-rc.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.0-rc.1/">
+<span>3.0.0-rc.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.0-beta.1/">
+<span>3.0.0-beta.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0-beta/">
+<span>3.0.0-beta</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>v2.1</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.19/">
+<span>2.1.19</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.18/">
+<span>2.1.18</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.17/">
+<span>2.1.17</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.16/">
+<span>2.1.16</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.15/">
+<span>2.1.15</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.14/">
+<span>2.1.14</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.13/">
+<span>2.1.13</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.12/">
+<span>2.1.12</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.11/">
+<span>2.1.11</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.10/">
+<span>2.1.10</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.9/">
+<span>2.1.9</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.8/">
+<span>2.1.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.7/">
+<span>2.1.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.6/">
+<span>2.1.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.5/">
+<span>2.1.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.4/">
+<span>2.1.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.3/">
+<span>2.1.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.2/">
+<span>2.1.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.1/">
+<span>2.1.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-ga/">
+<span>2.1 GA</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.5/">
+<span>2.1 RC5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.4/">
+<span>2.1 RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.3/">
+<span>2.1 RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.2/">
+<span>2.1 RC2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.1/">
+<span>2.1 RC1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-beta/">
+<span>2.1 Beta</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>v2.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.11/">
+<span>2.0.11</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.10/">
+<span>2.0.10</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.9/">
+<span>2.0.9</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.8/">
+<span>2.0.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.7/">
+<span>2.0.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.6/">
+<span>2.0.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.5/">
+<span>2.0.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.4/">
+<span>2.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.3/">
+<span>2.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.2/">
+<span>2.0.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.1/">
+<span>2.0.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-ga/">
+<span>2.0</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-rc.5/">
+<span>2.0 RC5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-rc.4/">
+<span>2.0 RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-rc.3/">
+<span>2.0 RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-rc.1/">
+<span>2.0 RC1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-1.1-beta/">
+<span>1.1 Beta</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-1.1-alpha/">
+<span>1.1 Alpha</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>v1.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-1.0-ga/">
+<span>1.0</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-pre-ga/">
+<span>Pre-GA</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-rc.4/">
+<span>RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-rc.3/">
+<span>RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-rc.2/">
+<span>RC2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-rc.1/">
+<span>RC1</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/glossary/">
+<span>术语表</span>
+</a>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="tidb-30-ga-release-notes">TiDB 3.0 GA Release Notes</h1>
+<p>发版日期：2019 年 6 月 28 日</p>
+<p>TiDB 版本：3.0.0</p>
+<p>TiDB Ansible 版本：3.0.0</p>
+<h2 id="overview">Overview</h2>
+<p>2019 年 6 月 28 日，TiDB 发布 3.0 GA 版本，对应的 TiDB Ansible 版本为 3.0.0。
+相比于 V2.1，V3.0.0 版本在以下方面有重要改进：</p>
+<ul>
+<li>稳定性方面，显著提升了大规模集群的稳定性，集群支持 150+ 存储节点，300+ TB 存储容量长期稳定运行。</li>
+<li>易用性方面有显著的提升，降低用户运维成本，例如：标准化慢查询日志，制定日志文件输出规范，新增 <code>EXPLAIN ANALYZE</code>，SQL Trace 功能方便排查问题等。</li>
+<li>性能方面，与 2.1 相比，TPC-C 性能提升约 4.5 倍，Sysbench 性能提升约 1.5 倍。因支持 View，TPC-H 50G Q15 可正常运行。</li>
+<li>新功能方面增加了窗口函数、视图（<strong>实验特性</strong>）、分区表、插件系统、悲观锁（<strong>实验特性</strong>）、<code>SQL Plan Management</code> 等特性。</li>
+</ul>
+<h2 id="tidb">TiDB</h2>
+<ul>
+<li>新功能
+<ul>
+<li>新增 Window Function，支持所有 MySQL 8.0 中的窗口函数，包括 <code>NTILE</code>，<code>LEAD</code>，<code>LAG</code>、<code>PERCENT_RANK</code>、<code>NTH_VALUE</code>、<code>CUME_DIST</code>、<code>FIRST_VALUE</code>、<code>LAST_VALUE</code>、<code>RANK</code>、<code>DENSE_RANK</code>、<code>ROW_NUMBER</code> 函数</li>
+<li>新增 View 功能（<strong>实验特性</strong>）</li>
+<li>完善  Table Partition 功能：
+<ul>
+<li>Range Partition</li>
+<li>Hash Partition</li>
+</ul>
+</li>
+<li>新增插件系统，官方提供 IP 白名单（<strong>企业版特性</strong>），审记日志（<strong>企业版特性</strong>）等插件</li>
+<li>新增 <code>SQL Plan Management</code> 功能，通过绑定 SQL 执行计划确保查询的稳定性（<strong>实验特性</strong>）</li>
+</ul>
+</li>
+<li>SQL 优化器
+<ul>
+<li>优化<code>NOT EXISTS</code> 子查询，转化为 Anti Semi Join 提升性能</li>
+<li>优化 <code>Outer Join</code> 常量传播，新增 <code>Outer Join</code> 消除优化规则，避免无效计算，提升性能</li>
+<li>优化 <code>IN</code> 子查询，先聚合后执行 <code>Inner Join</code>，提升性能</li>
+<li>优化 Index Join，适应更多的场景，提升性能</li>
+<li>优化 Range Partition 的 Partition Pruning 优化规则，提升性能</li>
+<li>优化 <code>_tidb_rowid</code> 查询逻辑，避免全表扫描，提升性能</li>
+<li>当过滤条件中包含相关列时，在抽取复合索引的访问条件时尽可能多地匹配索引的前缀列，提升性能</li>
+<li>利用列之间的顺序相关性，提升代价估算准确度</li>
+<li>基于统计信息的贪心算法及动态规划算法改进了 <code>Join Order</code>，提升多表关联的执行速度</li>
+<li>新增 Skyline Pruning，利用规则防止执行计划过于依赖统计信息，提升查询的稳定性</li>
+<li>提升单列索引上值为 NULL 时行数估算准确度</li>
+<li>新增 <code>FAST ANALYZE</code>，通过在各个 Region 中随机采样避免全表扫描的方式提升统计信息收集性能</li>
+<li>新增单调递增的索引列增量 <code>Analyze</code> 功能，提升统计信息收集性能</li>
+<li>支持 <code>DO</code> 语句中使用子查询</li>
+<li>支持在事务中使用 Index Join</li>
+<li>优化 <code>prepare</code>/<code>execute</code>，支持不带参数的 DDL 语句</li>
+<li>修改变量 <code>stats-lease</code> 值为 0 时系统的行为，使其自动加载统计</li>
+<li>新增导出历史统计信息功能</li>
+<li>新增导入导出列的关联性信息功能</li>
+</ul>
+</li>
+<li>SQL 执行引擎
+<ul>
+<li>优化日志输出，<code>EXECUTE</code> 语句输出用户变量，<code>COMMIT</code> 语句输出慢查询日志，方便排查问题</li>
+<li>新增 <code>EXPLAIN ANALYZE</code> 功能，提升SQL 调优易用性</li>
+<li>新增 <code>admin show next_row_id</code> 功能，方便获取下一行 ID</li>
+<li>新增<code>JSON_QUOTE</code>、<code>JSON_ARRAY_APPEND</code>、<code>JSON_MERGE_PRESERVE</code>、<code>BENCHMARK</code>、<code>COALESCE</code>、<code>NAME_CONST</code> 6 个内建函数</li>
+<li>优化 Chunk 大小控制逻辑，根据查询上下文件动态调整，降低 SQL 执行时间和资源消耗，提升性能</li>
+<li>新增 <code>TableReader</code>、<code>IndexReader</code> 和 <code>IndexLookupReader</code> 算子内存追踪控制</li>
+<li>优化 Merge Join 算子，使其支持空的 <code>ON</code> 条件</li>
+<li>优化单个表列较多时写入性能，提升数倍性能</li>
+<li>通过支持逆序扫数据提升 <code>admin show ddl jobs</code> 的性能</li>
+<li>新增 <code>split table region</code> 语句，手动分裂表的 Region，缓解热点问题</li>
+<li>新增 <code>split index region</code> 语句，手动分裂索引的 Region，缓解热点问题</li>
+<li>新增黑名单禁止下推表达式到 Coprocessor 功能</li>
+<li>优化 Expensive Query 日志，在日志中打印执行时间或者使用内存超过阈值的 SQL 查询</li>
+</ul>
+</li>
+<li>DDL
+<ul>
+<li>支持字符集从 <code>utf8</code> 转换到 <code>utf8mb4</code> 的功能</li>
+<li>修改默认字符集从 <code>utf8</code> 变为 <code>utf8mb4</code></li>
+<li>新增 <code>alter schema</code> 语句修改数据库 charset 和 collation 功能</li>
+<li>新增 ALTER ALGORITHM <code>INPLACE</code>/<code>INSTANT</code> 功能</li>
+<li>新增 <code>SHOW CREATE VIEW</code> 功能</li>
+<li>新增 <code>SHOW CREATE USER</code> 功能</li>
+<li>新增快速恢复误删除的表功能</li>
+<li>新增动态调整 <code>ADD INDEX</code> 的并发数功能</li>
+<li>新增 pre_split_regions 选项，在 <code>CREATE TABLE</code> 时预先分配 Region，缓解建表后大量写入造成的写热点问题</li>
+<li>新增通过 SQL 语句指定表的索引及范围分裂 Region，缓解热点问题</li>
+<li>新增 <code>ddl_error_count_limit</code> 全局变量，控制 DDL 任务重次数</li>
+<li>新增列属性包含 <code>AUTO_INCREMENT</code> 时利用 <code>SHARD_ROW_ID_BITS</code> 打散行 ID 功能，缓解热点问题</li>
+<li>优化无效 DDL 元信息存活时间，使集群升级后一段时间 DDL 操作比较慢的情况变短</li>
+</ul>
+</li>
+<li>事务
+<ul>
+<li>新增悲观事务模型（<strong>实验特性</strong>）</li>
+<li>优化事务处理逻辑，适应更多场景，具体如下：
+<ul>
+<li><code>tidb_disable_txn_auto_retry</code> 的默认值为 <code>on</code>，即不会重试非自动提交的事务</li>
+<li>新增 <code>tidb_batch_commit</code> 系统变量控制将事务拆分成多个事务并发执行</li>
+<li>新增 <code>tidb_low_resolution_tso</code> 系统变量控制批量获取 <code>tso</code> 个数，减少事务获取 <code>tso</code> 的次数以适应某些数据一致性要求较低的场景</li>
+<li>新增 <code>tidb_skip_isolation_level_check</code> 变量控制事务检查隔离级别设置为 SERIALIZABLE 时是否报错</li>
+<li>修改 <code>tidb_disable_txn_auto_retry</code> 系统变量的行为，修改为影响所有的可重试错误</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>权限管理
+- 对 <code>ANALYZE</code>、<code>USE</code>、<code>SET GLOBAL</code>、<code>SHOW PROCESSLIST</code> 语句进行权限检查
+- 新增基于角色的权限访问控制功能 (RBAC)（<strong>实验特性</strong>）</li>
+<li>Server
+<ul>
+<li>优化慢查询日志，具体包括：
+<ul>
+<li>重构慢查询日志格式</li>
+<li>优化慢查询日志内容</li>
+<li>优化查询慢查询日志的方法，通过内存表 <code>INFORMATION_SCHEMA.SLOW_QUERY</code>，<code>ADMIN SHOW SLOW</code> 语句查询慢查询日志</li>
+</ul>
+</li>
+<li>制定日志格式规范，重构日志系统，方便工具收集分析</li>
+<li>新增 SQL 语句管理 TiDB Binlog 服务功能，包括查询状态，开启 TiDB Binlog，维护发送 TiDB Binlog 策略</li>
+<li>新增通过 <code>unix_socket</code> 方式连接数据库</li>
+<li>新增 SQL 语句 <code>Trace</code> 功能</li>
+<li>新增 <code>/debug/zip</code> HTTP 接口，获取 TiDB 实例的信息，方便排查问题</li>
+<li>优化监控项，方便排查问题，如下：
+<ul>
+<li>新增 <code>high_error_rate_feedback_total</code> 监控项，监控真实数据量与统计信息估算数据量之间的差距</li>
+<li>新增 Database 维度的 QPS 监控项</li>
+</ul>
+</li>
+<li>优化系统初始化流程，仅允许 DDL Owner 执行初始化操作，缩短初始化或升级过程中的启动时间</li>
+<li>优化 <code>kill query</code> 语句执行逻辑，提升性能，确保资源正确释放</li>
+<li>新增启动选项 <code>config-check</code> 检查配置文件合法性</li>
+<li>新增 <code>tidb_back_off_weight</code> 系统变量，控制内部出错重试的退避时间</li>
+<li>新增 <code>wait_timeout</code>、<code>interactive_timeout</code> 系统变量，控制连接空闲超过变量的值，系统自动断开连接。</li>
+<li>新增连接 TiKV 的连接池，减少连接创建时间</li>
+</ul>
+</li>
+<li>兼容性
+<ul>
+<li>支持 <code>ALLOW_INVALID_DATES</code> SQL mode</li>
+<li>支持 MySQL 320 握手协议</li>
+<li>支持将 unsigned bigint 列声明为自增列</li>
+<li>支持 <code>SHOW CREATE DATABASE IF NOT EXISTS</code> 语法</li>
+<li>优化 load data 对 CSV 文件的容错</li>
+<li>过滤条件中包含用户变量时谓词不下推，兼容 MySQL Window Function 中使用用户变量行为</li>
+</ul>
+</li>
+</ul>
+<h2 id="pd">PD</h2>
+<ul>
+<li>新增从单个节点重建集群的功能</li>
+<li>将 Region 元信息从 etcd 移到 go-leveldb 存储引擎，解决大规模集群 etcd 存储瓶颈问题</li>
+<li>API
+<ul>
+<li>新增 <code>remove-tombstone</code> 接口，用于清理 Tombstone Store</li>
+<li>新增 <code>ScanRegions</code> 接口，用于批量查询 Region 信息</li>
+<li>新增 <code>GetOperator</code> 接口，用于查询运行中的 Operator</li>
+<li>优化 <code>GetStores</code> 接口的性能</li>
+</ul>
+</li>
+<li>配置
+<ul>
+<li>优化配置检查逻辑，防止配置项错误</li>
+<li>新增 <code>enable-two-way-merge</code>，用于控制 Region merge 的方向</li>
+<li>新增 <code>hot-region-schedule-limit</code>，用于控制热点 Region 调度速度</li>
+<li>新增 <code>hot-region-cache-hits-threshold</code>，连续命中阀值用于判断热点</li>
+<li>新增 <code>store-balance-rate</code> 配置，用于控制每分钟产生 balance Region Operator 数量的上限</li>
+</ul>
+</li>
+<li>调度器优化
+<ul>
+<li>添加 Store Limit 机制限制调度速度，使得速度限制适用于不同规模的集群</li>
+<li>添加 <code>waitingOperator</code> 队列，用于优化不同调度器之间资源竞争的问题</li>
+<li>支持调度限速功能，主动向 TiKV 下发调度操作，限制单节点同时执行调度任务的个数，提升调度速度</li>
+<li>Region Scatter 调度不再受 limit 机制限制，提升调度的速度</li>
+<li>新增 <code>shuffle-hot-region</code> 调度器，解决稳定性测试易用性问题</li>
+</ul>
+</li>
+<li>模拟器
+<ul>
+<li>新增数据导入场景模拟</li>
+<li>新增为 Store 设置不同的心跳间隔的功能</li>
+</ul>
+</li>
+<li>其他
+<ul>
+<li>升级 etcd，解决输出日志格式不一致，prevote 时选举不出 Leader，Lease 死锁等问题</li>
+<li>制定日志格式规范，重构日志系统，方便工具收集分析</li>
+<li>新增调度参数，集群 Label 信息，PD 处理 TSO 请求的耗时，Store ID 与地址信息等监控指标</li>
+</ul>
+</li>
+</ul>
+<h2 id="tikv">TiKV</h2>
+<ul>
+<li>新增分布式 GC 以及并行 Resolve Lock 功能，提升 GC 的性能</li>
+<li>新增逆向 <code>raw_scan</code> 和 <code>raw_batch_scan</code> 功能</li>
+<li>新增多线程 Raftstore 和 Apply 功能，提升单节点内可扩展性，提升单节点内并发处理能力，提升单节点的资源利用率，降低延时，同等压力情况下性能提升 70%</li>
+<li>新增批量接收和发送 Raft 消息功能，写入密集的场景 TPS 提升 7%</li>
+<li>新增 Apply snapshot 之前检查 RocksDB level 0 文件的优化，避免产生 Write stall</li>
+<li>新增 Titan 存储引擎插件，提升 Value 超过 1KiB 时系统的性能，一定程度上缓解写放大问题（<strong>实验特性</strong>）</li>
+<li>新增悲观事务模型（<strong>实验特性</strong>）</li>
+<li>新增通过 HTTP 方式获取监控信息功能</li>
+<li>修改 Insert 语义，仅在 Key 不存在的时候 Prewrite 才成功</li>
+<li>制定日志格式规范，重构日志系统，方便工具收集分析</li>
+<li>新增配置信息，Key 越界相关的性能监控指标</li>
+<li>RawKV 使用 Local Reader，提升性能</li>
+<li>Engine
+<ul>
+<li>优化内存管理，减少 <code>Iterator Key Bound Option</code> 的内存分配和拷贝，提升性能</li>
+<li>支持多个 column family 共享 block cache，提升资源的利用率</li>
+</ul>
+</li>
+<li>Server
+<ul>
+<li>优化  <code>batch commands</code> 的上下文切换开销，提升性能</li>
+<li>删除 txn scheduler</li>
+<li>新增 read index，GC worker 相关监控项</li>
+</ul>
+</li>
+<li>RaftStore
+<ul>
+<li>新增 hibernate Regions 功能，优化 RaftStore CPU 的消耗（<strong>实验特性</strong>）</li>
+<li>删除 local reader 线程</li>
+</ul>
+</li>
+<li>Coprocessor
+<ul>
+<li>重构计算框架，实现向量化算子、向量化表达式计算、向量化聚合，提升性能</li>
+<li>支持为 TiDB <code>EXPLAIN ANALYZE</code> 语句提供算子执行详情</li>
+<li>改用 work-stealing 线程池模型，减少上下文切换</li>
+</ul>
+</li>
+</ul>
+<h2 id="tools">Tools</h2>
+<ul>
+<li>TiDB Lightning
+<ul>
+<li>支持数据表重定向同步功能</li>
+<li>新增导入 CSV 文件功能</li>
+<li>提升 SQL 转 KV 对的性能</li>
+<li>单表支持批量导入功能，提升单表导入的性能</li>
+<li>支持将大表的数据和索引分别导入，提升 <code>TiKV-Importer</code> 导入数据性能</li>
+<li>支持对新增文件中缺少 Column 数据时使用 row id 或者列的默认值填充缺少的 column 数据</li>
+<li><code>TiKV-Importer</code> 支持对 upload SST 到 TiKV 限速功能</li>
+</ul>
+</li>
+<li>TiDB Binlog
+<ul>
+<li>Drainer 新增 <code>advertise-addr</code> 配置，支持容器环境中使用桥接模式</li>
+<li>Pump 使用 TiKV GetMvccByKey 接口加快事务状态查询</li>
+<li>新增组件之间通讯数据压缩功能，减少网络资源消耗</li>
+<li>新增 Arbiter 工具支持从 Kafka 读取 binlog 并同步到 MySQL 功能</li>
+<li>Reparo 支持过滤不需要被同步的文件的功能</li>
+<li>新增同步 Generated column 功能</li>
+<li>新增 syncer.sql-mode 配置项，支持采用不同的 SQL mode 解析 DDL</li>
+<li>新增 syncer.ignore-table 配置项，过滤不需要被同步的表</li>
+</ul>
+</li>
+<li>sync-diff-inspector
+<ul>
+<li>新增 checkpoint 功能，支持从断点继续校验的功能</li>
+<li>新增 only-use-checksum 配置项，控制仅通过计算 checksum 校验数据的一致性</li>
+<li>新增采用 TiDB 统计信息以及使用多个 Column 划分 Chunk 的功能，适应更多的场景</li>
+</ul>
+</li>
+</ul>
+<h2 id="tidb-ansible">TiDB Ansible</h2>
+<ul>
+<li>升级监控组件版本到安全的版本
+<ul>
+<li>Prometheus 从 2.2.1 升级到 2.8.1 版本</li>
+<li>Pushgateway 从 0.4.0 升级到 0.7.0 版本</li>
+<li>Node_exporter 从 0.15.2 升级到 0.17.0 版本</li>
+<li>Alertmanager 从 0.14.0 升级到 0.17.0 版本</li>
+<li>Grafana 从 4.6.3 升级到 6.1.6 版本</li>
+<li>Ansible 从 2.5.14 升级到 2.7.11 版本</li>
+</ul>
+</li>
+<li>新增 TiKV summary 监控面板，方便查看集群状态</li>
+<li>新增 TiKV trouble_shooting  监控面板，删除重复项，方便排查问题</li>
+<li>新增 TiKV details 监控面板，方便调试排查问题</li>
+<li>新增滚动升级并发检测版本是否一致功能，提升滚动升级性能</li>
+<li>新增 lightning 部署运维功能</li>
+<li>优化 <code>table-regions.py</code> 脚本，新增按表显示 leader 分布功能</li>
+<li>优化 TiDB 监控，新增以 SQL 类别显示延迟的监控项</li>
+<li>修改操作系统版本限制，仅支持 CentOS 7.0 及以上，Red Hat 7.0 及以上版本的操作系统</li>
+<li>新增预测集群最大 QPS 的监控项，默认隐藏</li>
+</ul>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-cn/blob/release-3.0/releases/release-3.0-ga.md">"TiDB 3.0 GA Release Notes"</a>
+    更新于
+    <span>May 14 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-cn/commit/940fd063259a640e757103eb8a272cbce82535bb">
+        add alias (#3101) <span class="hash">(940fd06)</span>
+</a>
+</div></div>
+<div class="sidebar-page sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-cn/edit/release-3.0/releases/release-3.0-ga.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    修改本文
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-cn/issues/new?body=File:%20[%2freleases%2frelease-3.0-ga.md](https%3a%2f%2fpingcap.com%2fdocs-cn%2fv3.0%2freleases%2frelease-3.0-ga%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    反馈文档问题
+</a>
+<p class="toc-title">本页导航</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>产品</strong></h4>
+<ul>
+<li><a href="/docs-cn/v3.0/" onclick="trackViews('footer-product-tidb', 'docs-cn_view')">TiDB</a></li>
+<li><a href="/docs-cn/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs-cn/v3.0/roadmap/">TiDB 路线图</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>文档</strong></h4>
+<ul>
+<li><a href="/docs-cn/stable/how-to/get-started/deploy-tidb-from-docker-compose/">快速入门</a></li>
+<li><a href="/blog-cn/tidb-best-practice/">最佳实践</a></li>
+<li><a href="/docs-cn/stable/faq/tidb/">常见问题解答</a></li>
+<li><a href="/docs-cn/stable/reference/tools/user-guide/">TiDB 周边工具</a></li>
+<li><a href="/docs-cn/dev/releases/rn/">版本发布说明</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>资源</strong></h4>
+<ul>
+<li><a href="/blog-cn/">博客</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="https://book.tidb.io" target="_blank">TiDB in Action</a></li>
+<li><a href="https://university.pingcap.com/" onclick="trackViews('footer-source-university', 'pingcap-university_view')" target="_blank">PingCAP
+                    University</a></li>
+<li><a href="/solutions/intel/" onclick="trackViews('footer-resource-solutions', 'solutions_view')">联合解决方案</a></li>
+<li><a href="https://asktug.com/" onclick="trackViews('footer-resource-asktug', 'asktug_view')" target="_blank">Ask TUG</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>公司</strong></h4>
+<ul>
+<li><a href="/about-cn/">关于我们</a></li>
+<li><a href="/about-cn/recruit/join/" onclick="trackViews('footer-recruit-join', 'recruit-join_view')">招贤纳士</a>
+</li>
+<li><a href="/about-cn/news/">新闻报道</a></li>
+<li><a href="/privacy-policy/">隐私申明</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>联系我们</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg> Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg> Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg> Stack Overflow</a></li>
+<li id="wechat"><a class="wechat" href="javascript:void(0)"><svg height="17" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg> 微信公众号</a> <div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-pc"></div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 北京平凯星辰科技发展有限公司</p>
+<a class="copyright-btn-lang copyright-btn-en" href="/docs/v3.0" id="lang">English</a>
+<a class="prepared-num" href="http://www.beian.miit.gov.cn/">京 ICP 备 16046278 号 - 2</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

@@ -1,0 +1,2545 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>分区表 | TiDB 官方用户文档</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="分区表 | TiDB 官方用户文档" property="og:title"/>
+<meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" property="og:description"/>
+<meta content="https://pingcap.com/docs-cn/v3.0/partitioned-table/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" name="twitter:description"/>
+<meta content="分区表 | TiDB 官方用户文档" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script><link rel="canonical" href="https://pingcap.com/docs-cn/stable/partitioned-table" /></head> <body data-lang="cn"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/index.html"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP
+                            University</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">文档</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs-cn/v3.0/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="cn" data-type="" id="search-input" name="q" placeholder="搜索 TiDB 文档" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">文档</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP University</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social social-cn ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+<li id="wechat-mobile"><a class="wechat" href="javascript:void(0)"><svg height="18" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg></a><div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-mobile"></div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs/" id="lang">English</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB 文档 </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">v3.0</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs-cn/stable/partitioned-table/">v4.0 (stable)</a>
+<a class="dropdown-item " href="
+                /docs-cn/dev/partitioned-table/">dev</a>
+<a class="dropdown-item " href="
+                /docs-cn/v3.1/partitioned-table/">v3.1</a>
+<a class="dropdown-item " href="
+                /docs-cn/v3.0/partitioned-table/">v3.0</a>
+<a class="dropdown-item unclickable-btn" href="
+                #">v2.1<span class="tooltiptext">This doc does not exist in v2.1</span></a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>关于 TiDB</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/overview/">
+<span>TiDB 简介</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Benchmark 测试</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/benchmark-tidb-using-sysbench/">
+<span>如何用 Sysbench 测试 TiDB</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/benchmark-tidb-using-tpcc/">
+<span>如何对 TiDB 进行 TPC-C 测试</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/v3.0-performance-benchmarking-with-sysbench/">
+<span>Sysbench 性能对比 - v3.0 对比 v2.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/v3.0-performance-benchmarking-with-tpcc/">
+<span>TPC-C 性能对比 - v3.0 对比 v2.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/benchmark/online-workloads-and-add-index-operations/">
+<span class="has-code">线上负载与 `Add Index` 相互影响测试</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>主要概念</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/architecture/">
+<span>整体架构</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>核心特性</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/key-features/#%e6%b0%b4%e5%b9%b3%e6%89%a9%e5%b1%95">
+<span>水平扩展</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/key-features/#%e9%ab%98%e5%8f%af%e7%94%a8">
+<span>高可用</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>操作指南</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>快速上手</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>创建集群</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/dev/how-to/get-started/deploy-tidb-from-docker-compose/">
+<span>使用 Docker Compose 部署 TiDB 集群</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/basic-sql-operations/">
+<span>SQL 基本操作</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/read-historical-data/">
+<span>读取历史数据</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/get-started-with-tidb-binlog/">
+<span>TiDB Binlog 教程</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/tidb-data-migration/stable/get-started/">
+<span>TiDB Data Migration 教程</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/get-started-with-tidb-lightning/">
+<span>TiDB Lightning 教程</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/get-started-with-tispark/">
+<span>TiSpark 教程</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>部署</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/hardware-and-software-requirements/">
+<span>软硬件环境需求</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>集群部署方式</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/online-deployment-using-ansible/">
+<span>使用 Ansible 部署（推荐）</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/offline-deployment-using-ansible/">
+<span>使用 Ansible 离线部署</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>跨地域冗余</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/geo-redundancy-deployment/">
+<span>跨数据中心部署方案</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/location-awareness/">
+<span>配置集群拓扑</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/tidb-data-migration/stable/deploy-a-dm-cluster-using-ansible/">
+<span>使用 Ansible 部署 DM 集群</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>配置</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/configure-time-zone/">
+<span>时区</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/configure-memory-usage/">
+<span>内存控制</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>安全</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>安全传输层协议 (TLS)</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/encrypted-connections-with-tls-protocols/">
+<span>为 MySQL 客户端开启 TLS</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/enable-tls-between-components/">
+<span>为 TiDB 组件间开启 TLS</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/generate-self-signed-certificates/">
+<span>生成自签名证书</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>监控</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-monitoring-framework/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/monitor-a-tidb-cluster/">
+<span>监控 TiDB 集群</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>迁移</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/ecosystem-tool-user-guide/">
+<span>迁移工具使用指南</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>从 MySQL 迁移</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/migrate-from-aurora-mysql-database/">
+<span>以 Amazon Aurora MySQL 为例</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/migrate-from-csv-using-tidb-lightning/">
+<span>从 CSV 迁移</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>运维</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/maintain-tidb-using-ansible/">
+<span>Ansible 常见运维操作</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/backup-and-restore-using-mydumper-lightning/">
+<span>备份与恢复</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>定位异常查询</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/identify-slow-queries/">
+<span>定位慢查询</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/identify-expensive-queries/">
+<span>定位消耗系统资源多的查询</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>扩容缩容</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/scale-tidb-using-ansible/">
+<span>使用 Ansible 扩容缩容</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>升级</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/upgrade-tidb-using-ansible/">
+<span>升级至 TiDB 3.0</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>故障诊断</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-troubleshooting-map/">
+<span>TiDB 集群问题导图</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/troubleshoot-tidb-cluster/">
+<span>集群配置诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/troubleshoot-tidb-lightning/">
+<span>TiDB Lightning 故障诊断</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>参考手册</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>SQL</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/mysql-compatibility/">
+<span>与 MySQL 兼容性对比</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>SQL 语言结构</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/literal-values/">
+<span>字面值</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/schema-object-names/">
+<span>Schema 对象名</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/keywords-and-reserved-words/">
+<span>关键字和保留字</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/user-defined-variables/">
+<span>用户自定义变量</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/expression-syntax/">
+<span>表达式语法</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/comment-syntax/">
+<span>注释语法</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>数据类型</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-default-values/">
+<span>默认值</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>数值类型</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#bit-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BIT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#boolean-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BOOL|BOOLEAN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#tinyint-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TINYINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#smallint-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`SMALLINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#mediumint-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`MEDIUMINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#integer-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`INT|INTEGER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#bigint-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BIGINT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#float-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`FLOAT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#double-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`DOUBLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-numeric/#decimal-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`DECIMAL`</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>日期和时间类型</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#date-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`DATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#time-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TIME`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#datetime-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`DATETIME`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#timestamp-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TIMESTAMP`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-date-and-time/#year-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`YEAR`</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>字符串类型</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#char-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`CHAR`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#varchar-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`VARCHAR`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#text-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#tinytext-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TINYTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#mediumtext-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`MEDIUMTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#longtext-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`LONGTEXT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#binary-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BINARY`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#varbinary-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`VARBINARY`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#blob-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`BLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#tinyblob-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`TINYBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#mediumblob-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`MEDIUMBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#longblob-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`LONGBLOB`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#enum-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`ENUM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-string/#set-%e7%b1%bb%e5%9e%8b">
+<span class="has-code">`SET`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/data-type-json/">
+<span>JSON 类型</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>函数与操作符</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/functions-and-operators-overview/">
+<span>函数与操作符概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/type-conversion-in-expression-evaluation/">
+<span>表达式求值的类型转换</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/operators/">
+<span>操作符</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/control-flow-functions/">
+<span>控制流程函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/string-functions/">
+<span>字符串函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/numeric-functions-and-operators/">
+<span>数值函数与操作符</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/date-and-time-functions/">
+<span>日期和时间函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/bit-functions-and-operators/">
+<span>位函数和操作符</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/cast-functions-and-operators/">
+<span>Cast 函数和操作符</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/encryption-and-compression-functions/">
+<span>加密和压缩函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/information-functions/">
+<span>信息函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/json-functions/">
+<span>JSON 函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/aggregate-group-by-functions/">
+<span>GROUP BY 聚合函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/window-functions/">
+<span>窗口函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/miscellaneous-functions/">
+<span>其它函数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/precision-math/">
+<span>精度数学</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/functions-and-operators/expressions-pushed-down/">
+<span>下推到 TiKV 的表达式列表</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>SQL 语句</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-add-column/">
+<span class="has-code">`ADD COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-add-index/">
+<span class="has-code">`ADD INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-admin/">
+<span class="has-code">`ADMIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-alter-database/">
+<span class="has-code">`ALTER DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-alter-table/">
+<span class="has-code">`ALTER TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-alter-user/">
+<span class="has-code">`ALTER USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-analyze-table/">
+<span class="has-code">`ANALYZE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-begin/">
+<span class="has-code">`BEGIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-commit/">
+<span class="has-code">`COMMIT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-database/">
+<span class="has-code">`CREATE DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-index/">
+<span class="has-code">`CREATE INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-table-like/">
+<span class="has-code">`CREATE TABLE LIKE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-table/">
+<span class="has-code">`CREATE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-user/">
+<span class="has-code">`CREATE USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-create-view/">
+<span class="has-code">`CREATE VIEW`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-deallocate/">
+<span class="has-code">`DEALLOCATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-delete/">
+<span class="has-code">`DELETE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-desc/">
+<span class="has-code">`DESC`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-describe/">
+<span class="has-code">`DESCRIBE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-do/">
+<span class="has-code">`DO`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-column/">
+<span class="has-code">`DROP COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-database/">
+<span class="has-code">`DROP DATABASE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-index/">
+<span class="has-code">`DROP INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-table/">
+<span class="has-code">`DROP TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-user/">
+<span class="has-code">`DROP USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-drop-view/">
+<span class="has-code">`DROP VIEW`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-execute/">
+<span class="has-code">`EXECUTE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-explain-analyze/">
+<span class="has-code">`EXPLAIN ANALYZE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-explain/">
+<span class="has-code">`EXPLAIN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-flush-privileges/">
+<span class="has-code">`FLUSH PRIVILEGES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-flush-status/">
+<span class="has-code">`FLUSH STATUS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-flush-tables/">
+<span class="has-code">`FLUSH TABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-grant-privileges/">
+<span class="has-code">`GRANT &lt;privileges&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-insert/">
+<span class="has-code">`INSERT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-kill/">
+<span class="has-code">`KILL [TIDB]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-load-data/">
+<span class="has-code">`LOAD DATA`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-modify-column/">
+<span class="has-code">`MODIFY COLUMN`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-prepare/">
+<span class="has-code">`PREPARE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-recover-table/">
+<span class="has-code">`RECOVER TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-rename-index/">
+<span class="has-code">`RENAME INDEX`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-rename-table/">
+<span class="has-code">`RENAME TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-replace/">
+<span class="has-code">`REPLACE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-revoke-privileges/">
+<span class="has-code">`REVOKE &lt;privileges&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-rollback/">
+<span class="has-code">`ROLLBACK`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-select/">
+<span class="has-code">`SELECT`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-set-names/">
+<span class="has-code">`SET [NAMES|CHARACTER SET]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-set-password/">
+<span class="has-code">`SET PASSWORD`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-set-transaction/">
+<span class="has-code">`SET TRANSACTION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-set-variable/">
+<span class="has-code">`SET [GLOBAL|SESSION] &lt;variable&gt;`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-character-set/">
+<span class="has-code">`SHOW CHARACTER SET`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-collation/">
+<span class="has-code">`SHOW COLLATION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-columns-from/">
+<span class="has-code">`SHOW [FULL] COLUMNS FROM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-create-table/">
+<span class="has-code">`SHOW CREATE TABLE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-create-user/">
+<span class="has-code">`SHOW CREATE USER`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-databases/">
+<span class="has-code">`SHOW DATABASES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-engines/">
+<span class="has-code">`SHOW ENGINES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-errors/">
+<span class="has-code">`SHOW ERRORS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-fields-from/">
+<span class="has-code">`SHOW [FULL] FIELDS FROM`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-grants/">
+<span class="has-code">`SHOW GRANTS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-indexes/">
+<span class="has-code">`SHOW INDEXES [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-index/">
+<span class="has-code">`SHOW INDEX [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-keys/">
+<span class="has-code">`SHOW KEYS [FROM|IN]`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-privileges/">
+<span class="has-code">`SHOW PRIVILEGES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-processlist/">
+<span class="has-code">`SHOW [FULL] PROCESSSLIST`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-schemas/">
+<span class="has-code">`SHOW SCHEMAS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-tables/">
+<span class="has-code">`SHOW [FULL] TABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-table-regions/">
+<span class="has-code">`SHOW TABLE REGIONS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-table-status/">
+<span class="has-code">`SHOW TABLE STATUS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-variables/">
+<span class="has-code">`SHOW [GLOBAL|SESSION] VARIABLES`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-show-warnings/">
+<span class="has-code">`SHOW WARNINGS`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-split-region/">
+<span class="has-code">`SPLIT REGION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-start-transaction/">
+<span class="has-code">`START TRANSACTION`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-trace/">
+<span class="has-code">`TRACE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-truncate/">
+<span class="has-code">`TRUNCATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-update/">
+<span class="has-code">`UPDATE`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-statements/sql-statement-use/">
+<span class="has-code">`USE`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/constraints/">
+<span>约束</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/generated-columns/">
+<span>生成列</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/partitioned-table/">
+<span>分区表</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/character-set-and-collation/">
+<span>字符集</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-mode/">
+<span>SQL 模式</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/views/">
+<span>视图</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>配置</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>tidb-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/system-variables/">
+<span>MySQL 系统变量</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-specific-system-variables/">
+<span>TiDB 特定系统变量</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/command-line-flags-for-tidb-configuration/">
+<span>配置参数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-configuration-file/">
+<span>配置文件描述</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>pd-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/command-line-flags-for-pd-configuration/">
+<span>配置参数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/pd-configuration-file/">
+<span>配置文件描述</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>tikv-server</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/command-line-flags-for-tikv-configuration/">
+<span>配置参数</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tikv-configuration-file/">
+<span>配置文件描述</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>安全</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/security-compatibility-with-mysql/">
+<span>与 MySQL 的安全特性差异</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/privilege-management/">
+<span>TiDB 数据库权限管理</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/user-account-management/">
+<span>TiDB 用户账户管理</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/role-based-access-control/">
+<span>基于角色的访问控制</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/certificate-authentication/">
+<span>TiDB 证书鉴权使用指南</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>事务</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/transaction-overview/">
+<span>事务概览</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/transaction-isolation-levels/">
+<span>隔离级别</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/optimistic-transaction/">
+<span>乐观事务</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/pessimistic-transaction/">
+<span>悲观事务</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>系统数据库</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/system-tables/system-table-overview/">
+<span class="has-code">`mysql`</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/system-tables/system-table-information-schema/">
+<span class="has-code">`information_schema`</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/error-codes/">
+<span>错误码</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/connectors-and-apis/">
+<span>支持的连接器和 API</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>垃圾回收 (GC)</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/garbage-collection-overview/">
+<span>GC 机制简介</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/garbage-collection-configuration/">
+<span>GC 配置</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>性能调优</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/sql-optimization-concepts/">
+<span>SQL 优化流程</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/query-execution-plan/">
+<span>理解 TiDB 执行计划</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/execution-plan-binding/">
+<span>执行计划绑定</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/statistics/">
+<span>统计信息概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/optimizer-hints/">
+<span>Optimizer Hints</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/check-cluster-status-using-sql-statements/">
+<span>使用 SQL 语句检查 TiDB 集群状态</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/statement-summary-tables/">
+<span>Statement Summary Table</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tune-tikv-performance/">
+<span>TiKV 调优</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/blog-cn/tidb-best-practice/">
+<span>TiDB 最佳实践</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>监控指标</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/grafana-overview-dashboard/">
+<span>Overview 面板</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/grafana-tidb-dashboard/">
+<span>TiDB 面板</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/grafana-pd-dashboard/">
+<span>PD 面板</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/grafana-tikv-dashboard/">
+<span>TiKV 面板</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/alert-rules/">
+<span>报警规则</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>最佳实践</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/haproxy-best-practices/">
+<span>HAProxy 最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/java-app-best-practices/">
+<span>Java 应用开发最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/high-concurrency-best-practices/">
+<span>高并发写入场景最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/grafana-monitor-best-practices/">
+<span>Grafana 监控最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/pd-scheduling-best-practices/">
+<span>PD 调度策略最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/best-practices/massive-regions-best-practices/">
+<span>海量 Region 集群调优最佳实践</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tispark-overview/">
+<span>TiSpark 使用指南</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>TiDB Binlog</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/deploy-tidb-binlog/">
+<span>部署使用</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/maintain-tidb-binlog-cluster/">
+<span>运维管理</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>配置说明</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-configuration-file/#pump">
+<span>Pump</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-configuration-file/#drainer">
+<span>Drainer</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/upgrade-tidb-binlog/">
+<span>版本升级</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/monitor-tidb-binlog-cluster/">
+<span>监控告警</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-reparo/">
+<span>增量恢复</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/binlog-slave-client/">
+<span>Kafka 自定义开发</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-relay-log/">
+<span>TiDB Binlog Relay Log</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/bidirectional-replication-between-tidb-clusters/">
+<span>集群间双向同步</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-glossary/">
+<span>术语表</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>故障诊断</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/troubleshoot-tidb-binlog/">
+<span>故障诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/handle-tidb-binlog-errors/">
+<span>常见错误修复</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-binlog/tidb-binlog-faq/">
+<span>FAQ</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>周边工具</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/ecosystem-tool-user-guide/">
+<span>工具使用指南</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/mydumper-overview/">
+<span>Mydumper</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/loader-overview/">
+<span>Loader</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/syncer-overview/">
+<span>Syncer</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/tidb-data-migration/stable/">
+<span>Data Migration</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>TiDB Lightning</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/deploy-tidb-lightning/">
+<span>部署执行</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-configuration/">
+<span>参数说明</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-checkpoints/">
+<span>断点续传</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-table-filter/">
+<span>表库过滤</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/migrate-from-csv-using-tidb-lightning/">
+<span>CSV 支持</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-tidb-backend/">
+<span>TiDB-backend</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-web-interface/">
+<span>Web 界面</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/monitor-tidb-lightning/">
+<span>监控告警</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/troubleshoot-tidb-lightning/">
+<span>故障诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-faq/">
+<span>FAQ</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-glossary/">
+<span>术语表</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>sync-diff-inspector</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/sync-diff-inspector/sync-diff-inspector-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sync-diff-inspector/route-diff/">
+<span>不同库名或表名的数据校验</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sync-diff-inspector/shard-diff/">
+<span>分库分表场景下的数据校验</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/sync-diff-inspector/upstream-downstream-diff/">
+<span>TiDB 主从集群的数据校验</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/pd-control/">
+<span>PD Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/pd-recover/">
+<span>PD Recover</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tikv-control/">
+<span>TiKV Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-control/">
+<span>TiDB Control</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/download-ecosystem-tools/">
+<span>工具下载</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="https://pingcap.com/docs-cn/tidb-in-kubernetes/stable/">
+<span>TiDB in Kubernetes</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>常见问题 (FAQ)</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/faq/tidb-faq/">
+<span>TiDB FAQ</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/tidb-lightning/tidb-lightning-faq/">
+<span>TiDB Lightning FAQ</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/faq/upgrade-faq/">
+<span>升级 FAQ</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>技术支持</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/support/">
+<span>支持渠道</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/report-issue/">
+<span>反馈问题</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>贡献</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/contribute/#%e6%88%90%e4%b8%ba-tidb-%e7%9a%84%e8%b4%a1%e7%8c%ae%e8%80%85">
+<span>贡献代码</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/contribute/#%e6%94%b9%e8%bf%9b%e6%96%87%e6%a1%a3">
+<span>改进文档</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/roadmap/">
+<span>TiDB 路线图</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>版本发布历史</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>v3.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.14/">
+<span>3.0.14</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.13/">
+<span>3.0.13</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.12/">
+<span>3.0.12</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.11/">
+<span>3.0.11</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.10/">
+<span>3.0.10</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.9/">
+<span>3.0.9</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.8/">
+<span>3.0.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.7/">
+<span>3.0.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.6/">
+<span>3.0.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.5/">
+<span>3.0.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.4/">
+<span>3.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.3/">
+<span>3.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.2/">
+<span>3.0.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.1/">
+<span>3.0.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0-ga/">
+<span>3.0 GA</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.0-rc.3/">
+<span>3.0.0-rc.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.0-rc.2/">
+<span>3.0.0-rc.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.0-rc.1/">
+<span>3.0.0-rc.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0.0-beta.1/">
+<span>3.0.0-beta.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-3.0-beta/">
+<span>3.0.0-beta</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>v2.1</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.19/">
+<span>2.1.19</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.18/">
+<span>2.1.18</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.17/">
+<span>2.1.17</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.16/">
+<span>2.1.16</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.15/">
+<span>2.1.15</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.14/">
+<span>2.1.14</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.13/">
+<span>2.1.13</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.12/">
+<span>2.1.12</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.11/">
+<span>2.1.11</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.10/">
+<span>2.1.10</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.9/">
+<span>2.1.9</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.8/">
+<span>2.1.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.7/">
+<span>2.1.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.6/">
+<span>2.1.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.5/">
+<span>2.1.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.4/">
+<span>2.1.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.3/">
+<span>2.1.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.2/">
+<span>2.1.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1.1/">
+<span>2.1.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-ga/">
+<span>2.1 GA</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.5/">
+<span>2.1 RC5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.4/">
+<span>2.1 RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.3/">
+<span>2.1 RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.2/">
+<span>2.1 RC2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-rc.1/">
+<span>2.1 RC1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.1-beta/">
+<span>2.1 Beta</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>v2.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.11/">
+<span>2.0.11</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.10/">
+<span>2.0.10</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.9/">
+<span>2.0.9</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.8/">
+<span>2.0.8</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.7/">
+<span>2.0.7</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.6/">
+<span>2.0.6</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.5/">
+<span>2.0.5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.4/">
+<span>2.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.3/">
+<span>2.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.2/">
+<span>2.0.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0.1/">
+<span>2.0.1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-ga/">
+<span>2.0</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-rc.5/">
+<span>2.0 RC5</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-rc.4/">
+<span>2.0 RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-rc.3/">
+<span>2.0 RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-2.0-rc.1/">
+<span>2.0 RC1</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-1.1-beta/">
+<span>1.1 Beta</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-1.1-alpha/">
+<span>1.1 Alpha</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>v1.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-1.0-ga/">
+<span>1.0</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-pre-ga/">
+<span>Pre-GA</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-rc.4/">
+<span>RC4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-rc.3/">
+<span>RC3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-rc.2/">
+<span>RC2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/releases/release-rc.1/">
+<span>RC1</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/v3.0/glossary/">
+<span>术语表</span>
+</a>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="heading">分区表</h1>
+<p>本文介绍 TiDB 的分区表。</p>
+<h2 id="heading-1">分区类型</h2>
+<p>本节介绍在 TiDB 中的分区类型。当前支持的类型包括 Range 分区和 Hash 分区。Range 分区可以用于解决业务中大量删除带来的性能问题，支持快速删除分区。Hash 分区则可以用于大量写入场景下的数据打散。</p>
+<h3 id="range-">Range 分区</h3>
+<p>一个表按 range 分区是指，对于表的每个分区中包含的所有行，按分区表达式计算的值都落在给定的范围内。Range 必须是连续的，并且不能有重叠，通过使用 <code>VALUES LESS THAN</code> 操作进行定义。</p>
+<p>下列场景中，假设你要创建一个人事记录的表：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> employees (
+    id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    fname VARCHAR(<span style="color:#ae81ff">30</span>),
+    lname VARCHAR(<span style="color:#ae81ff">30</span>),
+    hired DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">1970-01-01</span><span style="color:#e6db74">'</span>,
+    separated DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">9999-12-31</span><span style="color:#e6db74">'</span>,
+    job_code INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    store_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+);
+</code></pre></div><p>你可以根据需求按各种方式进行 range 分区。其中一种方式是按 <code>store_id</code> 列进行分区。你可以这样做：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> employees (
+    id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    fname VARCHAR(<span style="color:#ae81ff">30</span>),
+    lname VARCHAR(<span style="color:#ae81ff">30</span>),
+    hired DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">1970-01-01</span><span style="color:#e6db74">'</span>,
+    separated DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">9999-12-31</span><span style="color:#e6db74">'</span>,
+    job_code INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    store_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE (store_id) (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">6</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">11</span>),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">16</span>),
+    PARTITION p3 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">21</span>)
+);
+</code></pre></div><p>在这个分区模式中，所有 <code>store_id</code> 为 1 到 5 的员工，都存储在分区 <code>p0</code> 里面，<code>store_id</code> 为 6 到 10 的员工则存储在分区 <code>p1</code> 里面。range 分区要求，分区的定义必须是有序的，按从小到大递增。</p>
+<p>新插入一行数据 <code>(72, 'Mitchell', 'Wilson', '1998-06-25', NULL, 13)</code> 将会落到分区 <code>p2</code> 里面。但如果你插入一条 <code>store_id</code> 大于 20 的记录，则会报错，因为 TiDB 无法知晓应该将它插入到哪个分区。这种情况下，可以在建表时使用最大值：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> employees (
+    id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    fname VARCHAR(<span style="color:#ae81ff">30</span>),
+    lname VARCHAR(<span style="color:#ae81ff">30</span>),
+    hired DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">1970-01-01</span><span style="color:#e6db74">'</span>,
+    separated DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">9999-12-31</span><span style="color:#e6db74">'</span>,
+    job_code INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    store_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE (store_id) (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">6</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">11</span>),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">16</span>),
+    PARTITION p3 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> <span style="color:#66d9ef">MAXVALUE</span>
+);
+</code></pre></div><p><code>MAXVALUE</code> 表示一个比所有整数都大的整数。现在，所有 <code>store_id</code> 列大于等于 16 的记录都会存储在 <code>p3</code> 分区中。</p>
+<p>你也可以按员工的职位编号进行分区，也就是使用 <code>job_code</code> 列的值进行分区。假设两位数字编号是用于普通员工，三位数字编号是用于办公室以及客户支持，四位数字编号是管理层职位，那么你可以这样建表：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> employees (
+    id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    fname VARCHAR(<span style="color:#ae81ff">30</span>),
+    lname VARCHAR(<span style="color:#ae81ff">30</span>),
+    hired DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">1970-01-01</span><span style="color:#e6db74">'</span>,
+    separated DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">9999-12-31</span><span style="color:#e6db74">'</span>,
+    job_code INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    store_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE (job_code) (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">100</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">1000</span>),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">10000</span>)
+);
+</code></pre></div><p>在这个例子中，所有普通员工存储在 <code>p0</code> 分区，办公室以及支持人员在 <code>p1</code> 分区，管理者在 <code>p2</code> 分区。</p>
+<p>除了可以按 <code>store_id</code> 切分，你还可以按日期切分。例如，假设按员工离职的年份进行分区：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> employees (
+    id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    fname VARCHAR(<span style="color:#ae81ff">30</span>),
+    lname VARCHAR(<span style="color:#ae81ff">30</span>),
+    hired DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">1970-01-01</span><span style="color:#e6db74">'</span>,
+    separated DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">9999-12-31</span><span style="color:#e6db74">'</span>,
+    job_code INT,
+    store_id INT
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE ( <span style="color:#66d9ef">YEAR</span>(separated) ) (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">1991</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">1996</span>),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">2001</span>),
+    PARTITION p3 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> <span style="color:#66d9ef">MAXVALUE</span>
+);
+</code></pre></div><p>在 range 分区中，可以基于 <code>timestamp</code> 列的值分区，并使用 <code>unix_timestamp()</code> 函数，例如：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> quarterly_report_status (
+    report_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    report_status VARCHAR(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    report_updated <span style="color:#66d9ef">TIMESTAMP</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span> <span style="color:#66d9ef">ON</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span>
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE ( UNIX_TIMESTAMP(report_updated) ) (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2008-01-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2008-04-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2008-07-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p3 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2008-10-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p4 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2009-01-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p5 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2009-04-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p6 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2009-07-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p7 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2009-10-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p8 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> ( UNIX_TIMESTAMP(<span style="color:#e6db74">'</span><span style="color:#e6db74">2010-01-01 00:00:00</span><span style="color:#e6db74">'</span>) ),
+    PARTITION p9 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#66d9ef">MAXVALUE</span>)
+);
+</code></pre></div><p>对于 timestamp 值，使用其它的分区表达式是不允许的。</p>
+<p>Range 分区在下列条件之一或者多个都满足时，尤其有效：</p>
+<ul>
+<li>删除旧数据。如果你使用之前的 <code>employees</code> 表的例子，你可以简单使用 <code>ALTER TABLE employees DROP PARTITION p0;</code> 删除所有在 1991 年以前停止继续在这家公司工作的员工记录。这会比使用 <code>DELETE FROM employees WHERE YEAR(separated) &lt;= 1990;</code> 执行快得多。</li>
+<li>使用包含时间或者日期的列，或者是其它按序生成的数据。</li>
+<li>频繁查询分区使用的列。例如执行这样的查询 <code>EXPLAIN SELECT COUNT(*) FROM employees WHERE separated BETWEEN '2000-01-01' AND '2000-12-31' GROUP BY store_id;</code> 时，TiDB 可以迅速确定，只需要扫描 <code>p2</code> 分区的数据，因为其它的分区不满足 <code>where</code> 条件。</li>
+</ul>
+<h3 id="hash-">Hash 分区</h3>
+<p>Hash 分区主要用于保证数据均匀地分散到一定数量的分区里面。在 range 分区中你必须为每个分区指定值的范围；在 hash 分区中，你只需要指定分区的数量。</p>
+<p>使用 hash 分区时，需要在 <code>CREATE TABLE</code> 后面添加 <code>PARTITION BY HASH (expr)</code>，其中 <code>expr</code> 是一个返回整数的表达式。当这一列的类型是整数类型时，它可以是一个列名。此外，你很可能还需要加上 <code>PARTITIONS num</code>，其中 <code>num</code> 是一个正整数，表示将表划分多少分区。</p>
+<p>下面的语句将创建一个 hash 分区表，按 <code>store_id</code> 分成 4 个分区：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> employees (
+    id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    fname VARCHAR(<span style="color:#ae81ff">30</span>),
+    lname VARCHAR(<span style="color:#ae81ff">30</span>),
+    hired DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">1970-01-01</span><span style="color:#e6db74">'</span>,
+    separated DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">9999-12-31</span><span style="color:#e6db74">'</span>,
+    job_code INT,
+    store_id INT
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH(store_id)
+PARTITIONS <span style="color:#ae81ff">4</span>;
+</code></pre></div><p>如果不指定 <code>PARTITIONS num</code>，默认的分区数量为 1。</p>
+<p>你也可以使用一个返回整数的 SQL 表达式。例如，你可以按入职年份分区：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> employees (
+    id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    fname VARCHAR(<span style="color:#ae81ff">30</span>),
+    lname VARCHAR(<span style="color:#ae81ff">30</span>),
+    hired DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">1970-01-01</span><span style="color:#e6db74">'</span>,
+    separated DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">9999-12-31</span><span style="color:#e6db74">'</span>,
+    job_code INT,
+    store_id INT
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH( <span style="color:#66d9ef">YEAR</span>(hired) )
+PARTITIONS <span style="color:#ae81ff">4</span>;
+</code></pre></div><p>最高效的 hash 函数是作用在单列上，并且函数的单调性是跟列的值是一样递增或者递减的，因为这种情况可以像 range 分区一样裁剪。</p>
+<p>例如，<code>date_col</code> 是类型为 <code>DATE</code> 的列，表达式 <code>TO_DAYS(date_col)</code> 的值是直接随 <code>date_col</code> 的值变化的。<code>YEAR(date_col)</code> 跟 <code>TO_DAYS(date_col)</code> 就不太一样，因为不是每次 <code>date_col</code> 变化时 <code>YEAR(date_col)</code> 都会得到不同的值。即使如此，<code>YEAR(date_col)</code> 也仍然是一个比较好的 hash 函数，因为它的结果是随着 <code>date_col</code> 的值的比例变化的。</p>
+<p>作为对比，假设我们有一个类型是 INT 的 <code>int_col</code> 的列。考虑一下表达式 <code>POW(5-int_col,3) + 6</code>，这并不是一个比较好的 hash 函数，因为随着 <code>int_col</code> 的值的变化，表达式的结果不会成比例地变化。改变 <code>int_col</code> 的值会使表达式的结果的值变化巨大。例如，<code>int_col</code> 从 5 变到 6 表达式的结果变化是 -1，但是从 6 变到 7 的时候表达式的值的变化是 -7。</p>
+<p>总而言之，表达式越接近 <code>y = cx</code> 的形式，它越是适合作为 hash 函数。因为表达式越是非线性的，在各个分区上面的数据的分布越是倾向于不均匀。</p>
+<p>理论上，hash 分区也是可以做分区裁剪的。而实际上对于多列的情况，实现很难并且计算很耗时。因此，不推荐 hash 分区在表达式中涉及多列。</p>
+<p>使用 <code>PARTITIION BY HASH</code> 的时候，TiDB 通过表达式的结果做“取余”运算，决定数据落在哪个分区。换句话说，如果分区表达式是 <code>expr</code>，分区数是 <code>num</code>，则由 <code>MOD(expr, num)</code> 决定存储的分区。假设 <code>t1</code> 定义如下：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t1 (col1 INT, col2 CHAR(<span style="color:#ae81ff">5</span>), col3 DATE)
+    PARTITION <span style="color:#66d9ef">BY</span> HASH( <span style="color:#66d9ef">YEAR</span>(col3) )
+    PARTITIONS <span style="color:#ae81ff">4</span>;
+</code></pre></div><p>向 <code>t1</code> 插入一行数据，其中 <code>col3</code> 列的值是 ‘2005-09-15’，这条数据会被插入到分区 1 中：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">MOD(YEAR('2005-09-01'),4)
+=  MOD(2005,4)
+=  1
+</code></pre></div><h3 id="-null-">分区对 NULL 值的处理</h3>
+<p>TiDB 允许计算结果为 NULL 的分区表达式。注意，NULL 不是一个整数类型，NULL 小于所有的整数类型值，正如 <code>ORDER BY</code> 的规则一样。</p>
+<h4 id="range--null-">Range 分区对 NULL 的处理</h4>
+<p>如果插入一行到 range 分区表，它的分区列的计算结果是 NULL，那么这一行会被插入到最小的那个分区。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t1 (
+    c1 INT,
+    c2 VARCHAR(<span style="color:#ae81ff">20</span>)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE(c1) (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">0</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">10</span>),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> <span style="color:#66d9ef">MAXVALUE</span>
+);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 0 rows affected (0.09 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t1 partition(p0);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+------|--------+
+| c1   | c2     |
++------|--------+
+| NULL | mothra |
++------|--------+
+1 row in set (0.00 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t1 partition(p1);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Empty set (0.00 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t1 partition(p2);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Empty set (0.00 sec)
+</code></pre></div><p>删除 <code>p0</code> 后验证：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> t1 <span style="color:#66d9ef">drop</span> partition p0;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 0 rows affected (0.08 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t1;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Empty set (0.00 sec)
+</code></pre></div><h4 id="hash--null-">Hash 分区对 NULL 的处理</h4>
+<p>在 Hash 分区中 NULL 值的处理有所不同，如果分区表达式的计算结果为 NULL，它会被当作 0 值处理。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> th (
+    c1 INT,
+    c2 VARCHAR(<span style="color:#ae81ff">20</span>)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH(c1)
+PARTITIONS <span style="color:#ae81ff">2</span>;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 0 rows affected (0.00 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> th <span style="color:#66d9ef">VALUES</span> (<span style="color:#66d9ef">NULL</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">mothra</span><span style="color:#e6db74">'</span>), (<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">gigan</span><span style="color:#e6db74">'</span>);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 2 rows affected (0.04 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> th partition (p0);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+------|--------+
+| c1   | c2     |
++------|--------+
+| NULL | mothra |
+|    0 | gigan  |
++------|--------+
+2 rows in set (0.00 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> th partition (p1);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Empty set (0.00 sec)
+</code></pre></div><p>可以看到，插入的记录 <code>(NULL, 'mothra')</code> 跟 <code>(0, 'gigan')</code> 落在了同一个分区。</p>
+<h2 id="heading-2">分区管理</h2>
+<p>通过 <code>ALTER TABLE</code> 语句可以执行一些添加、删除、合并、切分、重定义分区的操作。</p>
+<h3 id="range--1">Range 分区管理</h3>
+<p>创建分区表：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> members (
+    id INT,
+    fname VARCHAR(<span style="color:#ae81ff">25</span>),
+    lname VARCHAR(<span style="color:#ae81ff">25</span>),
+    dob DATE
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE( <span style="color:#66d9ef">YEAR</span>(dob) ) (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">1980</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">1990</span>),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">2000</span>)
+);
+</code></pre></div><p>删除分区：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">TABLE</span> members <span style="color:#66d9ef">DROP</span> PARTITION p2;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 0 rows affected (0.03 sec)
+</code></pre></div><p>清空分区：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">TABLE</span> members <span style="color:#66d9ef">TRUNCATE</span> PARTITION p1;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 0 rows affected (0.03 sec)
+</code></pre></div><blockquote>
+<p><strong>注意：</strong></p>
+<p><code>ALTER TABLE ... REORGANIZE PARTITION</code> 在 TiDB 中暂不支持。</p>
+</blockquote>
+<p>添加分区：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">TABLE</span> members <span style="color:#66d9ef">ADD</span> PARTITION (PARTITION p3 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">2010</span>));
+</code></pre></div><p>Range 分区中，<code>ADD PARTITION</code> 只能在分区列表的最后面添加，如果是添加到已存在的分区范围则会报错：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">TABLE</span> members
+    <span style="color:#66d9ef">ADD</span> PARTITION (
+    PARTITION n <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">1970</span>));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ERROR 1463 (HY000): VALUES LESS THAN value must be strictly »
+   increasing for each partition
+</code></pre></div><h3 id="hash--1">Hash 分区管理</h3>
+<p>跟 Range 分区不同，Hash 分区不能够 <code>DROP PARTITION</code>。</p>
+<p>目前 TiDB 的实现暂时不支持 <code>ALTER TABLE ... COALESCE PARTITION</code>。</p>
+<h2 id="heading-3">分区裁剪</h2>
+<p>有一个优化叫做“分区裁剪”，它基于一个非常简单的概念：不需要扫描那些匹配不上的分区。</p>
+<p>假设创建一个分区表 <code>t1</code>：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t1 (
+    fname VARCHAR(<span style="color:#ae81ff">50</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    lname VARCHAR(<span style="color:#ae81ff">50</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    region_code TINYINT UNSIGNED <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    dob DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE( region_code ) (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">64</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">128</span>),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">192</span>),
+    PARTITION p3 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> <span style="color:#66d9ef">MAXVALUE</span>
+);
+</code></pre></div><p>如果你想获得这个 select 语句的结果：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> fname, lname, region_code, dob
+    <span style="color:#66d9ef">FROM</span> t1
+    <span style="color:#66d9ef">WHERE</span> region_code <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">125</span> <span style="color:#66d9ef">AND</span> region_code <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">130</span>;
+</code></pre></div><p>很显然，结果必然是在分区 <code>p1</code> 或者 <code>p2</code> 里面，也就是说，我们只需要在 <code>p1</code> 和 <code>p2</code> 里面去搜索匹配的行。去掉不必要的分区就是所谓的裁剪。优化器如果能裁剪掉一部分的分区，则执行会快于处理整个不做分区的表的相同查询。</p>
+<p>优化器可以通过 where 条件裁剪的两个场景：</p>
+<ul>
+<li>partition_column = constant</li>
+<li>partition_column IN (constant1, constant2, …, constantN)</li>
+</ul>
+<h3 id="heading-4">分区裁剪生效的场景</h3>
+<ol>
+<li>
+<p>分区裁剪需要使用分区表上面的查询条件，所以根据优化器的优化规则，如果查询条件不能下推到分区表，则相应的查询语句无法执行分区裁剪。</p>
+<p>例如：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t1 (x int) partition <span style="color:#66d9ef">by</span> range (x) (
+    partition p0 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">5</span>),
+    partition p1 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">10</span>));
+<span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t2 (x int);
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">explain</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t1 <span style="color:#66d9ef">left</span> <span style="color:#66d9ef">join</span> t2 <span style="color:#66d9ef">on</span> t1.x <span style="color:#f92672">=</span> t2.x <span style="color:#66d9ef">where</span> t2.x <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">5</span>;
+</code></pre></div><p>在这个查询中，外连接可以简化成内连接，然后由 <code>t1.x = t2.x</code> 和 <code>t2.x &gt; 5</code> 可以推出条件 <code>t1.x &gt; 5</code>，于是可以分区裁剪并且只使用 <code>p1</code> 分区。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">explain</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t1 <span style="color:#66d9ef">left</span> <span style="color:#66d9ef">join</span> t2 <span style="color:#66d9ef">on</span> t1.x <span style="color:#f92672">=</span> t2.x <span style="color:#66d9ef">and</span> t2.x <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">5</span>;
+</code></pre></div><p>这个查询中的 <code>t2.x &gt; 5</code> 条件不能下推到 <code>t1</code> 分区表上面，因此 <code>t1</code> 无法分区裁剪。</p>
+</li>
+<li>
+<p>由于分区裁剪的规则优化是在查询计划的生成阶段，对于执行阶段才能获取到过滤条件的场景，无法利用分区裁剪的优化。</p>
+<p>例如：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t1 (x int) partition <span style="color:#66d9ef">by</span> range (x) (
+    partition p0 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">5</span>),
+    partition p1 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">10</span>));
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">explain</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t2 <span style="color:#66d9ef">where</span> x <span style="color:#f92672">&lt;</span> (<span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t1 <span style="color:#66d9ef">where</span> t2.x <span style="color:#f92672">&lt;</span> t1.x <span style="color:#66d9ef">and</span> t2.x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2</span>);
+</code></pre></div><p>这个查询每从 <code>t2</code> 读取一行，都会去分区表 <code>t1</code> 上进行查询，理论上这时会满足 <code>t1.x &gt; val</code> 的过滤条件，但实际上由于分区裁剪只作用于查询计划生成阶段，而不是执行阶段，因而不会做裁剪。</p>
+</li>
+<li>
+<p>由于当前实现中的一处限制，对于查询条件无法下推到 TiKV 的表达式，不支持分区裁剪。</p>
+<p>对于一个函数表达式 <code>fn(col)</code>，如果 TiKV 支持这个函数 <code>fn</code>，则在查询优化做谓词下推的时候，<code>fn(col)</code> 会被推到叶子节点（也就是分区），因而能够执行分区裁剪。</p>
+<p>如果 TiKV 不支持 <code>fn</code>，则优化阶段不会把 <code>fn(col)</code> 推到叶子节点，而是在叶子上面连接一个 Selection 节点，分区裁剪的实现没有处理这种父节点的 Selection 中的条件，因此对不能下推到 TiKV 的表达式不支持分区裁剪。</p>
+</li>
+<li>
+<p>对于 hash 分区类型，只有等值比较的查询条件能够支持分区裁剪。</p>
+</li>
+<li>
+<p>对于 range 分区类型，分区表达式必须是 <code>col</code> 或者 <code>fn(col)</code> 的简单形式，查询条件是 <code>&gt;</code> <code>&lt;</code> <code>=</code> <code>&gt;=</code> <code>&lt;=</code> 时才能支持分区裁剪。如果分区表达式是 <code>fn(col)</code> 形式，还要求 <code>fn</code> 必须是单调函数，才有可能分区裁剪。</p>
+<p>这里单调函数是指某个函数 <code>fn</code> 满足条件：对于任意 <code>x</code> <code>y</code>，如果 <code>x &gt; y</code>，则 <code>fn(x) &gt; fn(y)</code>。</p>
+<p>这种是严格递增的单调函数，非严格递增的单调函数也可以符合分区裁剪要求，只要函数 <code>fn</code> 满足：对于任意 <code>x</code> <code>y</code>，如果 <code>x &gt; y</code>，则 <code>fn(x) &gt;= fn(y)</code>。</p>
+<p>理论上所有满足单调条件（严格或者非严格）的函数都是可以支持分区裁剪。实际上，目前 TiDB 已经支持的单调函数只有：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">unix_timestamp
+to_days
+</code></pre></div><p>例如，分区表达式是简单列的情况：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t (id int) partition <span style="color:#66d9ef">by</span> range (id) (
+    partition p0 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">5</span>),
+    partition p1 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">10</span>));
+<span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t <span style="color:#66d9ef">where</span> t <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">6</span>;
+</code></pre></div><p>分区表达式是 <code>fn(col)</code> 的形式，<code>fn</code> 是我们支持的单调函数 <code>to_days</code>：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t (dt datetime) partition <span style="color:#66d9ef">by</span> range (to_days(id)) (
+    partition p0 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (to_days(<span style="color:#e6db74">'</span><span style="color:#e6db74">2020-04-01</span><span style="color:#e6db74">'</span>)),
+    partition p1 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (to_days(<span style="color:#e6db74">'</span><span style="color:#e6db74">2020-05-01</span><span style="color:#e6db74">'</span>)));
+<span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t <span style="color:#66d9ef">where</span> t <span style="color:#f92672">&gt;</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">2020-04-18</span><span style="color:#e6db74">'</span>;
+</code></pre></div><p>有一处例外是 <code>floor(unix_timestamp(ts))</code> 作为分区表达式，TiDB 针对这个场景做了特殊处理，可以支持分区裁剪。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t (ts <span style="color:#66d9ef">timestamp</span>(<span style="color:#ae81ff">3</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">current_timestamp</span>(<span style="color:#ae81ff">3</span>))
+partition <span style="color:#66d9ef">by</span> range (floor(unix_timestamp(ts))) (
+    partition p0 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (unix_timestamp(<span style="color:#e6db74">'</span><span style="color:#e6db74">2020-04-01 00:00:00</span><span style="color:#e6db74">'</span>)),
+    partition p1 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (unix_timestamp(<span style="color:#e6db74">'</span><span style="color:#e6db74">2020-05-01 00:00:00</span><span style="color:#e6db74">'</span>)));
+<span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t <span style="color:#66d9ef">where</span> t <span style="color:#f92672">&gt;</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">2020-04-18 02:00:42.123</span><span style="color:#e6db74">'</span>;
+</code></pre></div></li>
+</ol>
+<h2 id="heading-5">分区选择</h2>
+<p>SELECT 语句中支持分区选择。实现通过使用一个 <code>PARTITION</code> 选项实现。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> employees  (
+    id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+    fname VARCHAR(<span style="color:#ae81ff">25</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    lname VARCHAR(<span style="color:#ae81ff">25</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    store_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    department_id INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> RANGE(id)  (
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">5</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">10</span>),
+    PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">15</span>),
+    PARTITION p3 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> <span style="color:#66d9ef">MAXVALUE</span>
+);
+
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> employees <span style="color:#66d9ef">VALUES</span>
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Bob</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Taylor</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">2</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Frank</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Williams</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>),
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Ellen</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Johnson</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Jim</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Smith</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>),
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Mary</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Jones</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Linda</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Black</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>),
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Ed</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Jones</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">June</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Wilson</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>),
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Andy</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Smith</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Lou</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Waters</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>),
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Jill</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Stone</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Roger</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">White</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">2</span>),
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Howard</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Andrews</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Fred</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Goldberg</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">3</span>),
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Barbara</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Brown</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Alice</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Rogers</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>),
+    (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Mark</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Morgan</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">3</span>), (<span style="color:#e6db74">'</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Karen</span><span style="color:#e6db74">'</span>, <span style="color:#e6db74">'</span><span style="color:#e6db74">Cole</span><span style="color:#e6db74">'</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">2</span>);
+</code></pre></div><p>你可以查看存储在分区 <code>p1</code> 中的行：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> employees PARTITION (p1);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+----|-------|--------|----------|---------------+
+| id | fname | lname  | store_id | department_id |
++----|-------|--------|----------|---------------+
+|  5 | Mary  | Jones  |        1 |             1 |
+|  6 | Linda | Black  |        2 |             3 |
+|  7 | Ed    | Jones  |        2 |             1 |
+|  8 | June  | Wilson |        3 |             1 |
+|  9 | Andy  | Smith  |        1 |             3 |
++----|-------|--------|----------|---------------+
+5 rows in set (0.00 sec)
+</code></pre></div><p>如果希望获得多个分区中的行，可以提供分区名的列表，用逗号隔开。例如，<code>SELECT * FROM employees PARTITION (p1, p2)</code> 返回分区 <code>p1</code> 和 <code>p2</code> 的所有行。</p>
+<p>使用分区选择时，仍然可以使用 where 条件，以及 ORDER BY 和 LIMIT 等选项。使用 HAVING 和 GROUP BY 等聚合选项也是支持的。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> employees PARTITION (p0, p2)
+    <span style="color:#66d9ef">WHERE</span> lname <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">'</span><span style="color:#e6db74">S%</span><span style="color:#e6db74">'</span>;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+----|-------|-------|----------|---------------+
+| id | fname | lname | store_id | department_id |
++----|-------|-------|----------|---------------+
+|  4 | Jim   | Smith |        2 |             4 |
+| 11 | Jill  | Stone |        1 |             4 |
++----|-------|-------|----------|---------------+
+2 rows in set (0.00 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id, CONCAT(fname, <span style="color:#e6db74">'</span><span style="color:#e6db74"> </span><span style="color:#e6db74">'</span>, lname) <span style="color:#66d9ef">AS</span> name
+    <span style="color:#66d9ef">FROM</span> employees PARTITION (p0) <span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> lname;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+----|----------------+
+| id | name           |
++----|----------------+
+|  3 | Ellen Johnson  |
+|  4 | Jim Smith      |
+|  1 | Bob Taylor     |
+|  2 | Frank Williams |
++----|----------------+
+4 rows in set (0.06 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> store_id, <span style="color:#66d9ef">COUNT</span>(department_id) <span style="color:#66d9ef">AS</span> <span style="color:#66d9ef">c</span>
+    <span style="color:#66d9ef">FROM</span> employees PARTITION (p1,p2,p3)
+    <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> store_id <span style="color:#66d9ef">HAVING</span> <span style="color:#66d9ef">c</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">4</span>;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+---|----------+
+| c | store_id |
++---|----------+
+| 5 |        2 |
+| 5 |        3 |
++---|----------+
+2 rows in set (0.00 sec)
+</code></pre></div><p>分支选择支持所有类型的分区表，无论是 range 分区或是 hash 分区等。对于 hash 分区，如果没有指定分区名，会自动使用 <code>p0</code>、<code>p1</code>、<code>p2</code>、……、或 <code>pN-1</code> 作为分区名。</p>
+<p>在 <code>INSERT ... SELECT</code> 的 <code>SELECT</code> 中也是可以使用分区选择的。</p>
+<h2 id="heading-6">分区的约束和限制</h2>
+<p>本节介绍当前 TiDB 分区表的一些约束和限制。</p>
+<h3 id="heading-7">分区键，主键和唯一键</h3>
+<p>本节讨论分区键，主键和唯一键之间的关系。一句话总结它们之间的关系要满足的规则：<strong>分区表的每个唯一键，必须包含分区表达式中用到的所有列</strong>。</p>
+<blockquote>
+<p>every unique key on the table must use every column in the table's partitioning expression.</p>
+</blockquote>
+<p>这里所指的唯一也包含了主键，因为根据主键的定义，主键必须是唯一的。例如，下面这些建表语句就是无效的：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t1 (
+    col1 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col2 DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col3 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col4 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col1, col2)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH(col3)
+PARTITIONS <span style="color:#ae81ff">4</span>;
+
+<span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t2 (
+    col1 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col2 DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col3 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col4 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col1),
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col3)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH(col1 <span style="color:#f92672">+</span> col3)
+PARTITIONS <span style="color:#ae81ff">4</span>;
+</code></pre></div><p>它们都是有唯一键但没有包含所有分区键的。</p>
+<p>下面是一些合法的语句的例子：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t1 (
+    col1 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col2 DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col3 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col4 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col1, col2, col3)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH(col3)
+PARTITIONS <span style="color:#ae81ff">4</span>;
+
+<span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t2 (
+    col1 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col2 DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col3 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col4 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col1, col3)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH(col1 <span style="color:#f92672">+</span> col3)
+PARTITIONS <span style="color:#ae81ff">4</span>;
+</code></pre></div><p>下例中会产生一个报错：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t3 (
+    col1 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col2 DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col3 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col4 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col1, col2),
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col3)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH(col1 <span style="color:#f92672">+</span> col3)
+    PARTITIONS <span style="color:#ae81ff">4</span>;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ERROR 1491 (HY000): A PRIMARY KEY must include all columns in the table's partitioning function
+</code></pre></div><p>原因是 <code>col1</code> 和 <code>col3</code> 出现在分区键中，但是几个唯一键定义并没有完全包含它们。</p>
+<p>下面这个表就没法做分区了，因为无论如何都不可能找到满足条件的分区键：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t4 (
+    col1 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col2 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col3 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col4 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col1, col3),
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> (col2, col4)
+);
+</code></pre></div><p>根据定义，主键也是唯一键，下面两个建表语句是无效的：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t5 (
+    col1 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col2 DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col3 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col4 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>(col1, col2)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH(col3)
+PARTITIONS <span style="color:#ae81ff">4</span>;
+
+<span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t6 (
+    col1 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col2 DATE <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col3 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    col4 INT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+    <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>(col1, col3),
+    <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span>(col2)
+)
+
+PARTITION <span style="color:#66d9ef">BY</span> HASH( <span style="color:#66d9ef">YEAR</span>(col2) )
+PARTITIONS <span style="color:#ae81ff">4</span>;
+</code></pre></div><p>两个例子中，主键都没有包含分区表达式中的全部的列。</p>
+<p>如果既没有主键，也没有唯一键，则不存在这个限制。</p>
+<p>DDL 变更时，添加唯一索引也需要考虑到这个限制。比如创建了这样一个表：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t_no_pk (c1 INT, c2 INT)
+    PARTITION <span style="color:#66d9ef">BY</span> RANGE(c1) (
+        PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">10</span>),
+        PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">20</span>),
+        PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">30</span>),
+        PARTITION p3 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">40</span>)
+    );
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 0 rows affected (0.12 sec)
+</code></pre></div><p>通过 <code>ALTER TABLE</code> 添加非唯一索引是可以的。但是添加唯一索引时，唯一索引里面必须包含 <code>c1</code> 列。</p>
+<h3 id="heading-8">关于函数的分区限制</h3>
+<p>只有以下函数可以用于分区表达式：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ABS()
+CEILING() (see CEILING() and FLOOR())
+DATEDIFF()
+DAY()
+DAYOFMONTH()
+DAYOFWEEK()
+DAYOFYEAR()
+EXTRACT() (see EXTRACT() function with WEEK specifier)
+FLOOR() (see CEILING() and FLOOR())
+HOUR()
+MICROSECOND()
+MINUTE()
+MOD()
+MONTH()
+QUARTER()
+SECOND()
+TIME_TO_SEC()
+TO_DAYS()
+TO_SECONDS()
+UNIX_TIMESTAMP() (with TIMESTAMP columns)
+WEEKDAY()
+YEAR()
+YEARWEEK()
+</code></pre></div><h3 id="heading-9">兼容性</h3>
+<p>目前 TiDB 里面只实现了 Range 分区和 Hash 分区，其它的 MySQL 分区类型比如 List 分区和 Key 分区尚不支持。</p>
+<p>对于 Range Columns 类型的分区表，目前只支持单列的场景。</p>
+<p>分区管理方面，只要底层实现可能会涉及数据挪到的操作，目前都暂不支持。包括且不限于：调整 Hash 分区表的分区数量，修改 Range 分区表的范围，合并分区，交换分区等。</p>
+<p>对于暂不支持的分区类型，在 TiDB 中建表时会忽略分区信息，以普通表的形式创建，并且会报 Warning。</p>
+<p>INFORMATION_SCHEMA.PARTITION 表暂不支持。</p>
+<p>Load Data 暂时不支持分区选择。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t (id int, val int) partition <span style="color:#66d9ef">by</span> hash(id) partitions <span style="color:#ae81ff">4</span>;
+</code></pre></div><p>普通的 Load Data 操作在 TiDB 中是支持的，如下：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">load</span> <span style="color:#66d9ef">local</span> <span style="color:#66d9ef">data</span> infile <span style="color:#e6db74">"</span><span style="color:#e6db74">xxx</span><span style="color:#e6db74">"</span> <span style="color:#66d9ef">into</span> t ...
+</code></pre></div><p>但 Load Data 不支持分区选择操作：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">load</span> <span style="color:#66d9ef">local</span> <span style="color:#66d9ef">data</span> infile <span style="color:#e6db74">"</span><span style="color:#e6db74">xxx</span><span style="color:#e6db74">"</span> <span style="color:#66d9ef">into</span> t partition (p1)...
+</code></pre></div><p>对于分区表，<code>select * from t</code> 的返回结果是分区之间无序的。这跟 MySQL 不同，MySQL 的返回结果是分区之间有序，分区内部无序。</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t (id int, val int) partition <span style="color:#66d9ef">by</span> range (id) (
+    partition p0 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">3</span>),
+    partition p1 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">7</span>),
+    partition p2 <span style="color:#66d9ef">values</span> <span style="color:#66d9ef">less</span> <span style="color:#66d9ef">than</span> (<span style="color:#ae81ff">11</span>));
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 0 rows affected (0.10 sec)
+</code></pre></div><div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>), (<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>),(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>),(<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">8</span>),(<span style="color:#ae81ff">9</span>,<span style="color:#ae81ff">10</span>);
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+</code></pre></div><p>TiDB 每次返回结果会不同，例如：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">select * from t;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+------|------+
+| id   | val  |
++------|------+
+|    7 |    8 |
+|    9 |   10 |
+|    1 |    2 |
+|    3 |    4 |
+|    5 |    6 |
++------|------+
+5 rows in set (0.00 sec)
+</code></pre></div><p>MySQL 的返回结果：</p>
+<div class="copyable-code-block sql">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">select * from t;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">+------|------+
+| id   | val  |
++------|------+
+|    1 |    2 |
+|    3 |    4 |
+|    5 |    6 |
+|    7 |    8 |
+|    9 |   10 |
++------|------+
+5 rows in set (0.00 sec)
+</code></pre></div>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-cn/blob/release-3.0/partitioned-table.md">"分区表"</a>
+    更新于
+    <span>May 27 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-cn/commit/13c37ffa83a65248edf02d2813ea3c2d52b9f65b">
+        fix build issues in release 3.0 branch (#3379) <span class="hash">(13c37ff)</span>
+</a>
+</div></div>
+<div class="sidebar-page sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-cn/edit/release-3.0/partitioned-table.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    修改本文
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-cn/issues/new?body=File:%20[%2fpartitioned-table.md](https%3a%2f%2fpingcap.com%2fdocs-cn%2fv3.0%2fpartitioned-table%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    反馈文档问题
+</a>
+<p class="toc-title">本页导航</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>产品</strong></h4>
+<ul>
+<li><a href="/docs-cn/v3.0/" onclick="trackViews('footer-product-tidb', 'docs-cn_view')">TiDB</a></li>
+<li><a href="/docs-cn/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs-cn/v3.0/roadmap/">TiDB 路线图</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>文档</strong></h4>
+<ul>
+<li><a href="/docs-cn/stable/how-to/get-started/deploy-tidb-from-docker-compose/">快速入门</a></li>
+<li><a href="/blog-cn/tidb-best-practice/">最佳实践</a></li>
+<li><a href="/docs-cn/stable/faq/tidb/">常见问题解答</a></li>
+<li><a href="/docs-cn/stable/reference/tools/user-guide/">TiDB 周边工具</a></li>
+<li><a href="/docs-cn/dev/releases/rn/">版本发布说明</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>资源</strong></h4>
+<ul>
+<li><a href="/blog-cn/">博客</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="https://book.tidb.io" target="_blank">TiDB in Action</a></li>
+<li><a href="https://university.pingcap.com/" onclick="trackViews('footer-source-university', 'pingcap-university_view')" target="_blank">PingCAP
+                    University</a></li>
+<li><a href="/solutions/intel/" onclick="trackViews('footer-resource-solutions', 'solutions_view')">联合解决方案</a></li>
+<li><a href="https://asktug.com/" onclick="trackViews('footer-resource-asktug', 'asktug_view')" target="_blank">Ask TUG</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>公司</strong></h4>
+<ul>
+<li><a href="/about-cn/">关于我们</a></li>
+<li><a href="/about-cn/recruit/join/" onclick="trackViews('footer-recruit-join', 'recruit-join_view')">招贤纳士</a>
+</li>
+<li><a href="/about-cn/news/">新闻报道</a></li>
+<li><a href="/privacy-policy/">隐私申明</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>联系我们</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg> Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg> Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg> Stack Overflow</a></li>
+<li id="wechat"><a class="wechat" href="javascript:void(0)"><svg height="17" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg> 微信公众号</a> <div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-pc"></div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 北京平凯星辰科技发展有限公司</p>
+<a class="copyright-btn-lang copyright-btn-en" href="/docs/v3.0" id="lang">English</a>
+<a class="prepared-num" href="http://www.beian.miit.gov.cn/">京 ICP 备 16046278 号 - 2</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

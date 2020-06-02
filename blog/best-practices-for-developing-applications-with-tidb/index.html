@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>Best Practices for Developing Applications with TiDB | TiDB</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="This article shows how to efficiently develop high-quality applications with TiDB, an open-source NewSQL database that supports Hybrid Transactional and Analytical Processing (HTAP) workloads and can serve as a scale-out MySQL database without manual sharding." name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="Best Practices for Developing Applications with TiDB | TiDB" property="og:title"/>
+<meta content="This article shows how to efficiently develop high-quality applications with TiDB, an open-source NewSQL database that supports Hybrid Transactional and Analytical Processing (HTAP) workloads and can serve as a scale-out MySQL database without manual sharding." property="og:description"/>
+<meta content="https://pingcap.com/blog/best-practices-for-developing-applications-with-tidb/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="This article shows how to efficiently develop high-quality applications with TiDB, an open-source NewSQL database that supports Hybrid Transactional and Analytical Processing (HTAP) workloads and can serve as a scale-out MySQL database without manual sharding." name="twitter:description"/>
+<meta content="Best Practices for Developing Applications with TiDB | TiDB" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/>
+<meta content="https://download.pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="en"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="a-en" href="/tidb-cloud/">Cloud</a></li>
+<li><a class="a-en" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector " id="docsTypeSelector">
+<a class="header-doc-nav" href="#">Docs</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a class="a-en" href="/success-stories">Success
+                    Stories</a></li>
+<li class="sel"><a class="a-en" href="/blog">Blog</a></li>
+<li><a class="link-download link-download-en" href="/download">Free Download</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs/dev/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="en" data-type="" id="search-input" name="q" placeholder="Search TiDB Docs" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li><a href="/tidb-cloud/">Cloud</a></li>
+<li><a class="tidb-academy" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector " id="docsTypeSelector">
+<p class="header-doc-nav">Docs</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/success-stories">Success Stories</a></li>
+<li class="sel"><a href="/blog">Blog</a></li>
+<li><a class="link-download" href="/download">Free Download</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc" style="margin-left: 0.75rem;">Subscribe to Blog</button></a>
+</div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/blog-cn" id="lang">中文</a>
+</div>
+</div>
+</nav>
+<div class="blog">
+<div class="blogArticle__container">
+<div class="archive"><div class="article-nav">
+<a href="/blog/#MySQL-Scalability">BLOG HOME</a> <span> &gt; </span>MySQL Scalability</div><div class="content markdown-body">
+<h1 class="title">Best Practices for Developing Applications with TiDB</h1>
+<ul class="blog-post-meta">
+<li class="meta-item">
+<img alt="Date icon" src="/images/svgs/icon-date.svg"/>Wed, Jun 19, 2019</li>
+<li class="meta-item">
+<img alt="Pen icon" src="/images/svgs/icon-writer.svg"/>Tianshuang Qin</li>
+</ul>
+<div class="blog-text"><h2 id="1-introduction-target-audiences-and-why-this-blog-exists">1. Introduction: target audiences and why this blog exists</h2>
+<p>Target audience: Database architects, database administrators, infrastructure engineers, or application developers.</p>
+<p>As an open source distributed database, in most cases, TiDB can serve as a scale-out MySQL database without manual sharding. However, because of its distributed nature, there are some differences between traditional relational databases like MySQL and TiDB. For detailed information, see <a href="https://pingcap.com/docs/dev/reference/mysql-compatibility/">TiDB Compatibility with MySQL</a>.</p>
+<p>This article shows you how to efficiently develop high-quality applications with TiDB. You'll get an in-depth look at several TiDB features that will save you hours of work and prevent some common coding errors. You'll also learn important best practices from the many TiDB users that have come before you.</p>
+<p>This article is also useful if you're migrating your current applications to TiDB.</p>
+<h2 id="2-transaction-in-tidb-and-what-it-means-to-you">2. Transaction in TiDB and what it means to you</h2>
+<p>This section is an in-depth look at transaction-related issues in TiDB and provides solutions to prevent or resolve them.</p>
+<h3 id="21-snapshot-isolation-in-tidb-jepsen-tested-and-a-few-caveats">2.1 Snapshot isolation in TiDB: Jepsen tested! And a few caveats</h3>
+<p>TiDB supports snapshot isolation (SI) as is shown in <a href="https://pingcap.com/blog/tidb-passes-jepsen-test-for-snapshot-isolation-and-single-key-linearizability/">TiDB Passes Jepsen Test for Snapshot Isolation and Single-Key Linearizability</a>. For more information about the TiDB transaction model and translation level, see <a href="https://pingcap.com/docs/dev/reference/transactions/transaction-model/">Transaction Model</a> and <a href="https://pingcap.com/docs/dev/reference/transactions/transaction-isolation/">TiDB Transaction Isolation Levels</a>.</p>
+<h3 id="22-solution-to-hot-record-scenarios-where-the-same-row-is-modified-concurrently">2.2 Solution to hot record scenarios where the same row is modified concurrently</h3>
+<p>TiDB uses the optimistic locking mechanism. This means that TiDB automatically retries the transactions that meet conflicts when being committed and backs off when TiDB handles concurrent transactions. However, if you specify the <code>SELECT FOR UPDATE</code> statement or disable the <code>tidb_disable_txn_auto_retry</code> variable, this backoff mechanism becomes invalid, and the transactions committed later are rolled back.</p>
+<p><code>SELECT FOR UPDATE</code> is applied in hot record scenarios including the following:</p>
+<ul>
+<li>Counter, in which the value of a field is continuously increased by 1.</li>
+<li>Seckilling, in which newly-advertised goods quickly sell out.</li>
+<li>Account balancing in some financial scenarios with “hot Region”, in which the same row of data is modified concurrently.</li>
+</ul>
+<p>Generally, traditional standalone DBMSs use pessimistic locking to implement <code>SELECT FOR UPDATE</code>. After a transaction starts, they check locks. If the lock required by the transaction and the current lock on the data are incompatible, a lock wait occurs, and the transaction can be executed after the current lock is released. TiDB executes <code>SELECT FOR UPDATE</code> just like setting the lock wait time to 0 in a pessimistic locking system, and a transaction encountering lock conflicts fails to commit.</p>
+<p>To sum up, TiDB doesn't apply to scenarios where the same row of data is modified concurrently. Using <code>SELECT FOR UPDATE</code> in a transaction can guarantee data consistency, but only the transaction committed earliest among the concurrently-executed transactions can be executed successfully. TiDB rolls back the remaining requests.</p>
+<p>The best practice to handle a hot record scenario is to transfer and implement the counter feature in the cache (like Redis and Codis).</p>
+<p>In a database with pessimistic locking applied, the concurrent <code>SELECT FOR UPDATE</code> transactions queue up and are executed serially. Therefore, the performance is not good. However, handling the counter with the cache improves performance.</p>
+<h3 id="23-nested-transaction">2.3 “Nested transaction”</h3>
+<h4 id="231-nested-transactions-in-most-rdbms-products">2.3.1 Nested transactions in most RDBMS products</h4>
+<p>According to the <a href="https://en.wikipedia.org/wiki/ACID">ACID</a> (Atomicity, Consistency, Isolation, Durability) theory, concurrent transactions should be isolated from each other to avoid mutual interference. This means that transactions cannot be “nested.”</p>
+<p>At the read committed (RC) isolation level, if multiple reads exist in the same transaction, the data is read each time the data is committed. When multiple transactions execute concurrently, multiple read results in a transaction may be very different. These are called “non-repeatable reads.”</p>
+<p>Most RDBMS products use RC as the default isolation level. However, sometimes database application developers don't pay attention to the isolation level setting. They even treat non-repeatable reads as a feature, and develop applications based on “nested transactions.”</p>
+<h4 id="232-nested-transaction-model-does-not-apply-to-tidb">2.3.2 Nested transaction model does not apply to TiDB</h4>
+<p>This section gives an example to explain why the nested transaction model does not apply to TiDB.</p>
+<p><strong>2.3.2.1 Example for a set of nested transactions</strong></p>
+<p>The following diagram shows the implementation logic for a set of nested transactions. At the top, session 1 and session 2 are two sessions initiated by the application. Down the left side, T1- T8 constitute a timeline. The logic is as follows:</p>
+<ol>
+<li>
+<p>The application opens session 1 at T1, and then performs a query. (Note that in the MySQL protocol, the first statement that follows <code>begin</code> and accesses the table data is the start of a transaction.)</p>
+</li>
+<li>
+<p>From T3 to T5, the application opens session 2, writes a row of data, and then commits the data.</p>
+</li>
+<li>
+<p>The application continues to manipulate session 1.</p>
+<ol>
+<li>At T6, it tries to update the data just written.</li>
+<li>At T7, it commits the transaction opened at T2.</li>
+<li>At T8, session 1 executes a query statement to check the <code>val</code> value of the corresponding row for <code>k=1</code> that is written by session 2 at T4.</li>
+</ol>
+</li>
+</ol>
+<p><img alt="Nested transaction example" class="lazy" data-original="https://download.pingcap.com/images/blog/nested-transaction-example.png" src="/images/svgs/loader-spinner.svg"/></p>
+<p>At the RC isolation level, the returned result for the query at T8 is <code>102</code>, which seems to meet the feature requirement for a nested transaction. But this process does not conform to reality. The diagram above only uses a single thread to simulate a nested transaction. But in the concurrent requests in practical application scenarios, multiple transactions are alternately executed and committed in the timeline. In this case, we can't predict the execution result of the nested transactions.</p>
+<p>At the snapshot isolation (SI) or repeatable read (RR) isolation levels, the returned result of any reads before being committed or rolled back corresponds to the consistency status when the transaction starts. The data accessible to the transaction in session 1 at T2 is determined. This is just like taking a snapshot of the database at T2. Even though session 2 is open from T3 to T5, and some data is written in and committed, this does not affect the data read by session 1 at T6. At T6, the row with <code>k=1</code> has not been read, so Row 0 is updated. At T8, the returned value for the query is 2. At the SI or RR isolation levels, the degree of isolation is higher, and for concurrent requests, the results are predictable.</p>
+<p><strong>2.3.2.2 Solution to the example</strong></p>
+<p>For these cases of nested transactions, if you only require that session 1 update the table after session 2 writes data into the table, you only need to control the application logic by adding a commit step after querying the statement at T2. This commits the query transaction in a timely manner. We then perform the rest of the steps on the timeline after T2.</p>
+<h3 id="24-no-support-for-the-propagation-nested-in-the-java-spring-framework-relying-on-the-savepoint-mechanism">2.4 No support for the <code>PROPAGATION_NESTED</code> in the Java Spring Framework (relying on the savepoint mechanism)</h3>
+<p>The Java Spring Framework supports<code>PROPAGATION_NESTED</code> propagation, and it starts a nested transaction, which is a subtransaction started independently of the existing transaction. When a nested transaction starts, the database records a savepoint. If the nested transaction fails to be executed, the database rolls back the transaction to the savepoint status. The nested transaction is part of the outer transaction, and it is committed with the outer transaction. The following commands show a savepoint mechanism:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">mysql&gt; BEGIN;
+mysql&gt; INSERT INTO T2 VALUES(100);
+mysql&gt; SAVEPOINT svp1;
+mysql&gt; INSERT INTO T2 VALUES(200);
+mysql&gt; ROLLBACK TO SAVEPOINT svp1;
+mysql&gt; RELEASE SAVEPOINT svp1;
+mysql&gt; COMMIT;
+mysql&gt; SELECT * FROM T2;
++------+
+|  ID   |
++------+
+|  100 |
++------+
+</code></pre></div><p>TiDB does not support the savepoint mechanism, and therefore it does not support the <code>PROPAGATION_NESTED</code> propagation behavior. If a <code>PROPAGATION_NESTED</code> propagation behavior is applied to an application based on the Java Spring Framework, you need to adjust the client by removing the nested transaction logic.</p>
+<h3 id="25-large-transactions">2.5 Large transactions</h3>
+<p>TiKV, the storage engine of TiDB is based on RocksDB which adopts the log-structured merge-tree (LSM-tree). For large transactions in a log-based database, you must manually set the available log capacity to a larger value to prevent a single transaction from filling the log.</p>
+<p>TiDB sets a hard limit for the number of transactions. Due to the two-phase commit in TiDB, modifying data in large transactions might cause some problems. Therefore, to reduce this impact, TiDB sets a limit for the transaction size.</p>
+<p>TiKV stores data in key-value pairs, and the transaction limit is based on the size and number of these pairs. One row of data a table in TiDB (or in the concept of other traditional relational databases) is mapped into a key-value pair, and so is an index. When a table has only two indexes, three key-value pairs are written to the database each time a row of data is inserted. Based on these assumptions, the transaction limit is as follows:</p>
+<ul>
+<li>The number of SQL statements in a transaction does not exceed 5,000. This is the default, but you can configure it.</li>
+<li>The size of each key-value pair does not exceed 6 MB.</li>
+<li>The total size of key-value pairs does not exceed 100 MB.</li>
+<li>The total number of key-value pairs does not exceed 300,000.</li>
+</ul>
+<p>To stay within these limits, you must reduce the number of transactions on certain operations. These include transactions with <code>Create</code>, <code>Delete</code>, and <code>Update</code> operations on large amounts of data. The best practice is to rewrite large transactions as paged SQL statements and to commit these statements in phases. TiDB uses <code>Order by</code> along with the offset of <code>limit</code> to implement the paging feature. For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">update tab set value='new_value' where id in (select id from tab order by id limit 0,10000);
+commit;
+update tab set value='new_value' where id in (select id from tab order by id limit 10000,10000);
+commit;
+update tab set value='new_value' where id in (select id from tab order by id limit 20000,10000);
+commit;
+...
+</code></pre></div><h2 id="3-auto-increment-ids-in-tidb-monotonically-increasing-but-not-necessarily-increasing-sequentially">3. Auto-increment IDs in TiDB: monotonically increasing but not necessarily increasing sequentially</h2>
+<p>This section introduces allocating principles for auto-increment IDs in TiDB, the best practice for designing auto-increment IDs, and how to use auto-increment IDs in TiDB.</p>
+<h3 id="31-allocating-principles-for-auto-increment-ids-in-tidb">3.1 Allocating principles for auto-increment IDs in TiDB</h3>
+<p>TiDB's auto-increment ID feature is only guaranteed to be automatically monotonic(incremental and unique), but it is not guaranteed to be allocated sequentially. Currently, TiDB allocates IDs in batches. If data is inserted into multiple TiDB servers simultaneously, the allocated IDs are not sequential. When multiple threads concurrently insert data into multiple tidb-server instances, the data inserted later may have a smaller auto-increment ID. TiDB lets you specify <code>AUTO_INCREMENT</code> for the integer field, but allows only one <code>AUTO_INCREMENT</code> field in a single table.</p>
+<h3 id="32-best-practice-for-auto-increment-id-design">3.2 Best practice for auto-increment ID design</h3>
+<p>Generally, the purpose for setting auto-increment IDs is to use them as the unique restriction for data in a table. Thus, auto-increment IDs are designed as the primary key or unique index, and the property of these columns should be <code>not null</code>.</p>
+<p>The type for auto-increment ID columns should be integer. Among multiple integer types, it is recommended to use <code>bigint</code>. The reason is that auto-increment IDs of the <code>int</code> type are usually used up even in a standalone database. TiDB handles much more data than a standalone database, and it allocates auto-increment IDs in a multi-threading framework. As a result, the <code>int</code> type can't meet the demand. Generally, auto-increment IDs don't store negative numbers, and adding the “unsigned” property for a column can double the ID storage capacity. The range for unsigned <code>int</code>s is from 0 to 4294967295, while the range for unsigned <code>bigint</code>s is from 0 to 18446744073709551615.</p>
+<p>In conclusion, the best practice for auto-increment ID design is:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">`auto_inc_id` bigint unsigned not null primary key auto_increment comment 'auto-increment ID'
+</code></pre></div><h3 id="33-how-to-auto-increment-ids-in-tidb">3.3 How to auto-increment IDs in TiDB</h3>
+<p>As mentioned previously, auto-increment IDs are mostly designed as primary keys or unique indexes. You shouldn't manually assign values for auto-increment IDs. This may cause frequent update requests for maximum values of many global auto-increment IDs, thereby affecting write performance.</p>
+<p>While writing data, you don't have to specify the auto-increment ID column in TiDB. TiDB automatically assigns values for it. Of course, you can specify an incremental ID column for writing. Just set the value to write as <code>NULL</code>, and TiDB automatically assigns values for it.</p>
+<div class="trackable-btns">
+<a href="/download" onclick="trackViews('Best Practices for Developing Applications with TiDB', 'download-tidb-btn-middle')"><button>Download TiDB</button></a>
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm" onclick="trackViews('Best Practices for Developing Applications with TiDB', 'subscribe-blog-btn-middle')"><button>Subscribe to Blog</button></a>
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">mysql&gt; create table autoid(`auto_inc_id` bigint unsigned not null primary key auto_increment comment 'auto-increment ID', b int);
+Query OK, 0 rows affected (0.25 sec)
+
+mysql&gt; insert into autoid(b) values(100);
+Query OK, 1 row affected (0.19 sec)
+
+mysql&gt; insert into autoid(b) values(200);
+Query OK, 1 row affected (0.03 sec)
+
+mysql&gt; insert into autoid(b) values(300);
+Query OK, 1 row affected (0.06 sec)
+
+mysql&gt; insert into autoid values(null,1000);
+Query OK, 1 row affected (0.04 sec)
+
+mysql&gt; insert into autoid values(null,2000);
+Query OK, 1 row affected (0.03 sec)
+
+mysql&gt; insert into autoid values(null,3000);
+Query OK, 1 row affected (0.03 sec)
+
+mysql&gt; select * from autoid;
++-------------+------+
+| auto_inc_id | b    |
++-------------+------+
+|           1 |  100 |
+|           2 |  200 |
+|           3 |  300 |
+|           4 | 1000 |
+|           5 | 2000 |
+|           6 | 3000 |
++-------------+------+
+6 rows in set (0.01 sec)
+</code></pre></div><h2 id="4-constraints-in-tidb">4. Constraints in TiDB</h2>
+<p>This section describes constraints used in TiDB and digs deep into a constraint check issue in TiDB.</p>
+<h3 id="41-primary-key-and-unique-index">4.1 Primary key and unique index</h3>
+<p>TiDB uses primary keys and unique indexes as UNIQUE constraints for table data. This approach is similar to other database management systems. However, be aware of the following differences:</p>
+<ul>
+<li>In TiDB, when you create a table, you must state the primary key. As of the current version (V2.1.0 and earlier), after you create a table, you can't add, modify, or delete the primary key. This constraint doesn't affect unique indexes.</li>
+<li>The <code>Drop Column</code> operation doesn't let you delete primary key columns.</li>
+</ul>
+<h3 id="42-foreign-keys-not-supported-by-tidb-but-shown-in-information-schema">4.2 Foreign keys, not supported by TiDB, but shown in <code>information_schema</code></h3>
+<p>TiDB doesn't support foreign keys. However as a reference, the parser imports them and shows the relations in the <code>information_schema</code>. You can only perform cascade operations on multiple tables with foreign keys within an application.</p>
+<h3 id="43-by-default-insert-only-performs-unique-constraint-check-upon-committing">4.3 By default, <code>INSERT</code> only performs UNIQUE constraint check upon committing</h3>
+<p>TiDB adopts an optimistic transaction model. During the commit phase, TiDB tries to land all write operations into the storage engine, which makes a heavier commit load compared to other databases that use pessimistic transaction models.</p>
+<p>The following DML statements involve read operations on table data:</p>
+<ul>
+<li><code>UPDATE</code></li>
+<li><code>DELETE</code></li>
+<li><code>MERGE/UPSERT</code> (not supported by TiDB)</li>
+<li><code>INSERT</code> (<code>INSERT IGNORE</code>, <code>INSERT ON DUPLICATE KEY UPDATE</code>, <code>INSERT IGNORE ON DUPLICATE KEY UPDATE</code>)</li>
+</ul>
+<p>When the table contains a primary key or a unique index, SQL semantics imply a UNIQUE constraint check of the table. This requires the verification to be performed once the DML statements above read the data. TiDB implements this requirement.</p>
+<p>In DML, only <code>INSERT</code> statements are pure write operations. There are exceptions, however. The following special <code>INSERT</code> statements aren't pure writes:</p>
+<ul>
+<li><code>INSERT IGNORE</code></li>
+<li><code>INSERT ON DUPLICATE KEY UPDATE</code></li>
+<li><code>INSERT IGNORE ON DUPLICATE KEY UPDATE</code></li>
+</ul>
+<p>A primary key or a unique index on the table implies the SQL semantics in the INSERT statement to read the corresponding record in the table. If nothing is returned for the read. This line of the record is available for the write; if any data is returned, it means this line doesn't satisfy the UNIQUE constraint of the table.</p>
+<p>To improve execution efficiency, TiDB doesn't compare the records in the table when it executes <code>INSERT</code> statements. Instead, it verifies that records are unique when it commits the transaction. This approach saves some read operations. The performance advantages are especially prominent when there are many records involved in the <code>INSERT</code> statement, such as a batch insert.</p>
+<p>However, this implementation is not flawless. When there are too many write records in a single transaction, if there is any conflict of primary key or unique index between the data for write and existing data in the table, TiDB waits until the commit to report the error and rolls back the whole transaction. In the meantime, some applications may capture the information returned by the <code>INSERT</code> statement. Based on the captured information, TiDB determines subsequent execution logics for the application. By default, TiDB does not return errors for duplicate primary keys or unique indexes during the execution of the <code>INSERT</code> statement. This type of information is only returned upon <code>COMMIT</code>.</p>
+<p>To conclude, TiDB by default doesn't behave as shown in the screenshot below. The first error occurs because the transaction contains two records with the same primary key, which indicates that TiDB performs uniqueness verification on all records involved in the transaction. The second error happens when the transaction is committed, which indicates that TiDB by default only compares the <code>INSERT</code> records involved in the transaction with the records in the table when it commits the transaction.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">mysql&gt; create table t1 (a int key);
+Query OK, 0 rows affected (0.23 sec)
+
+mysql&gt; insert into t1 values(1);
+Query OK, 1 row affected (0.15 sec)
+
+mysql&gt; begin;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; insert into t1 values(1);
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; insert into t1 values(1);
+ERROR 1062 (23000): Duplicate entry '1' for key 'PRIMARY'
+mysql&gt; commit;
+ERROR 1062 (23000): Duplicate entry '1' for key 'PRIMARY'
+</code></pre></div><p>TiDB provides a switch – <code>tidb_constraint_check_in_place</code> – to control this behavior. The default value, <code>0</code>, means that uniqueness verification is only performed when the transaction is committed instead of while an <code>INSERT</code> statement is executed. If you're sure about uniqueness verification during the <code>INSERT</code> execution, you can set this variable to <code>1</code>. It's recommended that you set it at the session level for every application so that the write performance of batch insert operations won't be affected, as shown below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">set @@session.tidb_constraint_check_in_place=1;
+</code></pre></div><p>So far, we have only noticed that Oracle GoldenGate (OGG) users need to set this system variable, because OGG does the constraint check in place. For OGG users, update the Java Database Connectivity (JDBC) connection string as shown below:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">jdbc:mysql://192.168.1.20:4000/dbname?tidb_constraint_check_in_place=1
+</code></pre></div><h2 id="5-tidb-supported-indexes-primary-key-indexes-unique-indexes-and-secondary-indexes">5. TiDB supported indexes: primary key indexes, unique indexes, and secondary indexes</h2>
+<p>This section describes how TiDB uses indexes and their current restrictions. It also describes how composite indexes are designed in TiDB.</p>
+<p>Indexes are also data that take up storage. Like the data in a table, indexes in TiDB are also stored as key-value (KV) pairs in the storage engine. An index row is a key-value pair. If we have a table with 10 indexes, 11 KV pairs are written each time we insert a row of data.</p>
+<p>TiDB supports primary key indexes, unique indexes, and secondary indexes. These indexes can be composed of either a single column or multiple columns (which is called a composite index).</p>
+<p>The current version of TiDB (V2.1.0) doesn't support bi-directional indexes, full-text indexes, or global indexes for partitioned tables.</p>
+<p>TiDB lets you use indexes when the query predicate is among the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">=, &gt;, &lt;, &gt;=, &lt;=, like '...%', not like '...%', in, not in, &lt;&gt;, !=, is null, is not null
+</code></pre></div><p>The optimizer determines whether to use indexes.</p>
+<p>You can't use an index when the query predicate is among the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">like '%...'，like '%...%'，not like '%...'，not like '%...%'，&lt;=&gt;
+</code></pre></div><blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>The current version of TiDB (V2.1.0) hasn't implemented <code>&lt;=&gt;</code> so it can't use indexes as “is null.”</li>
+<li>The current version of TiDB doesn't support using two indexes simultaneously in one table for the query against the same table. The related optimizations are still under development.</li>
+</ul>
+</blockquote>
+<h3 id="51-design-of-composite-indexes">5.1 Design of composite indexes</h3>
+<p>A composite index in TiDB is structured as <code>key tablekeyname (a,b,c)</code>. Like other databases, the ground rule for designing composite indexes is to place data with a high degree of discrimination in front as much as possible. This approach facilitates SQL execution by filtering out fewer rows within a shorter time. It's worth noting that in the current version of TiDB (V.2.1.0 or earlier), the range query for a front column in the composite index terminates the use of subsequent index columns. You can get a better idea about this feature by reviewing the following sample query:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> a,b,<span style="color:#66d9ef">c</span> <span style="color:#66d9ef">from</span> tablename <span style="color:#66d9ef">where</span> a<span style="color:#f92672">&lt;</span>predicate<span style="color:#f92672">&gt;</span><span style="color:#e6db74">'</span><span style="color:#e6db74">&lt;value1&gt;</span><span style="color:#e6db74">'</span> <span style="color:#66d9ef">and</span> b<span style="color:#f92672">&lt;</span>predicate<span style="color:#f92672">&gt;</span><span style="color:#e6db74">'</span><span style="color:#e6db74">&lt;value2&gt;</span><span style="color:#e6db74">'</span> <span style="color:#66d9ef">and</span> <span style="color:#66d9ef">c</span><span style="color:#f92672">&lt;</span>predicate<span style="color:#f92672">&gt;</span><span style="color:#e6db74">'</span><span style="color:#e6db74">&lt;value3&gt;</span><span style="color:#e6db74">'</span>;
+</code></pre></div><div class="trackable-btns">
+<a href="/download" onclick="trackViews('Best Practices for Developing Applications with TiDB', 'download-tidb-btn-middle')"><button>Download TiDB</button></a>
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm" onclick="trackViews('Best Practices for Developing Applications with TiDB', 'subscribe-blog-btn-middle')"><button>Subscribe to Blog</button></a>
+</div>
+<ul>
+<li>
+<p>If the predicate of condition <strong>a</strong> is <code>=</code>or <code>in</code>, composite index <code>(a,b,c)</code> can be used with query condition <strong>b</strong>, for example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> a,b,<span style="color:#66d9ef">c</span> <span style="color:#66d9ef">from</span> tablename <span style="color:#66d9ef">where</span> a<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">and</span> b<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">5</span> <span style="color:#66d9ef">and</span> <span style="color:#66d9ef">c</span><span style="color:#f92672">=</span><span style="color:#e6db74">'</span><span style="color:#e6db74">abc</span><span style="color:#e6db74">'</span>
+</code></pre></div></li>
+<li>
+<p>If the predicate is <code>=</code> or <code>in</code> for both condition <strong>a</strong> and condition <strong>b</strong>, composite index (a,b,c)` can be used for condition <strong>c</strong>, for example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> a,b,<span style="color:#66d9ef">c</span> <span style="color:#66d9ef">from</span> tablename <span style="color:#66d9ef">where</span> a <span style="color:#66d9ef">in</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>) <span style="color:#66d9ef">and</span> b<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> <span style="color:#66d9ef">and</span> <span style="color:#66d9ef">c</span><span style="color:#f92672">=</span><span style="color:#e6db74">'</span><span style="color:#e6db74">abc</span><span style="color:#e6db74">'</span>
+</code></pre></div></li>
+<li>
+<p>If the predicate of condition <strong>a</strong> is neither <code>=</code> nor <code>in</code> , composite index <code>(a,b,c)</code> is not available for condition <strong>b</strong>, in which case an indexless data scan per condition <strong>b</strong> is performed against the filtered data of condition <strong>a</strong>. For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> a,b,<span style="color:#66d9ef">c</span> <span style="color:#66d9ef">from</span> tablename <span style="color:#66d9ef">where</span> a<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">and</span> b<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">5</span> <span style="color:#66d9ef">and</span> <span style="color:#66d9ef">c</span><span style="color:#f92672">=</span><span style="color:#e6db74">'</span><span style="color:#e6db74">abc</span><span style="color:#e6db74">'</span>
+</code></pre></div><p>This is because in TiDB, if the front column in the composite index is used in a range query, queries in subsequent columns proceed as indexless scans within the filtered data of the previous column.</p>
+</li>
+</ul>
+<p>To conclude, when you design composite indexes in TiDB, you should place columns with a high degree of discrimination in front as much as possible, and columns for frequent range queries in the back.</p>
+<p>Also, composite index <code>(a,b,c)</code> is available for the query structured as <code>select c, count(*) from tablename where a=1 and b=2 group by c</code>, and the <code>where</code> clause complies with the above principle.</p>
+<h2 id="6-write-optimization-in-batch-job-scenarios">6. Write optimization in batch job scenarios</h2>
+<p>Write-back in batch job scenarios is a general cause of write hotspots. TiKV is a range-based key-value system, where the key determines which Region is written. The value of a key depends on the following:</p>
+<ul>
+<li>When the primary key is an integer (<code>int</code>, <code>bigint</code>…), the key is the primary key.</li>
+<li>When TiDB creates a hidden column (<code>_tidb_rowid</code>) for the table, the key is the hidden column.</li>
+</ul>
+<h3 id="61-use-shard-row-id-bits-to-scatter-the-write-hotspot">6.1 Use <code>SHARD_ROW_ID_BITS</code> to scatter the write hotspot</h3>
+<p>You can use <code>SHARD_ROW_ID_BITS</code> to set the number of bits of the shards in the hidden column.</p>
+<p>For the tables with non-integer primary keys or without primary keys, TiDB uses an implicit auto-increment ROW ID. When a large number of <code>INSERT</code> operations occur, the data is written into a single Region, causing a write hotspot.</p>
+<p>To mitigate the hotspot issue, you can configure <code>SHARD_ROW_ID_BITS</code>. The ROW ID is scattered, and the data is written into multiple different Regions. However, setting an overly large value might lead to an excessively large number of remote procedure call (RPC) requests, which increase the CPU and network overheads.</p>
+<ul>
+<li><code>SHARD_ROW_ID_BITS = 4</code> indicates 16 shards</li>
+<li><code>SHARD_ROW_ID_BITS = 6</code> indicates 64 shards</li>
+<li><code>SHARD_ROW_ID_BITS = 0</code> indicates the default, 1 shard</li>
+<li><code>CREATE TABLE</code> sample statement: <code>CREATE TABLE t (c int) SHARD_ROW_ID_BITS = 4</code></li>
+<li><code>ALTER TABLE</code> sample statement: <code>ALTER TABLE t SHARD_ROW_ID_BITS = 4</code></li>
+</ul>
+<h3 id="62-partitioned-table">6.2 Partitioned table</h3>
+<p>You can use a partitioned table to scatter the data from one table into multiple physical tables. With properly-designed partition rules, you can use the partitioned table to further avoid write hotspot issues.</p>
+<h2 id="7-some-notes-on-sql-syntax">7. Some notes on SQL syntax</h2>
+<p>This section describes some SQL syntax best practices in TiDB.</p>
+<h3 id="71-create-table-as-select-is-not-supported">7.1 <code>create table as select</code> is not supported</h3>
+<p>The current version of TiDB does not support the <code>create table as select …</code> statement. To achieve the same result, you must modify two statements in combination: <code>create table like …</code>and <code>insert into select …</code>. <code>create table like…</code> supports replicating the schema of the corresponding table.</p>
+<h3 id="72-use-full-group-byto-guarantee-stable-result-sets">7.2 Use full <code>GROUP BY</code>to guarantee stable result sets</h3>
+<p>For convenience, if you disable <code>ONLY_FULL_GROUP_BY</code>, MySQL lets the <code>SELECT</code> substatement reference the nonaggregated fields that are not stated in the <code>GROUP BY</code> substatements. This makes a non-full <code>GROUP BY</code> syntax. In other databases, this is deemed a syntax error that may cause unstable result sets.</p>
+<p>In the following three SQL statements, the first one uses the full <code>GROUP BY</code> syntax, with all the fields referenced in the <code>SELECT</code> substatement stated in the <code>GROUP BY</code> substaments. It has the most stable result sets with three combinations of <code>class</code> and <code>stuname</code> fields.</p>
+<p>The second and third SQL statements are identical, but they yield different results. The statement only states a <code>class</code> field in the <code>GROUP BY</code> statement, so the result sets are only aggregated for <code>class</code>. Since there are two unique values for <code>class</code>, the result sets only contains two rows of data, while there are three combinations of <code>class</code> and <code>stuname</code> fields. Class 2018_CS_03 has two students, and there is no semantic restriction as to which one is returned for each execution. Either one is semantically expected.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">mysql&gt; select a.class, a.stuname, max(b.courscore) from stu_info a join stu_score b on a.stuno=b.stuno group by a.class, a.stuname order by a.class, a.stuname;
++------------+--------------+------------------+
+| class      | stuname      | max(b.courscore) |
++------------+--------------+------------------+
+| 2018_CS_01 | MonkeyDLuffy |             95.5 |
+| 2018_CS_03 | PatrickStar  |             99.0 |
+| 2018_CS_03 | SpongeBob    |             95.0 |
++------------+--------------+------------------+
+3 rows in set (0.00 sec)
+
+mysql&gt; select a.class, a.stuname, max(b.courscore) from stu_info a join stu_score b on a.stuno=b.stuno group by a.class order by a.class, a.stuname;
++------------+--------------+------------------+
+| class      | stuname      | max(b.courscore) |
++------------+--------------+------------------+
+| 2018_CS_01 | MonkeyDLuffy |             95.5 |
+| 2018_CS_03 | SpongeBob    |             99.0 |
++------------+--------------+------------------+
+2 rows in set (0.01 sec)
+
+mysql&gt; select a.class, a.stuname, max(b.courscore) from stu_info a join stu_score b on a.stuno=b.stuno group by a.class order by a.class, a.stuname;
++------------+--------------+------------------+
+| class      | stuname      | max(b.courscore) |
++------------+--------------+------------------+
+| 2018_CS_01 | MonkeyDLuffy |             95.5 |
+| 2018_CS_03 | PatrickStar  |             99.0 |
++------------+--------------+------------------+
+2 rows in set (0.01 sec)
+</code></pre></div><p>Therefore, to guarantee stable result sets, use the full <code>GROUP BY</code> syntax.</p>
+<p>MySQL provides a <code>ONLY_FULL_GROUP_BY</code> SQL mode to control whether to check the full <code>GROUP BY</code> syntax, which is also supported in TiDB.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">mysql&gt; select a.class, a.stuname, max(b.courscore) from stu_info a join stu_score b on a.stuno=b.stuno group by a.class order by a.class, a.stuname;
++------------+--------------+------------------+
+| class      | stuname      | max(b.courscore) |
++------------+--------------+------------------+
+| 2018_CS_01 | MonkeyDLuffy |             95.5 |
+| 2018_CS_03 | PatrickStar  |             99.0 |
++------------+--------------+------------------+
+2 rows in set (0.01 sec)
+
+mysql&gt; set @@sql_mode='STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql&gt; select a.class, a.stuname, max(b.courscore) from stu_info a join stu_score b on a.stuno=b.stuno group by a.class order by a.class, a.stuname;
+ERROR 1055 (42000): Expression #2 of ORDER BY is not in GROUP BY clause and contains nonaggregated column '' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+</code></pre></div><h3 id="73-use-order-by-to-guarantee-the-output-sequence-of-result-sets">7.3 Use <code>ORDER BY</code> to guarantee the output sequence of result sets</h3>
+<p>According to SQL semantics, you must use the <code>ORDER BY</code> syntax to output result sets in a specified sequence. For standalone databases, because the data are all stored on one server, results are stably returned when data is not reorganized. Some databases can still output result sets in the order of primary keys or indexes. TiDB is a distributed database where data is stored in multiple servers, and the TiDB server layer does not cache data. Therefore, the display order of the result sets for SQL statements without <code>ORDER BY</code> may be unpredictable. To output the result sets in sequence, explicitly add the fields for sorting in the <code>ORDER BY</code> clause, as defined by SQL semantics.</p>
+<p>In the following example, the user only adds one field in the <code>ORDER BY</code> clause. Therefore, TiDB sorts the results by this field only.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">mysql&gt; select a.class, a.stuname, b.course, b.courscore from stu_info a join stu_score b on a.stuno=b.stuno order by a.class;
++------------+--------------+-------------------------+-----------+
+| class      | stuname      | course                  | courscore |
++------------+--------------+-------------------------+-----------+
+| 2018_CS_01 | MonkeyDLuffy | PrinciplesofDatabase    |      60.5 |
+| 2018_CS_01 | MonkeyDLuffy | English                 |      43.0 |
+| 2018_CS_01 | MonkeyDLuffy | OpSwimming              |      67.0 |
+| 2018_CS_01 | MonkeyDLuffy | OpFencing               |      76.0 |
+| 2018_CS_01 | MonkeyDLuffy | FundamentalsofCompiling |      88.0 |
+| 2018_CS_01 | MonkeyDLuffy | OperatingSystem         |      90.5 |
+| 2018_CS_01 | MonkeyDLuffy | PrincipleofStatistics   |      69.0 |
+| 2018_CS_01 | MonkeyDLuffy | ProbabilityTheory       |      76.0 |
+| 2018_CS_01 | MonkeyDLuffy | Physics                 |      63.5 |
+| 2018_CS_01 | MonkeyDLuffy | AdvancedMathematics     |      95.5 |
+| 2018_CS_01 | MonkeyDLuffy | LinearAlgebra           |      92.5 |
+| 2018_CS_01 | MonkeyDLuffy | DiscreteMathematics     |      89.0 |
+| 2018_CS_03 | SpongeBob    | PrinciplesofDatabase    |      88.0 |
+| 2018_CS_03 | SpongeBob    | English                 |      79.0 |
+| 2018_CS_03 | SpongeBob    | OpBasketball            |      92.0 |
+| 2018_CS_03 | SpongeBob    | OpTennis                |      94.0 |
+| 2018_CS_03 | PatrickStar  | LinearAlgebra           |       6.5 |
+| 2018_CS_03 | PatrickStar  | AdvancedMathematics     |       5.0 |
+| 2018_CS_03 | SpongeBob    | DiscreteMathematics     |      72.0 |
+| 2018_CS_03 | PatrickStar  | ProbabilityTheory       |      12.0 |
+| 2018_CS_03 | PatrickStar  | PrincipleofStatistics   |      20.0 |
+| 2018_CS_03 | PatrickStar  | OperatingSystem         |      36.0 |
+| 2018_CS_03 | PatrickStar  | FundamentalsofCompiling |       2.0 |
+| 2018_CS_03 | PatrickStar  | DiscreteMathematics     |      14.0 |
+| 2018_CS_03 | PatrickStar  | PrinciplesofDatabase    |       9.0 |
+| 2018_CS_03 | PatrickStar  | English                 |      60.0 |
+| 2018_CS_03 | PatrickStar  | OpTableTennis           |      12.0 |
+| 2018_CS_03 | PatrickStar  | OpPiano                 |      99.0 |
+| 2018_CS_03 | SpongeBob    | FundamentalsofCompiling |      43.0 |
+| 2018_CS_03 | SpongeBob    | OperatingSystem         |      95.0 |
+| 2018_CS_03 | SpongeBob    | PrincipleofStatistics   |      90.0 |
+| 2018_CS_03 | SpongeBob    | ProbabilityTheory       |      87.0 |
+| 2018_CS_03 | SpongeBob    | Physics                 |      65.0 |
+| 2018_CS_03 | SpongeBob    | AdvancedMathematics     |      55.0 |
+| 2018_CS_03 | SpongeBob    | LinearAlgebra           |      60.5 |
+| 2018_CS_03 | PatrickStar  | Physics                 |       6.0 |
++------------+--------------+-------------------------+-----------+
+36 rows in set (0.01 sec)
+</code></pre></div></div>
+</div>
+<div class="article-toc"></div><div class="ssba-wrap">
+<div class="ssba">
+<a class="ssba_twitter_share" data-site="" href="http://twitter.com/share?url=https%3a%2f%2fpingcap.com%2fblog%2fbest-practices-for-developing-applications-with-tidb%2f" target="_blank">
+<img alt="Twitter icon" src="/images/svgs/twitter-icon.svg"/>
+</a>
+<a class="ssba_reddit_share" data-site="reddit" href="http://reddit.com/submit?url=https%3a%2f%2fpingcap.com%2fblog%2fbest-practices-for-developing-applications-with-tidb%2f&amp;title=Best%20Practices%20for%20Developing%20Applications%20with%20TiDB" target="_blank">
+<img alt="Reddit icon" src="/images/svgs/reddit-icon.svg"/>
+</a>
+<a class="ssba_facebook_share" data-site="" href="http://www.facebook.com/sharer.php?u=https%3a%2f%2fpingcap.com%2fblog%2fbest-practices-for-developing-applications-with-tidb%2f" target="_blank">
+<img alt="Fackbook icon" src="/images/svgs/facebook-icon.svg"/>
+</a>
+<a class="ssba_linkedin_share" data-site="linkedin" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fpingcap.com%2fblog%2fbest-practices-for-developing-applications-with-tidb%2f" target="_blank">
+<img alt="Linkedin icon" src="/images/svgs/linkedin-icon.svg"/>
+</a>
+<a class="ssba_hackernews_share" data-site="hackernews" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fpingcap.com%2fblog%2fbest-practices-for-developing-applications-with-tidb%2f&amp;t=Best%20Practices%20for%20Developing%20Applications%20with%20TiDB" target="_blank">
+<img alt="Hacker News icon" src="/images/svgs/hacker-news-icon.svg"/>
+</a>
+</div>
+</div>
+<div class="trackable-btns">
+<a href="/download" onclick="trackViews('Best Practices for Developing Applications with TiDB', 'download-tidb-btn-bottom')"><button>Download
+                        TiDB</button></a>
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm" onclick="trackViews('Best Practices for Developing Applications with TiDB', 'subscribe-blog-btn-bottom')"><button>Subscribe to
+                        Blog</button></a>
+</div>
+</div>
+<div class="sidebar-page">
+<div class="sticky-sidebar">
+<p class="toc-title">What’s on this page</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Product</strong></h4>
+<ul>
+<li><a href="/docs/v3.0/">TiDB</a></li>
+<li><a href="/docs/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs/v3.0/roadmap/">Roadmap</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Docs</strong></h4>
+<ul>
+<li><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">Quick Start</a></li>
+<li><a href="/blog/2017-07-24-tidbbestpractice/">Best Practices</a></li>
+<li><a href="/docs/stable/faq/tidb/">FAQ</a></li>
+<li><a href="/docs/stable/reference/tools/user-guide/">TiDB Tools</a></li>
+<li><a href="/docs/dev/releases/rn/">Release Notes</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Resources</strong></h4>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/weekly/">Monthly</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="/community">TiDB Community</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Company</strong></h4>
+<ul>
+<li><a href="/about/">About</a></li>
+<li><a href="https://angel.co/pingcap-1/jobs" target="_blank">Careers</a></li>
+<li><a href="/news/">News</a></li>
+<li><a href="/contact-us/">Contact Us</a></li>
+<li><a href="/en/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/terms-of-service/">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Connect</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg>Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg>Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg>Stack Overflow</a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc">Subscribe to Blog</button></a>
+</div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 PingCAP. All Rights Reserved.</p>
+<a class="copyright-btn-lang" href="/blog-cn" id="lang">中文</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

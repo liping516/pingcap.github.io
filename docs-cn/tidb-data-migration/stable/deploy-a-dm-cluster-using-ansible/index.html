@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>使用 DM-Ansible 部署 DM 集群 | TiDB 官方用户文档</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="使用 DM-Ansible 部署 DM 集群 | TiDB 官方用户文档" property="og:title"/>
+<meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" property="og:description"/>
+<meta content="https://pingcap.com/docs-cn/tidb-data-migration/stable/deploy-a-dm-cluster-using-ansible/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="TiDB 是由 PingCAP 研发的一款定位于在线事务处理/在线分析处理（HTAP）的开源融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性，目前已广泛应用于金融服务、互联网、制造等行业。" name="twitter:description"/>
+<meta content="使用 DM-Ansible 部署 DM 集群 | TiDB 官方用户文档" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="cn"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/index.html"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP
+                            University</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">文档</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs-cn/tidb-data-migration/stable/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="cn" data-type="/tidb-data-migration/" id="search-input" name="q" placeholder="搜索 TiDB 文档" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">文档</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs-cn/stable/" onclick="trackViews('navbar-tidb-docs', 'docs-cn_view')">TiDB</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-in-kubernetes/stable/" onclick="trackViews('navbar-operator-docs', 'docs-cn_view')">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs-cn/tidb-data-migration/stable/" onclick="trackViews('navbar-dm-docs', 'docs-cn_view')">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/cases-cn">案例</a></li>
+<li><a href="/community-cn">社区</a></li>
+<li><a href="/blog-cn">博客</a></li>
+<li><a href="/about-cn">关于</a></li>
+<li><a href="https://asktug.com" onclick="trackViews('navbar-asktug', 'asktug_view')" target="_blank">问答</a></li>
+<li><a href="/download-cn">下载试用</a></li>
+<li><a class="link-download" href="mailto:info@pingcap.com" onclick="trackViews('navbar-contact-us', 'mail_to_info_view')" target="_blank">联系我们</a></li>
+<li><a class="nav-blinking" href="https://university.pingcap.com/" onclick="trackViews('navbar-university', 'pingcap-university_view')" target="_blank">PingCAP University</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social social-cn ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+<li id="wechat-mobile"><a class="wechat" href="javascript:void(0)"><svg height="18" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg></a><div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-mobile"></div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs/" id="lang">English</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB Data Migration 文档 </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">v1.0</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs-cn/tidb-data-migration/stable/deploy-a-dm-cluster-using-ansible/">v1.0 (stable)</a>
+<a class="dropdown-item " href="
+                /docs-cn/tidb-data-migration/dev/deploy-a-dm-cluster-using-ansible/">dev</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>概述</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/overview/">
+<span>DM 架构</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/overview/#%e5%90%8c%e6%ad%a5%e5%8a%9f%e8%83%bd%e4%bb%8b%e7%bb%8d">
+<span>同步功能介绍</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/overview/#%e4%bd%bf%e7%94%a8%e9%99%90%e5%88%b6">
+<span>使用限制</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/dm-worker-intro/">
+<span>DM-worker 简介</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/relay-log/">
+<span>DM Relay Log</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>核心特性</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/feature-overview/#table-routing">
+<span>Table Routing</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/feature-overview/#black--white-table-lists">
+<span>Black &amp; White Lists</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/feature-overview/#binlog-event-filter">
+<span>Binlog Event Filter</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/feature-overview/#%e5%90%8c%e6%ad%a5%e5%bb%b6%e8%bf%9f%e7%9b%91%e6%8e%a7">
+<span>同步延迟监控</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/feature-online-ddl-scheme/">
+<span>Online-ddl-scheme</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Shard Support</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/feature-shard-merge/">
+<span>简介</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/feature-shard-merge/#%e4%bd%bf%e7%94%a8%e9%99%90%e5%88%b6">
+<span>使用限制</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/feature-manually-handling-sharding-ddl-locks/">
+<span>手动处理 Sharding DDL Lock</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Benchmark</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/benchmark-v1.0-ga/">
+<span>DM 1.0-GA 性能测试</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>使用场景</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/usage-scenario-simple-replication/">
+<span>简单的从库同步场景</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/usage-scenario-shard-merge/">
+<span>分库分表合并场景</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/shard-merge-best-practices/">
+<span>分表合并数据迁移最佳实践</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/usage-scenario-master-slave-switch/">
+<span>DM-worker 在上游 MySQL 主从间切换</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/get-started/">
+<span>快速上手</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>部署</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>部署 DM 集群</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/deploy-a-dm-cluster-using-ansible/">
+<span>使用 DM-Ansible</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/deploy-a-dm-cluster-using-binary/">
+<span>使用 Binary</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/replicate-data-using-dm/">
+<span>使用 DM 同步数据</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>配置</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/config-overview/">
+<span>概述</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/dm-master-configuration-file/">
+<span>DM-master 配置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/dm-worker-configuration-file/">
+<span>DM-worker 配置</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/task-configuration-file/">
+<span>任务配置</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>DM 集群管理</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/cluster-operations/">
+<span>集群操作</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/dm-upgrade/">
+<span>集群升级</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>DM 同步任务管理</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/manage-replication-tasks/">
+<span>管理数据同步任务</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/precheck/">
+<span>任务前置检查</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/query-status/">
+<span>任务状态查询</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/skip-or-replace-abnormal-sql-statements/">
+<span>跳过或替代执行异常的 SQL 语句</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/monitor-a-dm-cluster/">
+<span>监控 DM 集群</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>从与 MySQL 兼容的数据库迁移数据</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/migrate-from-mysql-aurora/">
+<span>从 MySQL/Amazon Aurora MySQL 迁移数据</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/dm-portal/">
+<span>DM Portal</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>DM 故障诊断</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/troubleshoot-dm/">
+<span>故障诊断</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/error-system/">
+<span>错误含义</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/error-handling/">
+<span>常见错误修复</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/faq/">
+<span>DM FAQ</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>版本发布历史</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>v1.0</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/1.0.2/">
+<span>1.0.2</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/1.0.3/">
+<span>1.0.3</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/1.0.4/">
+<span>1.0.4</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/1.0.5/">
+<span>1.0.5</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs-cn/tidb-data-migration/stable/glossary/">
+<span>TiDB DM 术语表</span>
+</a>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="-dm-ansible--dm-">使用 DM-Ansible 部署 DM 集群</h1>
+<p>DM-Ansible 是 PingCAP 基于 <a href="https://docs.ansible.com/ansible/latest/index.html">Ansible</a> 的 <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html#about-playbooks">Playbooks</a> 研发的 DM (Data Migration) 集群部署工具。本文将介绍如何使用 DM-Ansible 快速部署 DM 集群。</p>
+<h2 id="heading">准备工作</h2>
+<p>在开始之前，先确保您准备好了以下配置的机器：</p>
+<ol>
+<li>
+<p>部署目标机器若干，配置如下：</p>
+<ul>
+<li>CentOS 7.3 (64-bit) 或更高版本，x86_64 架构（AMD64）</li>
+<li>机器之间内网互通</li>
+<li>关闭防火墙，或开放服务端口</li>
+</ul>
+</li>
+<li>
+<p>一台中控机，配置如下：</p>
+<ul>
+<li>包含 Python 2.7 的 CentOS 7.3（64-bit）或更高版本</li>
+<li>Ansible 2.5 或更高版本</li>
+<li>互联网访问</li>
+</ul>
+</li>
+</ol>
+<h2 id="-1-">第 1 步：在中控机上安装依赖包</h2>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>请确保使用 <code>root</code> 账户登录中控机。</p>
+</blockquote>
+<p>根据中控机的操作系统版本，运行相应命令如下：</p>
+<ul>
+<li>
+<p>CentOS 7：</p>
+<div class="copyable-code-block shell-root">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">yum -y install epel-release git curl sshpass <span style="color:#f92672">&amp;&amp;</span>
+yum -y install python-pip
+</code></pre></div></li>
+<li>
+<p>Ubuntu：</p>
+<div class="copyable-code-block shell-root">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">apt-get -y install git curl sshpass python-pip
+</code></pre></div></li>
+</ul>
+<h2 id="-2--tidb--ssh-">第 2 步：在中控机上创建 <code>tidb</code> 用户，并生成 SSH 密钥</h2>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>请确保使用 <code>root</code> 账户登录中控机。</p>
+</blockquote>
+<ol>
+<li>
+<p>创建 <code>tidb</code> 用户。</p>
+<div class="copyable-code-block shell-root">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">useradd -m -d /home/tidb tidb
+</code></pre></div></li>
+<li>
+<p>为 <code>tidb</code> 用户设置密码。</p>
+<div class="copyable-code-block shell-root">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">passwd tidb
+</code></pre></div></li>
+<li>
+<p>在 sudo 文件尾部加上 <code>tidb ALL=(ALL) NOPASSWD: ALL</code>，为 <code>tidb</code> 用户设置免密使用 sudo。</p>
+<div class="copyable-code-block shell-root">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">visudo
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">tidb ALL=(ALL) NOPASSWD: ALL
+</code></pre></div></li>
+<li>
+<p>生成 SSH 密钥。</p>
+<p>执行以下 <code>su</code> 命令，将登录用户从 <code>root</code> 切换至 <code>tidb</code>。</p>
+<div class="copyable-code-block shell-root">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">su - tidb
+</code></pre></div><p>为 <code>tidb</code> 用户创建 SSH 密钥。当提示 <code>Enter passphrase</code> 时，按 <kbd>Enter</kbd> 键。命令成功执行后，生成的 SSH 私钥文件为 <code>/home/tidb/.ssh/id_rsa</code>，SSH 公钥文件为<code>/home/tidb/.ssh/id_rsa.pub</code>。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ssh-keygen -t rsa
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Generating public/private rsa key pair.
+Enter file in which to save the key (/home/tidb/.ssh/id_rsa):
+Created directory '/home/tidb/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/tidb/.ssh/id_rsa.
+Your public key has been saved in /home/tidb/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:eIBykszR1KyECA/h0d7PRKz4fhAeli7IrVphhte7/So tidb@172.16.10.49
+The key's randomart image is:
++---[RSA 2048]----+
+|=+o+.o.          |
+|o=o+o.oo         |
+| .O.=.=          |
+| . B.B +         |
+|o B * B S        |
+| * + * +         |
+|  o + .          |
+| o  E+ .         |
+|o   ..+o.        |
++----[SHA256]-----+
+</code></pre></div></li>
+</ol>
+<h2 id="-3--dm-ansible-">第 3 步：下载 DM-Ansible 至中控机</h2>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>请确保使用 <code>tidb</code> 账户登录中控机。</p>
+</blockquote>
+<ol>
+<li>
+<p>打开 <code>/home/tidb</code> 目录。</p>
+</li>
+<li>
+<p>执行以下命令下载 DM-Ansible。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget https://download.pingcap.org/dm-ansible-<span style="color:#f92672">{</span>version<span style="color:#f92672">}</span>.tar.gz
+</code></pre></div><p><code>{version}</code> 为期望下载的 DM 版本，如 <code>v1.0.1</code>、<code>v1.0.2</code> 等。可以通过 <a href="https://github.com/pingcap/dm/releases">DM Release</a> 查看当前已发布版本。</p>
+</li>
+</ol>
+<h2 id="-4--dm-ansible-">第 4 步：安装 DM-Ansible 及其依赖至中控机</h2>
+<blockquote>
+<p><strong>注意：</strong></p>
+<ul>
+<li>请确保使用 <code>tidb</code> 账户登录中控机。</li>
+<li>您需要使用 <code>pip</code> 方式下载安装 TiDB Ansible 及其依赖，否则可能会遇到兼容性问题。 DM-Ansible 当前与 Ansible 2.5 或更高版本兼容。</li>
+</ul>
+</blockquote>
+<ol>
+<li>
+<p>在中控机上安装 DM-Ansible 及其依赖包：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tar -xzvf dm-ansible-<span style="color:#f92672">{</span>version<span style="color:#f92672">}</span>.tar.gz <span style="color:#f92672">&amp;&amp;</span>
+mv dm-ansible-<span style="color:#f92672">{</span>version<span style="color:#f92672">}</span> dm-ansible <span style="color:#f92672">&amp;&amp;</span>
+cd /home/tidb/dm-ansible <span style="color:#f92672">&amp;&amp;</span>
+sudo pip install -r ./requirements.txt
+</code></pre></div><p>Ansible 和相关依赖包含于 <code>dm-ansible/requirements.txt</code> 文件中。</p>
+</li>
+<li>
+<p>查看 Ansible 版本：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible --version
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ansible 2.5.0
+</code></pre></div></li>
+</ol>
+<h2 id="-5--ssh--sudo-">第 5 步：在中控机上配置 SSH 互信和 sudo 规则</h2>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>请确保使用 <code>tidb</code> 账户登录至中控机。</p>
+</blockquote>
+<ol>
+<li>
+<p>将您部署的目标机器的 IP 地址加至 <code>hosts.ini</code> 文件中的 <code>[servers]</code> 部分。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /home/tidb/dm-ansible <span style="color:#f92672">&amp;&amp;</span>
+vi hosts.ini
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[servers]
+172.16.10.71
+172.16.10.72
+172.16.10.73
+
+[all:vars]
+username = tidb
+</code></pre></div></li>
+<li>
+<p>运行如下命令，然后输入部署目标机器的 <code>root</code> 用户密码。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible-playbook -i hosts.ini create_users.yml -u root -k
+</code></pre></div><p>该步骤将在部署目标机器上创建 <code>tidb</code> 用户，创建 sudo 规则，并为中控机和部署目标机器之间配置 SSH 互信。</p>
+</li>
+</ol>
+<h2 id="-6--dm-">第 6 步：下载 DM 及监控组件安装包至中控机</h2>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>请确保中控机接入互联网。</p>
+</blockquote>
+<p>在中控机上，运行如下命令：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible-playbook local_prepare.yml
+</code></pre></div><h2 id="-7--inventoryini-">第 7 步：编辑 <code>inventory.ini</code> 配置文件</h2>
+<blockquote>
+<p><strong>注意：</strong></p>
+<p>请确保使用 <code>tidb</code> 账户登录中控机。</p>
+</blockquote>
+<p>打开并编辑 <code>/home/tidb/dm-ansible/inventory.ini</code> 文件如下，以管控 DM 集群。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">dm_worker1 ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.72 server_id=101 source_id="mysql-replica-01" mysql_host=172.16.10.81 mysql_user=root mysql_password='VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU=' mysql_port=3306</span>
+</code></pre></div><p>根据场景需要，您可以在以下两种集群拓扑中任选一种：</p>
+<ul>
+<li><a href="#%E9%80%89%E9%A1%B9-1%E4%BD%BF%E7%94%A8%E5%8D%95%E8%8A%82%E7%82%B9%E4%B8%8A%E5%8D%95%E4%B8%AA-dm-worker-%E5%AE%9E%E4%BE%8B%E7%9A%84%E9%9B%86%E7%BE%A4%E6%8B%93%E6%89%91">单节点上单个 DM-worker 实例的集群拓扑</a></li>
+<li><a href="#%E9%80%89%E9%A1%B9-2%E4%BD%BF%E7%94%A8%E5%8D%95%E8%8A%82%E7%82%B9%E4%B8%8A%E5%A4%9A%E4%B8%AA-dm-worker-%E5%AE%9E%E4%BE%8B%E7%9A%84%E9%9B%86%E7%BE%A4%E6%8B%93%E6%89%91">单节点上多个 DM-worker 实例的集群拓扑</a></li>
+</ul>
+<p>通常情况下，我们推荐每个节点上部署单个 DM-Worker 实例。但如果您的机器拥有性能远超 <a href="https://pingcap.com/docs-cn/stable/how-to/deploy/hardware-recommendations/">TiDB 软件和硬件环境要求</a>中推荐配置的 CPU 和内存，并且每个节点配置 2 块以上的硬盘或大于 2T 的 SSD，您可以在单个节点上部署不超过 2 个 DM-Worker 实例。</p>
+<h3 id="-1-dm-worker-">选项 1：使用单节点上单个 DM-Worker 实例的集群拓扑</h3>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>主机 IP</th>
+<th>服务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>node1</td>
+<td>172.16.10.71</td>
+<td>DM-master, Prometheus, Grafana, Alertmanager, DM Portal</td>
+</tr>
+<tr>
+<td>node2</td>
+<td>172.16.10.72</td>
+<td>DM-worker1</td>
+</tr>
+<tr>
+<td>node3</td>
+<td>172.16.10.73</td>
+<td>DM-worker2</td>
+</tr>
+<tr>
+<td>mysql-replica-01</td>
+<td>172.16.10.81</td>
+<td>MySQL</td>
+</tr>
+<tr>
+<td>mysql-replica-02</td>
+<td>172.16.10.82</td>
+<td>MySQL</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#75715e"># DM 模块</span>
+<span style="color:#66d9ef">[dm_master_servers]</span>
+<span style="color:#a6e22e">dm_master ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#66d9ef">[dm_worker_servers]</span>
+<span style="color:#a6e22e">dm_worker1 ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.72 server_id=101 source_id="mysql-replica-01" mysql_host=172.16.10.81 mysql_user=root mysql_password='VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU=' mysql_port=3306</span>
+
+<span style="color:#a6e22e">dm_worker2 ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.73 server_id=102 source_id="mysql-replica-02" mysql_host=172.16.10.82 mysql_user=root mysql_password='VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU=' mysql_port=3306</span>
+
+<span style="color:#66d9ef">[dm_portal_servers]</span>
+<span style="color:#a6e22e">dm_portal ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#75715e"># 监控模块</span>
+<span style="color:#66d9ef">[prometheus_servers]</span>
+<span style="color:#a6e22e">prometheus ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#66d9ef">[grafana_servers]</span>
+<span style="color:#a6e22e">grafana ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#66d9ef">[alertmanager_servers]</span>
+<span style="color:#a6e22e">alertmanager ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#75715e"># 全局变量</span>
+<span style="color:#66d9ef">[all:vars]</span>
+<span style="color:#a6e22e">cluster_name</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">test-cluster</span>
+
+<span style="color:#a6e22e">ansible_user</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">tidb</span>
+
+<span style="color:#a6e22e">dm_version</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">{version}</span>
+
+<span style="color:#a6e22e">deploy_dir</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/data1/dm</span>
+
+<span style="color:#a6e22e">grafana_admin_user</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">"admin"</span>
+<span style="color:#a6e22e">grafana_admin_password</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">"admin"</span>
+</code></pre></div><p><code>{version}</code> 为当前 DM-Ansible 对应的版本号。关于 DM-worker 参数的更多信息，请参考 <a href="#dm-worker-%E9%85%8D%E7%BD%AE%E5%8F%8A%E5%8F%82%E6%95%B0%E6%8F%8F%E8%BF%B0">DM-worker 配置及参数描述</a>。</p>
+<h3 id="-2-dm-worker-">选项 2：使用单节点上多个 DM-worker 实例的集群拓扑</h3>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>主机 IP</th>
+<th>服务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>node1</td>
+<td>172.16.10.71</td>
+<td>DM-master, Prometheus, Grafana, Alertmanager, DM Portal</td>
+</tr>
+<tr>
+<td>node2</td>
+<td>172.16.10.72</td>
+<td>DM-worker1-1, DM-worker1-2</td>
+</tr>
+<tr>
+<td>node3</td>
+<td>172.16.10.73</td>
+<td>DM-worker2-1, DM-worker2-2</td>
+</tr>
+</tbody>
+</table>
+<p>编辑 <code>inventory.ini</code> 文件时，请注意区分这些变量：<code>server_id</code>，<code>deploy_dir</code>，和 <code>dm_worker_port</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#75715e"># DM 模块</span>
+<span style="color:#66d9ef">[dm_master_servers]</span>
+<span style="color:#a6e22e">dm_master ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#66d9ef">[dm_worker_servers]</span>
+<span style="color:#a6e22e">dm_worker1_1 ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.72 server_id=101 deploy_dir=/data1/dm_worker dm_worker_port=8262 mysql_host=172.16.10.81 mysql_user=root mysql_password='VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU=' mysql_port=3306</span>
+<span style="color:#a6e22e">dm_worker1_2 ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.72 server_id=102 deploy_dir=/data2/dm_worker dm_worker_port=8263 mysql_host=172.16.10.82 mysql_user=root mysql_password='VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU=' mysql_port=3306</span>
+
+<span style="color:#a6e22e">dm_worker2_1 ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.73 server_id=103 deploy_dir=/data1/dm_worker dm_worker_port=8262 mysql_host=172.16.10.83 mysql_user=root mysql_password='VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU=' mysql_port=3306</span>
+<span style="color:#a6e22e">dm_worker2_2 ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.73 server_id=104 deploy_dir=/data2/dm_worker dm_worker_port=8263 mysql_host=172.16.10.84 mysql_user=root mysql_password='VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU=' mysql_port=3306</span>
+
+<span style="color:#66d9ef">[dm_portal_servers]</span>
+<span style="color:#a6e22e">dm_portal ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#75715e"># 监控模块</span>
+<span style="color:#66d9ef">[prometheus_servers]</span>
+<span style="color:#a6e22e">prometheus ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#66d9ef">[grafana_servers]</span>
+<span style="color:#a6e22e">grafana ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#66d9ef">[alertmanager_servers]</span>
+<span style="color:#a6e22e">alertmanager ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71</span>
+
+<span style="color:#75715e"># 全局变量</span>
+<span style="color:#66d9ef">[all:vars]</span>
+<span style="color:#a6e22e">cluster_name</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">test-cluster</span>
+
+<span style="color:#a6e22e">ansible_user</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">tidb</span>
+
+<span style="color:#a6e22e">dm_version</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">{version}</span>
+
+<span style="color:#a6e22e">deploy_dir</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/data1/dm</span>
+
+<span style="color:#a6e22e">grafana_admin_user</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">"admin"</span>
+<span style="color:#a6e22e">grafana_admin_password</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">"admin"</span>
+</code></pre></div><p><code>{version}</code> 为当前 DM-Ansible 对应的版本号。</p>
+<h3 id="dm-worker-">DM-worker 配置及参数描述</h3>
+<table>
+<thead>
+<tr>
+<th>变量名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>source_id</td>
+<td>DM-worker 绑定到的一个数据库实例或是具有主从架构的复制组。当发生主从切换的时候，只需要更新 <code>mysql_host</code> 或 <code>mysql_port</code> 而不用更改该 ID 标识。</td>
+</tr>
+<tr>
+<td>server_id</td>
+<td>DM-worker 伪装成一个 MySQL slave，该变量即为这个 slave 的 server ID，在 MySQL 集群中需保持全局唯一。取值范围 0 ~ 4294967295。v1.0.2 及以上版本的 DM 会自动生成，不需要手动配置。</td>
+</tr>
+<tr>
+<td>mysql_host</td>
+<td>上游 MySQL 主机。</td>
+</tr>
+<tr>
+<td>mysql_user</td>
+<td>上游 MySQL 用户名，默认值为 “root”。</td>
+</tr>
+<tr>
+<td>mysql_password</td>
+<td>上游 MySQL 用户密码，需使用 <code>dmctl</code> 工具加密。请参考<a href="#%E4%BD%BF%E7%94%A8-dmctl-%E5%8A%A0%E5%AF%86%E4%B8%8A%E6%B8%B8-mysql-%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81">使用 dmctl 加密上游 MySQL 用户密码</a>。</td>
+</tr>
+<tr>
+<td>mysql_port</td>
+<td>上游 MySQL 端口， 默认 3306。</td>
+</tr>
+<tr>
+<td>enable_gtid</td>
+<td>DM-worker 是否使用全局事务标识符（GTID）拉取 binlog。使用前提是在上游 MySQL 已开启 GTID 模式。</td>
+</tr>
+<tr>
+<td>relay_binlog_name</td>
+<td>DM-worker 是否从指定 binlog 文件位置开始拉取 binlog。仅适用于本地无有效 relay log 的情况。v1.0.2 及以上版本的 DM 会默认从最新位置开始拉取 binlog，一般情况下不需要手动配置。</td>
+</tr>
+<tr>
+<td>relay_binlog_gtid</td>
+<td>DM-worker 是否从指定 GTID 位置开始拉取 binlog。仅适用于本地无有效 relay log，且 <code>enable_gtid</code> 设置为 true 的情况。v1.0.2 及以上版本的 DM 会默认从最新位置开始拉取 binlog，一般情况下不需要手动配置。</td>
+</tr>
+<tr>
+<td>flavor</td>
+<td>代表 MySQL 的版本发布类型。 如果是官方版本，Percona 版，或 Cloud MySQL 版，其值为 “mysql”。 如果是 MariaDB，其值为 “mariadb”。默认值是 “mysql”。v1.0.2 及以上版本的 DM 会自动判断上游版本，不需要手动配置。</td>
+</tr>
+</tbody>
+</table>
+<p>关于 <code>deploy_dir</code> 配置的更多信息，请参考<a href="#%E9%85%8D%E7%BD%AE%E9%83%A8%E7%BD%B2%E7%9B%AE%E5%BD%95">配置部署目录</a>。</p>
+<h3 id="-dmctl--mysql-">使用 dmctl 加密上游 MySQL 用户密码</h3>
+<p>假定上游 MySQL 的用户密码为 <code>123456</code>，运行以下命令，并将生成的字符串添加至 DM-worker 的 <code>mysql_password</code> 变量。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /home/tidb/dm-ansible/resources/bin <span style="color:#f92672">&amp;&amp;</span>
+./dmctl -encrypt <span style="color:#ae81ff">123456</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU=
+</code></pre></div><h2 id="-8--inventoryini-">第 8 步：编辑 <code>inventory.ini</code> 文件中的变量</h2>
+<p>此步介绍如何编辑部署目录中的变量，如何配置 relay log 同步位置以及 relay log GTID 的同步模式。此外，还会描述 <code>inventory.ini</code> 中的全局变量。</p>
+<h3 id="heading-1">配置部署目录</h3>
+<p>编辑 <code>deploy_dir</code> 变量以配置部署目录。</p>
+<ul>
+<li>
+<p>全局变量默认设为 <code>/home/tidb/deploy</code>，适用于所有服务。如果数据盘挂载于 <code>/data1</code> 目录，您可以通过以下修改将其变更至 <code>/data1/dm</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#75715e">## Global variables.</span>
+<span style="color:#66d9ef">[all:vars]</span>
+<span style="color:#a6e22e">deploy_dir</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/data1/dm</span>
+</code></pre></div></li>
+<li>
+<p>如果需要为某个服务创建单独的部署目录，您可以在 <code>inventory.ini</code> 中配置服务主机列表的同时设置 host 变量。此操作需要您添加第一列别名，以避免在混合服务部署场景下产生混淆。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">dm-master ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71 deploy_dir=/data1/deploy</span>
+</code></pre></div></li>
+</ul>
+<h3 id="-relay-log-">配置 relay log 同步位置</h3>
+<p>首次启动 DM-worker 时，您需要配置 <code>relay_binlog_name</code> 变量以指定 DM-worker 拉取上游 MySQL 或 MariaDB binlog 的起始位置。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">[dm_worker_servers]
+dm-worker1 ansible_host=<span style="color:#ae81ff">172.16</span><span style="color:#ae81ff">.10</span><span style="color:#ae81ff">.72</span> source_id=<span style="color:#e6db74">"mysql-replica-01"</span> server_id=<span style="color:#ae81ff">101</span> relay_binlog_name=<span style="color:#e6db74">"binlog.000011"</span> mysql_host=<span style="color:#ae81ff">172.16</span><span style="color:#ae81ff">.10</span><span style="color:#ae81ff">.81</span> mysql_user=root mysql_password=<span style="color:#e6db74">'VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU='</span> mysql_port=<span style="color:#ae81ff">3306</span>
+
+dm-worker2 ansible_host=<span style="color:#ae81ff">172.16</span><span style="color:#ae81ff">.10</span><span style="color:#ae81ff">.73</span> source_id=<span style="color:#e6db74">"mysql-replica-02"</span> server_id=<span style="color:#ae81ff">102</span> relay_binlog_name=<span style="color:#e6db74">"binlog.000002"</span> mysql_host=<span style="color:#ae81ff">172.16</span><span style="color:#ae81ff">.10</span><span style="color:#ae81ff">.82</span> mysql_user=root mysql_password=<span style="color:#e6db74">'VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU='</span> mysql_port=<span style="color:#ae81ff">3306</span>
+</code></pre></div><blockquote>
+<p><strong>注意：</strong></p>
+<p>如未设定 <code>relay_binlog_name</code>，v1.0.2 之前版本的 DM-worker 将从上游 MySQL 或 MariaDB 现有最早时间点的 binlog 文件开始拉取 binlog，拉取到数据同步任务需要的最新 binlog 可能需要很长时间；v1.0.2 及之后版本的 DM-worker 将从最新时间点的 binlog 文件开始拉取 binlog，一般情况下不需要手动配置。</p>
+</blockquote>
+<h3 id="-relay-log-gtid-">开启 relay log GTID 同步模式</h3>
+<p>在 DM 集群中，DM-worker 的 relay log 处理单元负责与上游 MySQL 或 MariaDB 通信，从而将 binlog 拉取至本地文件系统。</p>
+<p>DM 目前支持 MySQL GTID 和 MariaDB GTID。您可以通过配置以下项目开启 relay log GTID 同步模式：</p>
+<ul>
+<li>
+<p><code>enable_gtid</code>：打开 relay log GTID 同步模式以处理 master 和 slave 易位的场景</p>
+</li>
+<li>
+<p><code>relay_binlog_gtid</code>：指定 DM-worker 开始拉取对应上游 MySQL 或 MariaDB binlog 的起始位置</p>
+</li>
+</ul>
+<p>示例配置如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">[dm_worker_servers]
+dm-worker1 ansible_host=<span style="color:#ae81ff">172.16</span><span style="color:#ae81ff">.10</span><span style="color:#ae81ff">.72</span> source_id=<span style="color:#e6db74">"mysql-replica-01"</span> server_id=<span style="color:#ae81ff">101</span> enable_gtid=<span style="color:#66d9ef">true</span> relay_binlog_gtid=<span style="color:#e6db74">"aae3683d-f77b-11e7-9e3b-02a495f8993c:1-282967971,cc97fa93-f5cf-11e7-ae19-02915c68ee2e:1-284361339"</span> mysql_host=<span style="color:#ae81ff">172.16</span><span style="color:#ae81ff">.10</span><span style="color:#ae81ff">.81</span> mysql_user=root mysql_password=<span style="color:#e6db74">'VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU='</span> mysql_port=<span style="color:#ae81ff">3306</span>
+
+dm-worker2 ansible_host=<span style="color:#ae81ff">172.16</span><span style="color:#ae81ff">.10</span><span style="color:#ae81ff">.73</span> source_id=<span style="color:#e6db74">"mysql-replica-02"</span> server_id=<span style="color:#ae81ff">102</span> relay_binlog_name=binlog<span style="color:#ae81ff">.000002</span> mysql_host=<span style="color:#ae81ff">172.16</span><span style="color:#ae81ff">.10</span><span style="color:#ae81ff">.82</span> mysql_user=root mysql_password=<span style="color:#e6db74">'VjX8cEeTX+qcvZ3bPaO4h0C80pe/1aU='</span> mysql_port=<span style="color:#ae81ff">3306</span>
+</code></pre></div><h3 id="heading-2">全局变量</h3>
+<table>
+<thead>
+<tr>
+<th>变量名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cluster_name</td>
+<td>集群名称，可调整</td>
+</tr>
+<tr>
+<td>dm_version</td>
+<td>DM 版本，默认已配置</td>
+</tr>
+<tr>
+<td>grafana_admin_user</td>
+<td>Grafana 管理员用户名称，默认值 <code>admin</code></td>
+</tr>
+<tr>
+<td>grafana_admin_password</td>
+<td>Grafana 管理员账户的密码，用于通过 Ansible 导入 Dashboard。默认值为 <code>admin</code>。如果您在 Grafana 网页端修改了密码，请更新此变量。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="-9--dm-">第 9 步：部署 DM 集群</h2>
+<p>使用 <code>ansible-playbook</code> 运行 Playbook，默认并发数量是 5。如果部署目标机器较多，您可以使用 <code>-f</code> 参数增加并发数量，例如，<code>ansible-playbook deploy.yml -f 10</code>。</p>
+<p>以下部署操作示例使用中运行服务的用户为 <code>tidb</code>：</p>
+<ol>
+<li>
+<p>编辑 <code>dm-ansible/inventory.ini</code> 文件，确保 <code>ansible_user = tidb</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">ansible_user</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">tidb</span>
+</code></pre></div><blockquote>
+<p><strong>注意：</strong></p>
+<p>请勿将 <code>ansible_user</code> 设为 <code>root</code>，因为 <code>tidb-ansible</code> 限制服务需以普通用户运行。</p>
+</blockquote>
+<p>运行以下命令。如果所有服务都返回 <code>tidb</code>，则 SSH 互信配置成功。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible -i inventory.ini all -m shell -a <span style="color:#e6db74">'whoami'</span>
+</code></pre></div><p>运行以下命令。如果所有服务都返回 <code>root</code>，则 <code>tidb</code> 用户免密 sudo 操作配置成功。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible -i inventory.ini all -m shell -a <span style="color:#e6db74">'whoami'</span> -b
+</code></pre></div></li>
+<li>
+<p>修改内核参数，并部署 DM 集群组件和监控组件。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible-playbook deploy.yml
+</code></pre></div></li>
+<li>
+<p>启动 DM 集群。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible-playbook start.yml
+</code></pre></div><p>此操作会按顺序启动 DM 集群的所有组件，包括 DM-master，DM-worker，以及监控组件。当一个 DM 集群被关闭后，您可以使用该命令将其开启。</p>
+</li>
+</ol>
+<h2 id="-10--dm-">第 10 步：关闭 DM 集群</h2>
+<p>如果您需要关闭一个 DM 集群，运行以下命令：</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible-playbook stop.yml
+</code></pre></div><p>该操作会按顺序关闭整个 DM 集群中的所有组件，包括 DM-master，DM-worker，以及监控组件。</p>
+<h2 id="heading-3">常见部署问题</h2>
+<h3 id="heading-4">默认服务端口</h3>
+<table>
+<thead>
+<tr>
+<th align="left">组件</th>
+<th align="left">端口变量</th>
+<th align="left">默认端口</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">DM-master</td>
+<td align="left"><code>dm_master_port</code></td>
+<td align="left">8261</td>
+<td align="left">DM-master 服务交流端口</td>
+</tr>
+<tr>
+<td align="left">DM-worker</td>
+<td align="left"><code>dm_worker_port</code></td>
+<td align="left">8262</td>
+<td align="left">DM-worker 服务交流端口</td>
+</tr>
+<tr>
+<td align="left">Prometheus</td>
+<td align="left"><code>prometheus_port</code></td>
+<td align="left">9090</td>
+<td align="left">Prometheus 服务交流端口</td>
+</tr>
+<tr>
+<td align="left">Grafana</td>
+<td align="left"><code>grafana_port</code></td>
+<td align="left">3000</td>
+<td align="left">外部 Web 监控服务及客户端（浏览器）访问端口</td>
+</tr>
+<tr>
+<td align="left">Alertmanager</td>
+<td align="left"><code>alertmanager_port</code></td>
+<td align="left">9093</td>
+<td align="left">Alertmanager 服务交流端口</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-5">自定义端口</h3>
+<p>编辑 <code>inventory.ini</code> 文件，将服务端口的相关主机变量添加在对应服务 IP 地址后：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">dm_master ansible_host</span><span style="color:#f92672">=</span><span style="color:#e6db74">172.16.10.71 dm_master_port=18261</span>
+</code></pre></div><h3 id="-dm-ansible">更新 DM-Ansible</h3>
+<ol>
+<li>
+<p>使用 <code>tidb</code> 账户登录至中控机，进入 <code>/home/tidb</code> 目录，然后备份<code>dm-ansible</code> 文件夹。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /home/tidb <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>mv dm-ansible dm-ansible-bak
+</code></pre></div></li>
+<li>
+<p>下载指定版本 DM-Ansible，解压。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /home/tidb <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>wget https://download.pingcap.org/dm-ansible-<span style="color:#f92672">{</span>version<span style="color:#f92672">}</span>.tar.gz <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>tar -xzvf dm-ansible-<span style="color:#f92672">{</span>version<span style="color:#f92672">}</span>.tar.gz <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>mv dm-ansible-<span style="color:#f92672">{</span>version<span style="color:#f92672">}</span> dm-ansible
+</code></pre></div></li>
+<li>
+<p>迁移 <code>inventory.ini</code> 配置文件。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /home/tidb <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>cp dm-ansible-bak/inventory.ini dm-ansible/inventory.ini
+</code></pre></div></li>
+<li>
+<p>迁移 <code>dmctl</code> 配置。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /home/tidb/dm-ansible-bak/dmctl <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>cp * /home/tidb/dm-ansible/dmctl/
+</code></pre></div></li>
+<li>
+<p>用 Playbook 下载最新的 DM 二进制文件。此文件会自动替换 <code>/home/tidb/dm-ansible/resource/bin/</code> 目录下的二进制文件。</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible-playbook local_prepare.yml
+</code></pre></div></li>
+</ol>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-dm/blob/release-1.0/zh/deploy-a-dm-cluster-using-ansible.md">"使用 DM-Ansible 部署 DM 集群"</a>
+    更新于
+    <span>Apr 8 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-dm/commit/374695ac968627eb53955662b923d77bf951de2a">
+        aliases: change stable to v3.0 in aliases (#21) <span class="hash">(374695a)</span>
+</a>
+</div></div>
+<div class="sidebar-page sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-dm/edit/release-1.0/zh/deploy-a-dm-cluster-using-ansible.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    修改本文
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-dm/issues/new?body=File:%20[%2fzh%2fdeploy-a-dm-cluster-using-ansible.md](https%3a%2f%2fpingcap.com%2fdocs-cn%2ftidb-data-migration%2fv1.0%2fdeploy-a-dm-cluster-using-ansible%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    反馈文档问题
+</a>
+<p class="toc-title">本页导航</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>产品</strong></h4>
+<ul>
+<li><a href="/docs-cn/v3.0/" onclick="trackViews('footer-product-tidb', 'docs-cn_view')">TiDB</a></li>
+<li><a href="/docs-cn/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs-cn/v3.0/roadmap/">TiDB 路线图</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>文档</strong></h4>
+<ul>
+<li><a href="/docs-cn/stable/how-to/get-started/deploy-tidb-from-docker-compose/">快速入门</a></li>
+<li><a href="/blog-cn/tidb-best-practice/">最佳实践</a></li>
+<li><a href="/docs-cn/stable/faq/tidb/">常见问题解答</a></li>
+<li><a href="/docs-cn/stable/reference/tools/user-guide/">TiDB 周边工具</a></li>
+<li><a href="/docs-cn/dev/releases/rn/">版本发布说明</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>资源</strong></h4>
+<ul>
+<li><a href="/blog-cn/">博客</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="https://book.tidb.io" target="_blank">TiDB in Action</a></li>
+<li><a href="https://university.pingcap.com/" onclick="trackViews('footer-source-university', 'pingcap-university_view')" target="_blank">PingCAP
+                    University</a></li>
+<li><a href="/solutions/intel/" onclick="trackViews('footer-resource-solutions', 'solutions_view')">联合解决方案</a></li>
+<li><a href="https://asktug.com/" onclick="trackViews('footer-resource-asktug', 'asktug_view')" target="_blank">Ask TUG</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>公司</strong></h4>
+<ul>
+<li><a href="/about-cn/">关于我们</a></li>
+<li><a href="/about-cn/recruit/join/" onclick="trackViews('footer-recruit-join', 'recruit-join_view')">招贤纳士</a>
+</li>
+<li><a href="/about-cn/news/">新闻报道</a></li>
+<li><a href="/privacy-policy/">隐私申明</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>联系我们</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg> Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg> Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg> Stack Overflow</a></li>
+<li id="wechat"><a class="wechat" href="javascript:void(0)"><svg height="17" viewbox="0 0 31.403 31.404" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M31.403 21.306c0-4.597-4.388-8.32-9.8-8.32-5.414 0-9.802 3.725-9.802 8.32 0 4.597 4.388 8.322 9.802 8.322 1.701 0 3.302-.369 4.697-1.019l3.863 1.671-.447-4.309c1.066-1.329 1.687-2.937 1.687-4.665zm-13.102-2.254a1.395 1.395 0 1 1 0-2.79 1.395 1.395 0 0 1 0 2.79zm6.604 0a1.395 1.395 0 1 1 .003-2.79 1.395 1.395 0 0 1-.003 2.79z"></path><path d="M21.604 11.885c1.515 0 2.957.27 4.271.755.009-.175.03-.345.03-.521 0-6.074-5.801-10.996-12.953-10.996C5.799 1.123 0 6.044 0 12.119c0 2.284.822 4.408 2.229 6.167l-.591 5.694 5.104-2.213c1.264.59 2.661.986 4.136 1.189a8.143 8.143 0 0 1-.179-1.65c.001-5.195 4.892-9.421 10.905-9.421zm-4.287-6.428a1.84 1.84 0 1 1-1.841 1.84c0-1.016.825-1.84 1.841-1.84zM8.586 9.139a1.84 1.84 0 0 1 0-3.682 1.84 1.84 0 1 1 0 3.682z"></path></svg> 微信公众号</a> <div class="qr_code_outer f-hide f-tc">
+<div class="qr_code">
+<i id="close_qrcode"><svg viewbox="0 0 224.512 224.512" xmlns="http://www.w3.org/2000/svg"><path d="M224.507 6.997L217.521 0 112.256 105.258 6.998 0 .005 6.997l105.258 105.257L.005 217.512l6.993 7L112.256 119.24l105.265 105.272 6.986-7-105.258-105.258z" fill="#010002"></path></svg></i>
+<img alt="Wechat qrCode" class="qr_code_img" id="js_qr_code_img" src="/images/wechat-qrcode.jpg"/>
+<p>微信扫一扫<br/> 微信ID：pingcap2015</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="subscribe" id="subscribe-pc"></div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 北京平凯星辰科技发展有限公司</p>
+<a class="copyright-btn-lang copyright-btn-en" href="/docs/tidb-data-migration/stable" id="lang">English</a>
+<a class="prepared-num" href="http://www.beian.miit.gov.cn/">京 ICP 备 16046278 号 - 2</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

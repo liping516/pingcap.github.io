@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests | TiDB</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="This post introduces why Jepsen is important to the distributed database industry, how it works, common issues found, how we use Jepsen with TiDB, and a short summary of all problems Jepsen has found." name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests | TiDB" property="og:title"/>
+<meta content="This post introduces why Jepsen is important to the distributed database industry, how it works, common issues found, how we use Jepsen with TiDB, and a short summary of all problems Jepsen has found." property="og:description"/>
+<meta content="https://pingcap.com/blog/safety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/blog/jepsen-offers-system-wide-approach-to-testing-databases-at-scale.png" property="og:image"/>
+<meta content="/images/blog/jepsen-offers-system-wide-approach-to-testing-databases-at-scale.png" property="og:image:secure_url"/><meta content="summary_large_image" name="twitter:card"/>
+<meta content="1200" name="og:image:width"/>
+<meta content="600" name="og:image:height"/><meta content="This post introduces why Jepsen is important to the distributed database industry, how it works, common issues found, how we use Jepsen with TiDB, and a short summary of all problems Jepsen has found." name="twitter:description"/>
+<meta content="Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests | TiDB" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/>
+<meta content="https://download.pingcap.com/images/blog/jepsen-offers-system-wide-approach-to-testing-databases-at-scale.png" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="en"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="a-en" href="/tidb-cloud/">Cloud</a></li>
+<li><a class="a-en" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector " id="docsTypeSelector">
+<a class="header-doc-nav" href="#">Docs</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a class="a-en" href="/success-stories">Success
+                    Stories</a></li>
+<li class="sel"><a class="a-en" href="/blog">Blog</a></li>
+<li><a class="link-download link-download-en" href="/download">Free Download</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs/stable/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="en" data-type="" id="search-input" name="q" placeholder="Search TiDB Docs" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li><a href="/tidb-cloud/">Cloud</a></li>
+<li><a class="tidb-academy" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector " id="docsTypeSelector">
+<p class="header-doc-nav">Docs</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/success-stories">Success Stories</a></li>
+<li class="sel"><a href="/blog">Blog</a></li>
+<li><a class="link-download" href="/download">Free Download</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc" style="margin-left: 0.75rem;">Subscribe to Blog</button></a>
+</div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/blog-cn" id="lang">中文</a>
+</div>
+</div>
+</nav>
+<div class="blog">
+<div class="blogArticle__container">
+<div class="archive"><div class="article-nav">
+<a href="/blog/#Engineering">BLOG HOME</a> <span> &gt; </span>Engineering</div><div class="content markdown-body">
+<h1 class="title">Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests</h1>
+<ul class="blog-post-meta">
+<li class="meta-item">
+<img alt="Date icon" src="/images/svgs/icon-date.svg"/>Wed, Sep 18, 2019</li>
+<li class="meta-item">
+<img alt="Pen icon" src="/images/svgs/icon-writer.svg"/>Ana Hobden</li>
+</ul>
+<div class="blog-text"><p><img alt="Jepsen Offers System-Wide Approach to Testing Databases at Scale" class="lazy" data-original="https://download.pingcap.com/images/blog/jepsen-offers-system-wide-approach-to-testing-databases-at-scale.png" src="/images/svgs/loader-spinner.svg"/></p>
+<div class="caption-center"> Image source: <a href="https://thenewstack.io/jepsen-offers-system-wide-approach-testing-databases-scale/" target="_blank">Jepsen Offers System-Wide Approach to Testing Databases at Scale </a></div>
+<p>When <a href="https://jepsen.io/">Jepsen</a> appeared in the industry several years ago we couldn't have been happier. Finally, an approachable, understandable reliability testing framework along with an enjoyable and rigorous library of analyses of popular databases.</p>
+<p>Jepsen is an umbrella term for the software library, collection of articles, and service of the same name. Together, the project pushes distributed systems to be more accurate in their claims and more thorough in their testing.</p>
+<p>It's been indispensable for battle-testing TiDB, our distributed NewSQL database, as we deploy it in some of the largest technology companies in the world.</p>
+<p>This article is, in many ways, a love letter to one of our favorite projects. We'll talk about <a href="#why-is-jepsen-so-important-to-our-industry">why it's important</a>, <a href="#how-does-jepsen-work">how it works</a>, <a href="#commonly-found-problems">common issues found</a>, <a href="#how-we-use-jepsen-with-tidb">how we use Jepsen</a>, and finally we included a really <a href="#appendix-i">short summary of all the problems Jepsen has found</a>.</p>
+<p>In the rest of this article, and in any Jepsen analyses you might find, you're going to find a lot of database jargon. Jepsen has our back! <a href="https://jepsen.io/consistency">Located here</a> you can see definitions and explanations of many of these terms.</p>
+<p>We'll refer to <a href="https://jepsen.io/consistency/models/serializable"><em>serializability</em></a> and <a href="https://jepsen.io/consistency/models/linearizable"><em>linearizability</em></a> often below, so you may benefit from quickly (re)familiarizing yourself with them.</p>
+<h2 id="why-is-jepsen-so-important-to-our-industry">Why is Jepsen so important to our industry?</h2>
+<p>Testing a distributed system like <a href="https://en.wikipedia.org/wiki/TiDB">TiDB</a> isn't easy! Because these systems depend on multiple nodes coordinating there is a lot of room for failures. Networks and hardware aren't reliable, and when multiple nodes are involved, the probability of failure is much higher. Even still, deployments (and even nodes!) are highly variable in scale, OS, hardware, and workloads. It's impossible to test all of them.</p>
+<p>Is all hope lost? No! In <a href="https://people.mpi-sws.org/~fniksic/popl2018/paper.pdf">Why Is Random Testing Effective for Partition Tolerance Bugs?</a> Majumdar and Niksic formalized many failure scenarios and discussed how even a small, random subset of possibilities can be sufficient to achieve a specific coverage goal.</p>
+<p>It's fairly rare to see projects and articles tackling the same kind of content as Jepsen. Vendors aren't always honest (by mistake or not) about what they do and don't guarantee. Projects like Jepsen, produced independently and rigorously, that test these claims are reinvigorating when compared to often banal marketing copy.</p>
+<p>The Jepsen library helps automate and reproduce test cases, allowing the testers and readers to reproduce results for themselves.</p>
+<h2 id="how-does-jepsen-work">How does Jepsen work?</h2>
+<p>Many projects use the Jepsen library to test their systems before a Jepsen analysis, or never undergo an analysis while still using the Jepsen framework.</p>
+<p>This is great. This is the goal:</p>
+<blockquote>
+<p>Jepsen is an effort to improve the safety of distributed databases, queues, consensus systems, etc.</p>
+</blockquote>
+<p>– <a href="https://jepsen.io/">The Jepsen website</a></p>
+<p>When a project wishes to improve themselves, a Jepsen analysis places the Jepsen framework in the hands of an expert operator who improves and expands the test suite. Often this involves adding aggressive failure scenarios or entirely new complex tests.</p>
+<h3 id="jepsen-the-framework">Jepsen (the framework)</h3>
+<p>The tool itself, also called Jepsen, is a Clojure framework used to set up distributed systems tests, run operations against them, and verify the operation history is sane and possible given the claims of the project. Then, it can generate some nice graphs out of that data.</p>
+<blockquote>
+<p>It's kind of like a really flexible failure-injecting fuzzer.</p>
+</blockquote>
+<p>In many cases, Jepsen tests for <em>linearizability</em> by using <a href="https://github.com/jepsen-io/knossos">Knossos</a> to prove that a given history (from a test) is non-linearizable. Jepsen also frequently tests for timing-related issues using <a href="https://github.com/jepsen-io/libfaketime">libfaketime</a> to create clock skew.</p>
+<p>Jepsen itself doesn't rigorously enforce any specific tests, it's <strong>up to the tester to determine which claims, under which conditions, they wish to attempt to disprove</strong>. Once these claims are written, the framework can attempt to find examples in invalid states.</p>
+<p>While the specifics of tests are up to the author, there is a common suite of tests for testing certain claims, such as how required for <em>snapshot isolation</em> or <em>sequential consistency</em>.</p>
+<p>Common tests include:</p>
+<ul>
+<li>
+<p><strong>Bank:</strong> simulated bank accounts including transfers between accounts (using transactions).</p>
+<ul>
+<li>Claim: the total of all accounts should be consistent.</li>
+<li>Required for: snapshot isolation.</li>
+</ul>
+</li>
+<li>
+<p><strong>Monotonic:</strong> a counter which increments over time.</p>
+<ul>
+<li>Claim: successive reads of that value by any single client should observe monotonically increasing transaction timestamps and values.</li>
+<li>Required for: monotonicity.</li>
+</ul>
+</li>
+<li>
+<p><strong>Register:</strong> read, writes, and compare-and-swap operations on registers.</p>
+<ul>
+<li>Claim: the operations should be linearizable (according to Knossos).</li>
+<li>Required for: snapshot isolation.</li>
+</ul>
+</li>
+<li>
+<p><strong>Set:</strong> unique integers inserted as rows in a table.</p>
+<ul>
+<li>Claim: concurrent reads should include all present values at any given time and at any later time.</li>
+<li>Note: a stricter variant requires immediate visibility instead of allowing stale reads.</li>
+</ul>
+</li>
+<li>
+<p><strong>Long Fork:</strong> non-intersecting transactions are run concurrently.</p>
+<ul>
+<li>Claim: transactions happen in <em>some</em> specific order for future reads.</li>
+<li>Prohibited in: <a href="https://jepsen.io/consistency/models/snapshot-isolation">snapshot isolation</a> (Prefix property).</li>
+<li>Allowed in: parallel snapshot isolation.</li>
+</ul>
+</li>
+<li>
+<p><strong>Sequential:</strong> in one process, perform two write transactions (<code>write_1</code> then <code>write_2</code>), concurrently read in the reverse order.</p>
+<ul>
+<li>Claim: no instances where <code>write_2</code> is present before <code>write_1</code> should be discovered.</li>
+<li>Required for: sequential Consistency.</li>
+</ul>
+</li>
+</ul>
+<p>In addition to these tests, Jepsen uses <em>Nemeses</em>, an error injection tool which introduces failures to a system. A Nemesis can create partitions, fail processes, and cause other types of actions.</p>
+<p>Here's an example of some nemeses that do partitioning:</p>
+<ul>
+<li><code>partition-halves</code>: Cuts the network into two halves, a majority and a minority.</li>
+<li><code>random-partition-halves</code>: Cuts the network into two randomly chosen halves.</li>
+<li><code>partition-random-node</code>: Isolates a random node from the rest of the network.</li>
+</ul>
+<h3 id="jepsen-the-analysis">Jepsen (the analysis)</h3>
+<p>When a project requests a Jepsen analysis from Jepsen, they're actually asking Jepsen to verify the claims the system makes, rather than check the system against a rigorous, formal model or set of requirements. E.g., if the project claims to withstand single node failures, then Jepsen can test that. In many cases, the project (or a possible customer) is funding some or all of the work.</p>
+<p>All of this is quite important. This means Jepsen analyses aren't just someone “dunking” on a project. Moreover, Jepsen is validating the claims the project makes in its own documentation.</p>
+<h2 id="commonly-found-problems">Commonly found problems</h2>
+<p>While not all analyses map directly to specific suites, tests, or claims, there were some problems that just seem to keep popping up!</p>
+<h3 id="responding-too-early">Responding too early</h3>
+<p>When you write data to disk, it isn't immediately persistent on the disk. Instead, the data will be held in a buffer until it is “flushed” to disk. In the event of a failure, the data in the buffer may be lost, corrupted, or partially written. Therefore, in systems which promise no data loss, writes must be flushed before they can be acknowledged.</p>
+<p>There were cases like in <a href="https://aphyr.com/posts/317-jepsen-elasticsearch">ElasticSearch 1.1.0</a> where writes were not fsynced by default. In these cases, for either performance reasons or mistakenly, a system responded prior to fsync. This created write loss during node failures.</p>
+<p>A good way to test this yourself is to kill nodes at the start of a network write, then validate if the data was saved in the node on recovery.</p>
+<h3 id="membership-changes-are-hard">Membership Changes are hard</h3>
+<p>Over time, a distributed system is likely to grow, shrink, or otherwise change its membership to accommodate maintenance and load. These phases of transition often involve periods of hand-off, where failures may expose previously undiscovered bugs.</p>
+<p>In the <a href="https://jepsen.io/analyses/rethinkdb-2-2-3-reconfiguration">RethinkDB configuration</a> analysis, Jepsen built a nemesis that would interact with RethinkDB's reconfiguration API to reconfigure the cluster. Then, in conjunction with another nemesis that creates partitions, Jepsen was able to create very aggressive membership change tests.</p>
+<p>In several cases, testing for more aggressive error modes during these times of transition lead to the discovery of subtle bugs. In RethinkDB, a split-brain (multiple competing sub-clusters) could happen during transition, requiring emergency repairs by a human operator.</p>
+<h3 id="split-brains-from-a-bridge">Split brains from a bridge</h3>
+<p>Split brains were a regular problem in many Jepsen analyses. A split-brain occurs when a cluster somehow promotes multiple leaders in a cluster that should only have a single leader.</p>
+<p>While many projects test trivial partition scenarios (such as <code>{A,B,C,D,E}</code> becoming <code>{A,B,C},{D, E}</code>), there were cases, such as Elasticsearch testing a “bridge”, where nodes on each side of a partition were only partially disconnected, yielding split brains.</p>
+<p>An example of this is <code>{A,B,C,D,E}</code> becoming <code>{A,B,C},{C,D,E}</code>, where <code>C</code> is a bridge between the two partitions.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">A - C - E
+ \ / \ /
+  B   D
+</code></pre></div><p>Intuitively, we can see from the diagram that <code>C</code> should probably be the elected leader. It's totally connected. But this isn't always what happens.</p>
+<p>In <a href="https://aphyr.com/posts/317-call-me-maybe-elasticsearch">Zendisco (2014)</a>, Elasticsearch's membership system, there was no invariant preventing two leaders from existing, so it was possible for two nodes to believe themselves to be in a majority, and become elected leaders.</p>
+<h3 id="poor-behavior-on-failed-connections">Poor behavior on failed connections</h3>
+<p>Some projects suffered from connection behaviors that are not ideal for operators. TiKV issue <a href="https://github.com/tikv/tikv/issues/4500">#4500</a> is an interesting example of this. TiKV 2.1.7 would retry a failed PD connection for up to 60 seconds on startup. However, if it lost connection to PD while online, it would retry until recovery.</p>
+<p>In this case, if PD failed, then TiKV failed before PD recovered. This could lead to a state where TiKV nodes would never recover.</p>
+<p>Here's an example of a problematic case involving 1 TiKV node, and 1 PD node:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust">kill(pd);
+restart(tikv);
+sleep(<span style="color:#ae81ff">61_000</span>);
+recover(pd);
+<span style="color:#75715e">// TiKV never recovers connection.
+</span></code></pre></div><p><a href="https://jepsen.io/analyses/dgraph-1-0-2">Dgraph behaved similarly</a> with interactions between it's Alpha and Zero nodes.</p>
+<h3 id="inappropriate-retries">Inappropriate retries</h3>
+<p>Both CockroachDB and TiDB recently were shown to have issues where they could improperly retry a transaction using a newer timestamp. In CockroachDB, this could result in duplicate writes. In TiDB, this could lead to read skew or lost updates, as indicated by a drifting total in the bank test.</p>
+<p>In TiDB's case, these could occur under the default configuration for two reasons:</p>
+<ul>
+<li>When one transaction conflicts with another, TiDB would automatically retry the transaction. (<a href="https://github.com/pingcap/tidb/issues/10075">10075</a>, <a href="https://github.com/pingcap/tidb/issues/10076">10076</a>)</li>
+<li>If TiDB lost connection to PD, TiDB would also retry. (<a href="https://github.com/pingcap/tidb/issues/10495">10495</a>, <a href="https://github.com/tikv/tikv/issues/4500">4500</a>, <a href="https://github.com/pingcap/tidb/issues/10470">10470</a>)</li>
+</ul>
+<h3 id="misleading-or-incorrect-advertising">Misleading or incorrect advertising</h3>
+<p>Projects like Aerospike suffered from making obviously false claims such as “100% Uptime” on their marketing pages. These sorts of claims ultimately only are a detriment to the project's credibility. These sorts of claims show either deliberate lying, or lack of knowledge about fundamental principles.</p>
+<p>Jepsen testing showed in these cases that these claims were too good to be true. These kinds of problems remind us all to properly evaluate systems for our needs, instead of trusting in marketing copy.</p>
+<h3 id="incorrect-claims-by-developers">Incorrect claims by developers</h3>
+<p>Often, Jepsen analyses test claims or “sanctioned use cases” by the developers. For example, RabbitMQ developers <a href="https://www.rabbitmq.com/blog/2014/02/19/distributed-semaphores-with-rabbitmq/">claimed</a> to support distributed semaphores but was not able to provide the common guarantees associated with these structures. In the case of NuoDB, a developer made <a href="https://groups.google.com/forum/#!msg/cloud-computing/nn7Sw5T0eSE/NxOTUwD_0ykJ">bold claims</a> about the database's capabilities in relation to the CAP theorem.</p>
+<p>While these claims aren't sitting on the glossy marketing pages of the product, it's common for developers to reference official blogs and mailing lists when learning the capabilities and limits of a system. Developers of a project are typically considered trustworthy sources of knowledge about their product, so claims they make are often taken as true by users.</p>
+<h2 id="interesting-notes">Interesting notes</h2>
+<p>During my review of Jepsen history, some interesting notes came up that may be of your interest. Here are a few of them that may hopefully encourage you to read the analyses for yourself.</p>
+<h3 id="serializability-vs-strict-serializability-casual-reverse">Serializability vs strict serializability: casual reverse</h3>
+<p>In the <a href="https://jepsen.io/analyses/cockroachdb-beta-20160829">CockroachDB analysis</a>, Jepsen talks about the differences between <a href="https://jepsen.io/consistency/models/strict-serializable"><em>strict serializability</em></a> and <em>serializability</em>. Serializability, but not “strict serializability”, means it was possible for reads to fail to observe the most recent transactions.</p>
+<p>Strict serializability means that operations should appear to have some order consistency with the real-time ordering. It implies both serializability and linearizability.</p>
+<div class="trackable-btns">
+<a href="/download" onclick="trackViews('Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests', 'download-tidb-btn-middle')"><button>Download TiDB</button></a>
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm" onclick="trackViews('Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests', 'subscribe-blog-btn-middle')"><button>Subscribe to Blog</button></a>
+</div>
+<h3 id="error-message-compatibility">Error message compatibility</h3>
+<p>In <a href="https://aphyr.com/posts/317-call-me-maybe-elasticsearch">ElasticSearch - 2014-06-15 - 1.1.0</a> it was noted that different JVMs serialize classes differently (e.g., InetAddress), meaning it was possible clients and servers would be unable to correctly communicate error messages from a different node.</p>
+<p>This is <a href="https://github.com/elastic/elasticsearch/issues/3145">issue #3145</a>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">[</span>2013<span style="color:#f92672">-</span>06<span style="color:#f92672">-</span>05 09<span style="color:#f92672">:</span>35<span style="color:#f92672">:</span>20<span style="color:#f92672">,</span>480<span style="color:#f92672">]</span><span style="color:#f92672">[</span>WARN <span style="color:#f92672">]</span><span style="color:#f92672">[</span>action<span style="color:#f92672">.</span><span style="color:#a6e22e">index</span>          <span style="color:#f92672">]</span> <span style="color:#f92672">[</span>es<span style="color:#f92672">-</span>1<span style="color:#f92672">]</span> Failed to perform index on replica <span style="color:#f92672">[</span>rules<span style="color:#f92672">]</span><span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">elasticsearch</span><span style="color:#f92672">.</span><span style="color:#a6e22e">transport</span><span style="color:#f92672">.</span><span style="color:#a6e22e">RemoteTransportException</span><span style="color:#f92672">:</span> Failed to deserialize exception response from stream
+Caused by<span style="color:#f92672">:</span> org<span style="color:#f92672">.</span><span style="color:#a6e22e">elasticsearch</span><span style="color:#f92672">.</span><span style="color:#a6e22e">transport</span><span style="color:#f92672">.</span><span style="color:#a6e22e">TransportSerializationException</span><span style="color:#f92672">:</span> Failed to deserialize exception response from stream
+</code></pre></div><p>Using tools such as <a href="https://developers.google.com/protocol-buffers/">Protobuf</a> or <a href="https://capnproto.org/">Cap'n Proto</a> can help prevent these kinds of issues, as they have a well defined backward compatibility semantic.</p>
+<h2 id="how-we-use-jepsen-with-tidb">How we use Jepsen with TiDB</h2>
+<p>The team at PingCAP uses Jepsen to test TiDB (which uses TiKV) frequently. This includes tests developed for the <a href="https://jepsen.io/analyses/tidb-2.1.7">official Jepsen Analysis</a> for TiDB.</p>
+<p>Each new release of TiDB and TiKV passes a check ensuring that there are no claims we have made which the Jepsen framework disproves.</p>
+<h2 id="appendix-i">Appendix I</h2>
+<p>This is a summary of each report's problems discovered.</p>
+<blockquote>
+<p>Note: Since Jepsen has expanded its feature set over time, these results are somewhat skewed, since some problems detected in new reports may have not been detectable in earlier reports.</p>
+</blockquote>
+<ul>
+<li>Aerospike
+<ul>
+<li>2015-05-04 - 3.5.4
+<ul>
+<li>Routine Linearizability violations and timeouts in read and CaS ops during network interruptions between nodes.</li>
+<li>Counter operation loss (despite being acknowledged) during network interruptions between nodes.</li>
+<li>Split brain detected (via counter operation fluctuation) during networking between nodes.</li>
+</ul>
+</li>
+<li>2018-03-07 - 3.99.0.3
+<ul>
+<li>lost updates when more than k nodes crash (either concurrently or in sequence).</li>
+<li>when either process pauses or clock skew exceed 27 seconds, Aerospike could lose committed updates</li>
+<li>Aerospike could inform a client that a write did not succeed when, in fact, it had</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Cassandra
+<ul>
+<li>2013-09-24 - 2.0.0
+<ul>
+<li>Due to last-write-win semantics, even under perfect clocks, QUORUM consistency, and a perfect lock service, Cassandra lost 28% of it's acknowledged writes during an ordered mutation test on a single cell.</li>
+<li>If a cluster is partitioned during around half of a test run, counters could drift by up to 50% of the value.</li>
+<li>Row isolation seems to be probabilistic at best due to duplicate timestamps.</li>
+<li>Lightweight transactions dropping 1-5% of requests without network partitions.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Chronos
+<ul>
+<li>2015-08-10 - 2.4.0
+<ul>
+<li>Poor error handling and poor Debian packaging could lead to multiple copies of the service running.</li>
+<li>Hard crashes in response to a network partition.</li>
+<li>It is seemingly impossible to recover Chronos after a network failure.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>CockroachDB
+<ul>
+<li>2017-02-16 - beta-20160829
+<ul>
+<li>Casual reverses in insert order show a subtle example of how serializability and strict serializability differ.</li>
+<li>Non-monotonicity (decreasing values with increasing timestamps) as well as a serializability violation due to a cache not discriminating between transaction IDs.</li>
+<li>Nodes coordinating a transaction may attempt to retry a request and receive an error, causing another retry with a new timestamp, resulting in a duplicate entry.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Crate
+<ul>
+<li>2016-06-28 - 0.54.9
+<ul>
+<li>ElasticSearch 1.7 as a data store meant that updates could be lost.</li>
+<li>During partitions or split brains the system seems to hold two different copies of a row with the same <code>_version</code> value.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Dgraph
+<ul>
+<li>2018-08-23 - 1.0.2
+<ul>
+<li>Schema issues could transform data in unexpected ways, including unexpectedly treating integers as floats.</li>
+<li>Several segfaults and deadlocks around cluster joining, mostly related to leader discovery when a leader wasn't present.</li>
+<li>Concurrent upserts on the same key could succeed, resulting in duplicate keys.</li>
+<li>Several delete anomalies, including deletions committed after a read began, occurred in part due to a race condition.</li>
+<li>Client-side sequencing race conditions meant clients could experience read skew.</li>
+<li>Acknowledged writes could be lost during network partitions in part by Dgraph failing to advance read timestamps on leader changes.</li>
+<li>The same bug as above caused transactions writing to a given key to abort with a conflict, despite none existing.</li>
+<li>Nodes could lock up during partitions, causing requests to time out.</li>
+<li>Partitions could push transaction timestamps into the future, causing requests to fail with outdated timestamps for some time.</li>
+<li>No configurable retry loop on Alpha startup made recovery difficult for operators.</li>
+<li>Write loss may occur during Alpha node crashes.</li>
+<li>After crashes Alpha nodes could return timeouts due to not having up been informed of a leadership change.</li>
+<li>During the cluster join process, nodes which received requests shortly after restarting could handle requests before initializing, resulting in a null pointer dereference.</li>
+<li>Migration read skew &amp; write loss due to race conditions on the commit path.</li>
+<li>Migration read skew &amp; write loss due to race conditions between updates and predicate moves.</li>
+<li>Predicate moves could cause node failure, resulting in a permanently unavailable state.</li>
+<li>During a large read-write transaction, if a predicate move happens, a cluster could lock up indefinitely.</li>
+<li>Read skew issues in otherwise healthy clusters.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Elasticsearch
+<ul>
+<li>2014-06-15 - 1.1.0
+<ul>
+<li>Error messages between JVM versions are unstable, resulting in poor error reporting.</li>
+<li>Cluster convergence is not instantaneous, takes approximately 90s with defaults.</li>
+<li>Health endpoints may lie (reporting green) in the case of a split-brain.</li>
+<li>During bridge (nontransitive partition) many acknowledged writes may be lost.</li>
+<li>During shifting total partitions (with distinct majority and minorities) writes may be lost.</li>
+<li>During static total partitions some writes may be lost.</li>
+<li>During partitions where the primaries (split-brain) are cut off, reconverge, and cut off again, some writes may be lost.</li>
+<li>During partitions where the primary node is cut off, then the cluster can reconverge, then heal the cut, and reconverge, some writes may still be lost.</li>
+</ul>
+</li>
+<li>2015-04-27 - 1.5.0
+<ul>
+<li>All data loss problems from prior report still an issue.</li>
+<li>Long GC pauses, high swap pressure, or an IO scheduler hiccup can result in a split-brain (and lost data)</li>
+<li>Writes are not fsynced immediately by default, leading to data loss on crashed nodes.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>etcd
+<ul>
+<li>2014-06-09 - 0.4.1
+<ul>
+<li>Race condition in cluster join.</li>
+<li>Consistent reads were not going through Raft, and thus registers were not linearizable.</li>
+<li>Consul also had the same issue.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>FaunaDB
+<ul>
+<li>2019-03-05 - 2.5.4
+<ul>
+<li>Slow partition recovery.</li>
+<li>Several Data definition language bugs related to it being non-transactional.</li>
+<li>Asking a node to remove itself will always fail.</li>
+<li>Removed nodes would fail to actually leave the cluster.</li>
+<li>Topology changes could result in unexpected internal errors from nodes.</li>
+<li>Rebooting nodes to apply topology changes could result in errors until the topology stabilized.</li>
+<li>Nodes could leave the cluster before log partitions had been spun down/migrated, causing future leaves to stall.</li>
+<li>Removing nodes could stall transaction pipelines due to log segments being closed but not destroyed.</li>
+<li>Clock skew can cause availability issues.</li>
+<li>Pagination issues related to double-sized integers.</li>
+<li>Events log pagination had issues returning the correct pages.</li>
+<li>Read skew due to non-transactional pagination.</li>
+<li>Read skew issues in bank test due to inconsistent indices, due to incomplete <em>bitemporal indices</em>.</li>
+<li>The query engine filtered unapplied transactions from the index, but still counted these transactions against the total number of results.</li>
+<li>Near present and future reads could result in non-monotonic anomalies.</li>
+<li>Reads may fail to observe the most recent state of some (but not necessarily all) instances read in a transaction, instead of observing some other, past state.</li>
+<li>An off by one error in a development release resulted in acute, persistent read skew.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Hazelcast
+<ul>
+<li>2017-10-06 - 3.8.3
+<ul>
+<li>Locks fail to provide mutual exclusion in the presence of network failures and split brains.</li>
+<li>During a small window of time at the start of a network partition enqueues on queues may be lost.</li>
+<li>During a partition, AtomicLongs and AtomicReferences can diverge, upon healing, all but one are discarded.</li>
+<li>IdGenerator does not generate cluster-wide unique types in the presence of network failure.</li>
+<li>Map's replace can lose modifications around the start of network partition</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Kafka
+<ul>
+<li>2013-09-24 - 0.8 beta
+<ul>
+<li>Writes can lose during partition due to a leader operating independently, then the leader loses its claim and a new election occurs, later the old leader reappears. This creates a situation with data loss, since the new leader is not aware of the old leader's updates.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>MariaDB Galera
+<ul>
+<li>2015-09-01 - 10.0
+<ul>
+<li>Under more than minimal load, Reads can see data that's being modified by a transaction. This seems to be read skew.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>MongoDB
+<ul>
+<li>2013-05-18 - 2.4.3
+<ul>
+<li>At the start of a network partition a minority-part primary may accept (unsafe) writes before stepping down, resulting in the newly chosen primary having lost writes. The old primary loses this data upon cluster recovery.</li>
+<li>The same problem also exists with <code>WriteConcern.SAFE</code> writes.</li>
+<li>The same problem persists (to a much lesser degree) with <code>WriteConcern.MAJORITY</code> writes.</li>
+</ul>
+</li>
+<li>2015-04-20 - 2.6.7
+<ul>
+<li>Stale and dirty reads at the start of a network partition may demonstrate impossible behavior due to illegal histories.</li>
+</ul>
+</li>
+<li>2017-02-07 - 3.4.0‑rc3
+<ul>
+<li>In the replication protocol v1, some bugs in the rollback process of the snapshot approach lead to loss of committed writes.</li>
+</ul>
+</li>
+<li>2018-10-23 - 3.6.4
+<ul>
+<li>Using Casual Consistency, when recovering from a network partition, it may be possible for writes to be lost. (two separate anomalies)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>NuoDB
+<ul>
+<li>2013-09-23 - 1.2
+<ul>
+<li>Cold starts may result in multiple clusters instead of one.</li>
+<li>It is possible to join a node to itself, and this has consequences.</li>
+<li>Race conditions on database creation.</li>
+<li>Under network partitions, many writes went unacknowledged (in addition to a few false negatives).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Percona XtraDB Cluster
+<ul>
+<li>2015-09-04 - 5.6.25
+<ul>
+<li>When multiple nodes are involved in a cluster, failed to isolate transactions correctly for Snapshot Isolation test.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>RabbitMQ
+<ul>
+<li>2014-06-06 - 3.3.0
+<ul>
+<li>Vendor <a href="https://www.rabbitmq.com/blog/2014/02/19/distributed-semaphores-with-rabbitmq/">post</a> claimed system was capable of implementing distributed mutexes when it was not, because queues are not expected typically expected to be linearizable.</li>
+<li>Loss of acknowledged writes after recovering specific network partitions due to node's wiping data on cluster rejoin.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Redis
+<ul>
+<li>2013-05-18 - 2.6.13
+<ul>
+<li>Sentinel system violates C (in CAP) as it can exhibit split brain scenarios, losing writes upon recovery.</li>
+</ul>
+</li>
+<li>2013-12-10 - WAIT
+<ul>
+<li>Proposed feature did not include ability to support transactional rollbacks, which is important for linearizability.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>RethinkDB
+<ul>
+<li>2016-01-04 - 2.1.5
+<ul>
+<li>Under different consistency levels, system performed largely as expected for single document operations. Only <code>majority/majority</code> proving to be linearizable under all tests.</li>
+</ul>
+</li>
+<li>2016-01-22 - 2.2.3
+<ul>
+<li>Changing replica configuration while nodes undergo network partitions can introduce split-brain phenomena. This was due to multiple rafts considering themselves leader. The root cause was related to violations of the Raft stable storage assumptions. <a href="https://github.com/rethinkdb/rethinkdb/issues/5289#issuecomment-175394540">Bug</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Riak
+<ul>
+<li>2013-05-19 - 1.2.1
+<ul>
+<li>Last write wins (<code>allow-mult=false</code>) semantics means simutaneous writes may be lost on a healthy, connected cluster.</li>
+<li>Under network partitions, last write wins may cause catatrophic write loss.</li>
+<li>Under network partitions, enforcing primary read/write to be quorum reported more failures accurately, but still lost data.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Tendermint
+<ul>
+<li>2017-09-05 - 0.10.2
+<ul>
+<li>On-disk store could become corrupt due to repeated updates on a single key.</li>
+<li>A <a href="https://github.com/tendermint/merkleeyes/issues/38">bug</a> in goleveldb, which causes Merkleeyes to crash when recovering from a truncated logfile.</li>
+<li>The Tendermint WAL is not synced to disk before operations are acknowledged to clients.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>TiDB
+<ul>
+<li>2019-06-12 - 2.1.7
+<ul>
+<li>Poor startup behavior when pd is not reachable.</li>
+<li>Read skew and stale read due to two default auto-retry mechanisms.</li>
+<li>Minor race condition in table creation.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>VoltDB
+<ul>
+<li>2016-07-12 - 6.3
+<ul>
+<li>Violations in a single partition linearizability tests due to read-only transactions passing through the transaction ordering system.</li>
+<li>Dirty read / Lost updates are possible during network partitions due to waiting transactions being released before partition detection code has run.</li>
+<li>Lost updates in the crash recovery system are possible.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>YugaByte DB
+<ul>
+<li>2019-03-26 - 1.1.9
+<ul>
+<li>Timeouts persist for the entire duration of a partition, instead of eventually falling to a “declared unavailable” state.</li>
+<li>Logs during partition could consume 40MB of disk per minute.</li>
+<li>Concurrent <code>CREATE TABLE ... IF NOT EXISTS</code> could return success before creation.</li>
+<li>Peer table is stored in master Raft group, impacting availability. (Caching is recommended)</li>
+<li>Slow recovery after partitions due to election times.</li>
+<li>After partition service could exhibit long windows of unavailability. Additional partitions surprisingly resolved this problem due to a race condition in the leader election process.</li>
+<li>Memory leaks resulting from <code>libbacktrace</code> caused masters to occasionally be killed by the OOM killer.</li>
+<li>Frequent read skew under normal conditions.</li>
+<li>In rare cases involving multiple network partitions, acknowledged writes could be discarded even after being visible to other reads. A bug allowed all raft members (not just voters) to be counted towards majority calculations.</li>
+<li>Read skew may happen during clock skew resulting from a locking system bug.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Zookeeper
+<ul>
+<li>2013-09-23 - 3.4.5
+<ul>
+<li>Zookeeper passed linearizability tests.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="article-toc"></div><div class="ssba-wrap">
+<div class="ssba">
+<a class="ssba_twitter_share" data-site="" href="http://twitter.com/share?url=https%3a%2f%2fpingcap.com%2fblog%2fsafety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests%2f" target="_blank">
+<img alt="Twitter icon" src="/images/svgs/twitter-icon.svg"/>
+</a>
+<a class="ssba_reddit_share" data-site="reddit" href="http://reddit.com/submit?url=https%3a%2f%2fpingcap.com%2fblog%2fsafety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests%2f&amp;title=Safety%20First%21%20Common%20Safety%20Pitfalls%20in%20Distributed%20Databases%20Found%20by%20Jepsen%20Tests" target="_blank">
+<img alt="Reddit icon" src="/images/svgs/reddit-icon.svg"/>
+</a>
+<a class="ssba_facebook_share" data-site="" href="http://www.facebook.com/sharer.php?u=https%3a%2f%2fpingcap.com%2fblog%2fsafety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests%2f" target="_blank">
+<img alt="Fackbook icon" src="/images/svgs/facebook-icon.svg"/>
+</a>
+<a class="ssba_linkedin_share" data-site="linkedin" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fpingcap.com%2fblog%2fsafety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests%2f" target="_blank">
+<img alt="Linkedin icon" src="/images/svgs/linkedin-icon.svg"/>
+</a>
+<a class="ssba_hackernews_share" data-site="hackernews" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fpingcap.com%2fblog%2fsafety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests%2f&amp;t=Safety%20First%21%20Common%20Safety%20Pitfalls%20in%20Distributed%20Databases%20Found%20by%20Jepsen%20Tests" target="_blank">
+<img alt="Hacker News icon" src="/images/svgs/hacker-news-icon.svg"/>
+</a>
+</div>
+</div>
+<div class="trackable-btns">
+<a href="/download" onclick="trackViews('Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests', 'download-tidb-btn-bottom')"><button>Download
+                        TiDB</button></a>
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm" onclick="trackViews('Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests', 'subscribe-blog-btn-bottom')"><button>Subscribe to
+                        Blog</button></a>
+</div>
+</div>
+<div class="sidebar-page">
+<div class="sticky-sidebar">
+<p class="toc-title">What’s on this page</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Product</strong></h4>
+<ul>
+<li><a href="/docs/v3.0/">TiDB</a></li>
+<li><a href="/docs/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs/v3.0/roadmap/">Roadmap</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Docs</strong></h4>
+<ul>
+<li><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">Quick Start</a></li>
+<li><a href="/blog/2017-07-24-tidbbestpractice/">Best Practices</a></li>
+<li><a href="/docs/stable/faq/tidb/">FAQ</a></li>
+<li><a href="/docs/stable/reference/tools/user-guide/">TiDB Tools</a></li>
+<li><a href="/docs/dev/releases/rn/">Release Notes</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Resources</strong></h4>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/weekly/">Monthly</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="/community">TiDB Community</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Company</strong></h4>
+<ul>
+<li><a href="/about/">About</a></li>
+<li><a href="https://angel.co/pingcap-1/jobs" target="_blank">Careers</a></li>
+<li><a href="/news/">News</a></li>
+<li><a href="/contact-us/">Contact Us</a></li>
+<li><a href="/en/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/terms-of-service/">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Connect</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg>Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg>Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg>Stack Overflow</a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc">Subscribe to Blog</button></a>
+</div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 PingCAP. All Rights Reserved.</p>
+<a class="copyright-btn-lang" href="/blog-cn" id="lang">中文</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

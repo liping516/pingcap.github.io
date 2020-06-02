@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TiDB in Kubernetes 用户文档 on SQL at Scale</title>
+    <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/</link>
+    <description>Recent content in TiDB in Kubernetes 用户文档 on SQL at Scale</description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	<atom:link href="https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/TOC/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/TOC/</guid>
+      <description>TiDB in Kubernetes 文档 文档目录  关于 TiDB Operator  简介 What&#39;s New in v1.1 TiDB Operator v1.1 重要注意事项   快速上手  kind GKE Minikube   部署  部署 TiDB 集群  部署到 AWS EKS 部署到 GCP GKE 部署到阿里云 ACK   部署到自托管的 Kubernetes  集群环境要求 配置 Storage Class 部署 TiDB Operator 资源及容灾配置 通过 TidbCluster 配置集群 部署 TiDB 集群 初始化 TiDB 集群 访问 TiDB 集群     部署 TiFlash 部署 TiCDC 部署 TiDB Binlog   部署 TiDB 集群监控  监控 Kubernetes 和 TiDB 集群 使用 TidbMonitor 监控 TiDB 集群 访问 TiDB Dashboard     安全  为 MySQL 客户端开启 TLS 为 TiDB 组件间开启 TLS   运维  升级 TiDB 集群 升级 TiDB Operator   TiDB 集群伸缩  手动扩缩容 自动弹性伸缩   备份与恢复  基于 Helm Charts 的备份恢复   基于 CRD 的备份恢复  使用 Mydumper 备份 TiDB 集群数据到 GCS 使用 TiDB Lightning 恢复 GCS 上的备份数据 使用 Mydumper 备份 TiDB 集群数据到兼容 S3 的存储 使用 TiDB Lightning 恢复 S3 兼容存储上的备份数据 使用 BR 备份 TiDB 集群数据到兼容 S3 的存储 使用 BR 恢复 S3 兼容存储上的备份数据       重启 TiDB 集群 维护 TiDB 集群所在节点 查看日志 集群故障自动转移 恢复 PD 集群 销毁 TiDB 集群     导入集群数据 故障诊断 常见问题   参考  架构  TiDB Scheduler 扩展调度器 增强型 StatefulSet 控制器 准入控制器     Sysbench 性能测试 API 参考文档 Cheat Sheet   工具  tkctl TiDB Toolkit   配置  tidb-drainer chart 配置 tidb-cluster chart 配置 tidb-backup chart 配置     日志收集    </description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB Binlog Drainer 配置</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-tidb-binlog-drainer/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-tidb-binlog-drainer/</guid>
+      <description>了解 Kubernetes 上的 TiDB Binlog Drainer 配置参数。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB 工具指南</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/tidb-toolkit/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/tidb-toolkit/</guid>
+      <description>详细介绍 Kubernetes 上的 TiDB 相关的工具及其使用方法。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB 集群常见问题</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/faq/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/faq/</guid>
+      <description>介绍 Kubernetes 上的 TiDB 集群常见问题以及解决方案。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB 集群扩缩容</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/scale-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/scale-a-tidb-cluster/</guid>
+      <description>介绍如何在 Kubernetes 中对 TiDB 集群扩缩容。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB 集群故障自动转移</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/use-auto-failover/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/use-auto-failover/</guid>
+      <description>介绍 Kubernetes 上的 TiDB 集群故障自动转移的功能。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB 集群故障诊断</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/troubleshoot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/troubleshoot/</guid>
+      <description>介绍 Kubernetes 上 TiDB 集群的常见故障以及诊断解决方案。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB 集群环境需求</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/prerequisites/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/prerequisites/</guid>
+      <description>介绍在 Kubernetes 上部署 TiDB 集群的软硬件环境需求。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB 集群的资源配置以及容灾配置</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-a-tidb-cluster/</guid>
+      <description>介绍 Kubernetes 上 TiDB 集群的的资源配置以及容灾配置。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的 TiDB 集群监控</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/monitor-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/monitor-a-tidb-cluster/</guid>
+      <description>介绍如何在 Kubernetes 上部署 TiDB 集群监控。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的持久化存储类型配置</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-storage-class/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-storage-class/</guid>
+      <description>介绍 Kubernetes 上的数据持久化存储类型配置。</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 上的集群初始化配置</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/initialize-a-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/initialize-a-cluster/</guid>
+      <description>介绍如何初始化配置 Kubernetes 上的 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>TiDB in Kubernetes Sysbench 性能测试</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/benchmark-sysbench/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/benchmark-sysbench/</guid>
+      <description>TiDB in Kubernetes Sysbench 性能测试 随着 TiDB Operator GA 发布，越来越多用户开始使用 TiDB Operator 在 Kubernetes 中部署管理 TiDB 集群。在本次测试中，我们选择 GKE 平台做了一次深入、全方位的测试，方便大家了解 TiDB 在 Kubernetes 中性能影响因素。
+目的  测试典型公有云平台上 TiDB 性能数据 测试公有云平台磁盘、网络、CPU 以及不同 Pod 网络下对 TiDB 性能的影响  环境 版本与配置 本次测试统一使用 TiDB v3.0.1 版本进行测试。
+TiDB Operator 使用 v1.0.0 版本。
+PD、TiDB 和 TiKV 实例数均为 3 个。各组件分别作了如下配置，未配置部分使用默认值。
+PD:
+[log] level = &amp;#34;info&amp;#34; [replication] location-labels = [&amp;#34;region&amp;#34;, &amp;#34;zone&amp;#34;, &amp;#34;rack&amp;#34;, &amp;#34;host&amp;#34;] TiDB:
+[log] level = &amp;#34;error&amp;#34; [prepared-plan-cache] enabled = true [tikv-client] max-batch-wait-time = 2000000 TiKV:</description>
+    </item>
+    
+    <item>
+      <title>TiDB Operator API Document</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/api-references/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/api-references/</guid>
+      <description>Reference of TiDB Operator API</description>
+    </item>
+    
+    <item>
+      <title>TiDB Operator v1.1 重要注意事项</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/notes-tidb-operator-v1.1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/notes-tidb-operator-v1.1/</guid>
+      <description>TiDB Operator v1.1 重要注意事项 本文介绍 TiDB Operator v1.1 版本重要注意事项。
+PingCAP 不再继续更新维护 tidb-cluster chart 从 TiDB Operator v1.1.0 开始，PingCAP 不再继续更新维护 tidb-cluster chart，原来由 tidb-cluster chart 负责管理的组件或者功能在 v1.1 中的变更如下：
+   组件、功能 v1.1     TiDB Cluster (PD, TiDB, TiKV) TidbCluster CR   TiDB Monitor TidbMonitor CR   TiDB Initializer TidbInitializer CR   Scheduled Backup BackupSchedule CR   Pump TidbCluster CR   Drainer tidb-drainer chart   Importer tikv-importer chart     tidb-cluster chart 仍然会继续发布，但是不再添加新功能，比如组件 TLS（目前只是部分支持）、TiKV 和 TiDB 自动伸缩等功能。 通过 v1.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Operator 简介</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/tidb-operator-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/tidb-operator-overview/</guid>
+      <description>介绍 TiDB Operator 的整体架构及使用方式。</description>
+    </item>
+    
+    <item>
+      <title>TiDB Scheduler 扩展调度器</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/tidb-scheduler/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/tidb-scheduler/</guid>
+      <description>了解 TiDB Scheduler 扩展调度器及其工作原理。</description>
+    </item>
+    
+    <item>
+      <title>tidb-backup chart 配置</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-backup/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-backup/</guid>
+      <description>介绍 tidb-backup chart 配置。</description>
+    </item>
+    
+    <item>
+      <title>tidb-cluster chart 配置</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/tidb-cluster-chart-config/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/tidb-cluster-chart-config/</guid>
+      <description>介绍 tidb-cluster chart 配置。</description>
+    </item>
+    
+    <item>
+      <title>tkctl 使用指南</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/use-tkctl/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/use-tkctl/</guid>
+      <description>介绍如何使用 tkctl 命令行工具来运维集群和诊断集群问题。</description>
+    </item>
+    
+    <item>
+      <title>What&#39;s New in v1.1</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/whats-new-in-v1.1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/whats-new-in-v1.1/</guid>
+      <description>What&#39;s New in v1.1 TiDB Operator v1.1 在 v1.0 基础上新增 TiDB 4.0 功能特性支持，TiKV 数据加密、TLS 证书配置等。新增 TiFlash、TiCDC 新组件部署支持，同时在易用性上做了许多改进，提供与 Kubernetes 原生资源一致的用户体验。以下是主要变化：
+扩展性  TidbCluster CR 支持部署管理 PD Discovery 组件，可完全替代 tidb-cluster chart 管理 TiDB 集群 TidbCluster CR 新增 Pump、TiFlash、TiCDC、Dashboard 支持 新增可选的准入控制器改进升级、扩缩容体验，并提供灰度发布功能 tidb-scheduler 支持任意维度的 HA 调度和调度器 preemption 使用 tikv-importer chart 部署、管理 TiKV Importer  易用性  新增 TidbMonitor CR 用于部署集群监控 新增 TidbInitializer CR 用于初始化集群 新增 Backup、BackupSchedule、Restore CR 用于备份恢复集群。备份、恢复支持 S3 和 GCS 优雅重启 TiDB 集群组件  安全性  支持 TiDB 集群各组件及客户端 TLS 证书配置 支持 TiKV 数据存储加密  实验性特性  新增 TidbClusterAutoScaler 实现集群自动伸缩功能（开启 AutoScaling 特性开关后使用） 新增可选的增强型 StatefulSet 控制器，提供对指定 Pod 进行删除的功能（开启 AdvancedStatefulSet 特性开关后使用）  完整发布日志参见 1.</description>
+    </item>
+    
+    <item>
+      <title>为 MySQL 客户端开启 TLS</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/enable-tls-for-mysql-client/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/enable-tls-for-mysql-client/</guid>
+      <description>在 Kubernetes 上如何为 TiDB 集群的 MySQL 客户端开启 TLS。</description>
+    </item>
+    
+    <item>
+      <title>为 TiDB 组件间开启 TLS</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/enable-tls-between-components/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/enable-tls-between-components/</guid>
+      <description>在 Kubernetes 上如何为 TiDB 集群组件间开启 TLS。</description>
+    </item>
+    
+    <item>
+      <title>使用 BR 工具备份 TiDB 集群数据到兼容 S3 的存储</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/backup-to-aws-s3-using-br/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/backup-to-aws-s3-using-br/</guid>
+      <description>介绍如何使用 BR 工具备份 TiDB 集群数据到兼容 Amazon S3 的存储。</description>
+    </item>
+    
+    <item>
+      <title>使用 BR 工具恢复 S3 兼容存储上的备份数据</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restore-from-aws-s3-using-br/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restore-from-aws-s3-using-br/</guid>
+      <description>介绍如何使用 BR 工具恢复 Amazon S3 兼容存储上的备份数据。</description>
+    </item>
+    
+    <item>
+      <title>使用 kind 在 Kubernetes 上部署 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-kind/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-kind/</guid>
+      <description>介绍如何使用 kind 在 Kubernetes 上部署 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>使用 Mydumper 备份 TiDB 集群数据到 GCS</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/backup-to-gcs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/backup-to-gcs/</guid>
+      <description>介绍如何使用 Mydumper 将 TiDB 集群数据备份到 Google Cloud Storage (GCS)。</description>
+    </item>
+    
+    <item>
+      <title>使用 Mydumper 备份 TiDB 集群数据到兼容 S3 的存储</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/backup-to-s3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/backup-to-s3/</guid>
+      <description>介绍如何使用 Mydumper 备份 TiDB 集群数据到兼容 S3 的存储。</description>
+    </item>
+    
+    <item>
+      <title>使用 PD Recover 恢复 PD 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/pd-recover/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/pd-recover/</guid>
+      <description>了解如何使用 PD Recover 恢复 PD 集群。</description>
+    </item>
+    
+    <item>
+      <title>使用 TiDB Lightning 恢复 GCS 上的备份数据</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restore-from-gcs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restore-from-gcs/</guid>
+      <description>介绍如何使用 TiDB Lightning 将存储在 GCS 上的备份数据恢复到 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>使用 TiDB Lightning 恢复 Kubernetes 上的集群数据</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restore-data-using-tidb-lightning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restore-data-using-tidb-lightning/</guid>
+      <description>使用 TiDB Lightning 快速恢复 Kubernetes 上的 TiDB 集群数据。</description>
+    </item>
+    
+    <item>
+      <title>使用 TiDB Lightning 恢复 S3 兼容存储上的备份数据</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restore-from-s3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restore-from-s3/</guid>
+      <description>了解如何使用 TiDB Lightning 将兼容 S3 存储上的备份数据恢复到 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>升级 TiDB Operator</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/upgrade-tidb-operator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/upgrade-tidb-operator/</guid>
+      <description>介绍如何升级 TiDB Operator。</description>
+    </item>
+    
+    <item>
+      <title>启用 TidbCluster 弹性伸缩</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/enable-tidb-cluster-auto-scaling/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/enable-tidb-cluster-auto-scaling/</guid>
+      <description>介绍如何使用 TidbCluster 的弹性伸缩能力。</description>
+    </item>
+    
+    <item>
+      <title>在 AWS EKS 上部署 TiDB</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-aws-eks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-aws-eks/</guid>
+      <description>介绍如何在 AWS EKS (Elastic Kubernetes Service) 上部署 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>在 GCP GKE 上部署 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-gcp-gke/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-gcp-gke/</guid>
+      <description>了解如何在 GCP GKE 上部署 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>在 GCP 上通过 Kubernetes 部署 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-gke/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-gke/</guid>
+      <description>在 GCP 上通过 Kubernetes 部署 TiDB 集群教程。</description>
+    </item>
+    
+    <item>
+      <title>在 Kubernetes 上部署 TiCDC</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-ticdc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-ticdc/</guid>
+      <description>了解如何在 Kubernetes 上部署 TiCDC。</description>
+    </item>
+    
+    <item>
+      <title>在 Kubernetes 上部署 TiDB Operator</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-operator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-operator/</guid>
+      <description>了解如何在 Kubernetes 上部署 TiDB Operator。</description>
+    </item>
+    
+    <item>
+      <title>在 Kubernetes 上部署 TiFlash</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tiflash/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tiflash/</guid>
+      <description>了解如何在 Kubernetes 上部署 TiFlash。</description>
+    </item>
+    
+    <item>
+      <title>在 Minikube 集群上部署 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-minikube/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-from-kubernetes-minikube/</guid>
+      <description>介绍如何在 Minikube 集群上部署 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>在标准 Kubernetes 上部署 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-general-kubernetes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-general-kubernetes/</guid>
+      <description>介绍如何在标准 Kubernetes 集群上通过 TiDB Operator 部署 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>在阿里云上部署 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-alibaba-cloud/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-on-alibaba-cloud/</guid>
+      <description>介绍如何在阿里云上部署 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>基于 Helm Charts 实现的 TiDB 集群备份恢复</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/backup-and-restore-using-helm-charts/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/backup-and-restore-using-helm-charts/</guid>
+      <description>介绍如何基于 Helm Charts 实现 TiDB 集群的备份与恢复。</description>
+    </item>
+    
+    <item>
+      <title>增强型 StatefulSet 控制器</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/advanced-statefulset/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/advanced-statefulset/</guid>
+      <description>介绍如何开启、使用增强型 StatefulSet 控制器</description>
+    </item>
+    
+    <item>
+      <title>开启 TiDB Operator 准入控制器</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/enable-admission-webhook/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/enable-admission-webhook/</guid>
+      <description>介绍如何开启 TiDB Operator 准入控制器以及它的作用。</description>
+    </item>
+    
+    <item>
+      <title>日志收集</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/logs-collection/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/logs-collection/</guid>
+      <description>介绍收集 TiDB 及相关组件日志的方法。</description>
+    </item>
+    
+    <item>
+      <title>查看日志</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/view-logs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/view-logs/</guid>
+      <description>介绍如何查看 TiDB 集群各组件日志以及 TiDB 慢查询日志。</description>
+    </item>
+    
+    <item>
+      <title>滚动升级 Kubernetes 上的 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/upgrade-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/upgrade-a-tidb-cluster/</guid>
+      <description>介绍如何滚动升级 Kubernetes 上的 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>管理 TiDB 集群的 Command Cheat Sheet</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/cheat-sheet/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/cheat-sheet/</guid>
+      <description>介绍管理 TiDB 集群的 Command Cheat Sheet。</description>
+    </item>
+    
+    <item>
+      <title>维护 TiDB 集群所在的 Kubernetes 节点</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/maintain-a-kubernetes-node/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/maintain-a-kubernetes-node/</guid>
+      <description>介绍如何维护 TiDB 集群所在的 Kubernetes 节点。</description>
+    </item>
+    
+    <item>
+      <title>访问 Kubernetes 上的 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/access-tidb/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/access-tidb/</guid>
+      <description>介绍如何访问 Kubernetes 上的 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>访问 TiDB Dashboard</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/access-dashboard/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/access-dashboard/</guid>
+      <description>介绍如何在 Kubernetes 环境下访问 TiDB Dashboard</description>
+    </item>
+    
+    <item>
+      <title>通过 TidbCluster 配置 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-cluster-using-tidbcluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/configure-cluster-using-tidbcluster/</guid>
+      <description>介绍如何使用 TidbCluster 配置 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>通过 TidbMonitor 监控 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/monitor-using-tidbmonitor/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/monitor-using-tidbmonitor/</guid>
+      <description>通过 TidbMonitor 监控 TiDB 集群 在 v1.1 及更高版本的 TiDB Operator 中，我们可以通过简单的 CR 文件（即 TidbMonitor）来快速建立对 Kubernetes 集群上的 TiDB 集群的监控。
+快速上手  注意：
+快速上手只是用来作为演示或是测试，请勿将以下配置部署在关键、生产环境。
+ 前置条件  已经安装了 Operator v1.1.0-beta.1 及以上版本，并且已经更新了相关版本的 CRD 文件 已经设置了默认的 storageClass，并保证其有足够的 PV（默认情况下需要 6 个 PV）。这可以通过以下指令来验证：  $ kubectl get storageClass NAME PROVISIONER RECLAIMPOLICY VOLUMEBINDINGMODE ALLOWVOLUMEEXPANSION AGE standard (default) rancher.io/local-path Delete WaitForFirstConsumer false 14h 安装 你可以在 Kubernetes 集群上通过 CR 文件快速建立起一个 TidbMonitor 监控 TiDB 集群。接下来我们可以将以下内容存为 yaml 文件，通过 kubectl apply -f 的方式部署一个 TidbMonitor 组件。</description>
+    </item>
+    
+    <item>
+      <title>部署 TiDB Binlog</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-binlog/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/deploy-tidb-binlog/</guid>
+      <description>了解如何在 Kubernetes 上部署 TiDB 集群的 TiDB Binlog。</description>
+    </item>
+    
+    <item>
+      <title>重启 Kubernetes 上的 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restart-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/restart-a-tidb-cluster/</guid>
+      <description>了解如何重启 Kubernetes 集群上的 TiDB 集群。</description>
+    </item>
+    
+    <item>
+      <title>销毁 Kubernetes 上的 TiDB 集群</title>
+      <link>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/destroy-a-tidb-cluster/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/docs-cn/tidb-in-kubernetes/dev/destroy-a-tidb-cluster/</guid>
+      <description>介绍如何销毁 Kubernetes 集群上的 TiDB 集群。</description>
+    </item>
+    
+  </channel>
+</rss>

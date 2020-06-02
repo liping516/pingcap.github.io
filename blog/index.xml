@@ -1,0 +1,1112 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on SQL at Scale</title>
+    <link>https://pingcap.com/blog/</link>
+    <description>Recent content in Blogs on SQL at Scale</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Thu, 28 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://pingcap.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>TiDB Dashboard: Easier Troubleshooting for Distributed Databases</title>
+      <link>https://pingcap.com/blog/easier-troubleshooting-for-distributed-databases/</link>
+      <pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/easier-troubleshooting-for-distributed-databases/</guid>
+      <description>TiDB 4.0 introduces TiDB Dashboard, which provides various built-in widgets in a graphical interface that let you easily diagnose, monitor, and manage your clusters in one place. Now you can troubleshoot TiDB clusters more easily.</description>
+    </item>
+    
+    <item>
+      <title>Pessimistic Locking: Better MySQL Compatibility, Fewer Rollbacks Under High Load</title>
+      <link>https://pingcap.com/blog/pessimistic-locking-better-mysql-compatibility-fewer-rollbacks-under-high-load/</link>
+      <pubDate>Fri, 22 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/pessimistic-locking-better-mysql-compatibility-fewer-rollbacks-under-high-load/</guid>
+      <description>With improvements in stability and functionality in TiDB 4.0, we finally remove the experimental label for pessimistic locking, making it a generally available feature. See how pessimistic locking behaves in TiDB.</description>
+    </item>
+    
+    <item>
+      <title>TiCDC: Replication Latency in Milliseconds for 100&#43; TB Clusters</title>
+      <link>https://pingcap.com/blog/replication-latency-in-milliseconds-for-100-tb-clusters/</link>
+      <pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/replication-latency-in-milliseconds-for-100-tb-clusters/</guid>
+      <description>TiDB 4.0 introduces TiCDC, an open-source feature that replicates TiDB&#39;s incremental changes to downstream platforms. It shows only millisecond replication latency for 100+ TB clusters.</description>
+    </item>
+    
+    <item>
+      <title>Large Transactions in TiDB</title>
+      <link>https://pingcap.com/blog/large-transactions-in-tidb/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/large-transactions-in-tidb/</guid>
+      <description>This post describes how we implemented support for large transactions in TiDB 4.0.</description>
+    </item>
+    
+    <item>
+      <title>TiDB at ZaloPay Infrastructure &amp; Lesson Learned</title>
+      <link>https://pingcap.com/success-stories/tidb-at-zalopay-infrastructure-lesson-learned/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-at-zalopay-infrastructure-lesson-learned/</guid>
+      <description>As VNG&#39;s business developed, their infrastructure became an obstacle to their growth. Then they chose TiDB as the core database for their ZaloPay app and used it to store their critical data. Now, VNG has 20+ TiDB nodes in their production environment.</description>
+    </item>
+    
+    <item>
+      <title>SQL Plan Management: Never Worry About Slow Queries Again</title>
+      <link>https://pingcap.com/blog/sql-plan-management-never-worry-about-slow-queries-again/</link>
+      <pubDate>Wed, 06 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/sql-plan-management-never-worry-about-slow-queries-again/</guid>
+      <description>This post introduces how SQL Plan Management helps the optimizer automatically select efficient execution plans to prevent performance regressions caused by unexpected plan changes.</description>
+    </item>
+    
+    <item>
+      <title>Building, Running, and Benchmarking TiKV and TiDB</title>
+      <link>https://pingcap.com/blog/building-running-and-benchmarking-tikv-and-tidb/</link>
+      <pubDate>Mon, 04 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/building-running-and-benchmarking-tikv-and-tidb/</guid>
+      <description>This post introduces how to build and run your own TiDB or TiKV, and how to run some benchmarks on those databases.</description>
+    </item>
+    
+    <item>
+      <title>Get a TiDB Cluster Up in Only One Minute</title>
+      <link>https://pingcap.com/blog/get-tidb-cluster-up-in-only-one-minute/</link>
+      <pubDate>Wed, 29 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/get-tidb-cluster-up-in-only-one-minute/</guid>
+      <description>TiUP is a component manager that streamlines installing and configuring a TiDB cluster into a few easy commands. It helps get your cluster up and running quickly with a minimal learning curve.</description>
+    </item>
+    
+    <item>
+      <title>Key Visualizer: Observe Distributed Databases to Discover the Unknowns</title>
+      <link>https://pingcap.com/blog/observe-distributed-databases-to-discover-unknowns/</link>
+      <pubDate>Wed, 22 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/observe-distributed-databases-to-discover-unknowns/</guid>
+      <description>Key Visualizer is a visual diagnostic tool that makes it easier to troubleshoot distributed SQL databases. Users can observe system health, quickly find hotspots in the cluster, and gain deep insights into applications.</description>
+    </item>
+    
+    <item>
+      <title>Simulating Clock Skew in K8s Without Affecting Other Containers on the Node</title>
+      <link>https://pingcap.com/blog/simulating-clock-skew-in-k8s-without-affecting-other-containers-on-node/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/simulating-clock-skew-in-k8s-without-affecting-other-containers-on-node/</guid>
+      <description>As a cloud-native chaos engineering platform, Chaos Mesh supports TimeChaos, which simulates clock skew in containers or K8s for distributed systems to test system robustness, without affecting other containers on the node.</description>
+    </item>
+    
+    <item>
+      <title>How to Back Up and Restore a 10-TB Cluster at 1&#43; GB/s</title>
+      <link>https://pingcap.com/blog/back-up-and-restore-a-10-tb-cluster-at-1-gb-per-second/</link>
+      <pubDate>Mon, 13 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/back-up-and-restore-a-10-tb-cluster-at-1-gb-per-second/</guid>
+      <description>Backing up or restoring a large-scale distributed SQL database is a time-consuming task. Our upcoming TiDB 4.0 release will support Backup &amp;amp; Restore (BR), a distributed backup and restore tool, which lets you back up and restore data at 1+ GB/s for 10-TB data.</description>
+    </item>
+    
+    <item>
+      <title>TiDB 4.0 Preview: An Easier-to-Use, Production-Ready HTAP Database</title>
+      <link>https://pingcap.com/blog/tidb-4.0-preview-easier-to-use-production-ready-htap-database/</link>
+      <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-4.0-preview-easier-to-use-production-ready-htap-database/</guid>
+      <description>Get a preview of TiDB 4.0. Our landmark release has production-ready HTAP capabilities, continues to solve issues for large-scale, distributed SQL databases, and is easier to use than ever.</description>
+    </item>
+    
+    <item>
+      <title>A Peek into the Future of Database: A Unified Infrastructure to Adapt Intelligently</title>
+      <link>https://pingcap.com/blog/future-of-database-unified-infrastructure-to-adapt-intelligently/</link>
+      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/future-of-database-unified-infrastructure-to-adapt-intelligently/</guid>
+      <description>Today is PingCAP&#39;s 5-year birthday. In this post, Ed Huang, PingCAP&#39;s CTO, discusses about what he thinks the future holds for databases. The future of the database is about unification, adaptiveness, and intelligence.</description>
+    </item>
+    
+    <item>
+      <title>Quickly Find Rust Program Bottlenecks Online Using a Go Tool</title>
+      <link>https://pingcap.com/blog/quickly-find-rust-program-bottlenecks-online-using-a-go-tool/</link>
+      <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/quickly-find-rust-program-bottlenecks-online-using-a-go-tool/</guid>
+      <description>It can be hard to find Rust programs&amp;rsquo; performance bottlenecks online. By integrating pprof-rs in TiKV, we can use the Go tool pprof to visualize TiKV&#39;s profiling data. This helps analyze the program&#39;s performance online.</description>
+    </item>
+    
+    <item>
+      <title>Run Your First Chaos Experiment in 10 Minutes</title>
+      <link>https://pingcap.com/blog/run-first-chaos-experiment-in-ten-minutes/</link>
+      <pubDate>Wed, 18 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/run-first-chaos-experiment-in-ten-minutes/</guid>
+      <description>In this 10-minute tutorial, we will help you to quickly get started with Chaos Engineering and run your first chaos experiment with Chaos Mesh.</description>
+    </item>
+    
+    <item>
+      <title>Choosing the Right Database for Your Applications</title>
+      <link>https://pingcap.com/success-stories/choosing-right-database-for-your-applications/</link>
+      <pubDate>Wed, 11 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/choosing-right-database-for-your-applications/</guid>
+      <description>With so many databases on the market, choosing the right fit for your app is not an easy task. As a leading e-commerce platform in Southeast Asia and Taiwan, Shopee has an effective strategy for database selection. Learn from their experience.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Usability Challenge - Dare to Dream Bigger</title>
+      <link>https://pingcap.com/blog/tidb-usability-challenge-dare-to-dream-bigger/</link>
+      <pubDate>Fri, 06 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-usability-challenge-dare-to-dream-bigger/</guid>
+      <description>TiDB Challenge Program is a series community program to bring TiDB to a new level in terms of stability, performance, and usability. With amazing improvements in performance in season 1 last year, we are now pleased to announce that season 2 is ready for you.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Celebrates 400 Contributors</title>
+      <link>https://pingcap.com/blog/tidb-celebrates-400-contributors/</link>
+      <pubDate>Thu, 05 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-celebrates-400-contributors/</guid>
+      <description>The TiDB repository reaches the 400th contributor milestone. All our honors and achievements belong to the TiDB community, our beloved contributors, and distinguished committers.</description>
+    </item>
+    
+    <item>
+      <title>Early Impressions of Go from a Rust Programmer</title>
+      <link>https://pingcap.com/blog/early-impressions-of-go-from-a-rust-programmer/</link>
+      <pubDate>Wed, 26 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/early-impressions-of-go-from-a-rust-programmer/</guid>
+      <description>Nick Cameron is a long-time Rust programmer who has recently started using Go. In this post, he talks about his early impressions of Go. Read this post to learn more.</description>
+    </item>
+    
+    <item>
+      <title>How We Reduced Multi-region Read Latency and Network Traffic by 50%</title>
+      <link>https://pingcap.com/blog/how-we-reduced-multi-region-read-latency-and-network-traffic-by-50/</link>
+      <pubDate>Wed, 19 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/how-we-reduced-multi-region-read-latency-and-network-traffic-by-50/</guid>
+      <description>High read latency and network traffic are common issues for a multi-region architecture. At TiDB Hackathon 2019, a team won 2nd place by reducing multi-region read latency and network traffic by 50%. Read this post to learn how they did it.</description>
+    </item>
+    
+    <item>
+      <title>Remote Work - Part 3</title>
+      <link>https://pingcap.com/blog/remote-work-part-3/</link>
+      <pubDate>Mon, 17 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/remote-work-part-3/</guid>
+      <description>It&#39;s the third post in a series on remote work. In this post, Nick Cameron talks a bit about some of the practicalities, specifically around work and life balance.</description>
+    </item>
+    
+    <item>
+      <title>Remote Work - Part 2</title>
+      <link>https://pingcap.com/blog/remote-work-part-2/</link>
+      <pubDate>Fri, 14 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/remote-work-part-2/</guid>
+      <description>Nick Cameron has nearly ten-year experience of remote work. In this post, he discusses communication in remote work.</description>
+    </item>
+    
+    <item>
+      <title>Remote Work - Part 1</title>
+      <link>https://pingcap.com/blog/remote-work-part-1/</link>
+      <pubDate>Wed, 12 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/remote-work-part-1/</guid>
+      <description>Nick has been working remotely for nearly ten years. In this post, he introduces why you might benefit from remote work and some of the things that make remote work successful.</description>
+    </item>
+    
+    <item>
+      <title>Doubling System Read Throughput with Only 26 Lines of Code</title>
+      <link>https://pingcap.com/blog/doubling-system-read-throughput-with-only-26-lines-of-code/</link>
+      <pubDate>Wed, 05 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/doubling-system-read-throughput-with-only-26-lines-of-code/</guid>
+      <description>The Follower Read feature lets any follower replica in a Region serve a read request under the premise of strongly consistent reads. It reduces the load on the Raft leader and improves the read throughput of the TiDB cluster. Read this post to learn more.</description>
+    </item>
+    
+    <item>
+      <title>The Rust Compilation Model Calamity</title>
+      <link>https://pingcap.com/blog/rust-compilation-model-calamity/</link>
+      <pubDate>Thu, 30 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/rust-compilation-model-calamity/</guid>
+      <description>In this first episode of the Rust Compile time series, Brian Anderson, one of Rust&#39;s original authors, shares with you his researches and experiences with Rust compile times, using the TiKV project as a case study.</description>
+    </item>
+    
+    <item>
+      <title>Chaos Mesh - Your Chaos Engineering Solution for System Resiliency on Kubernetes</title>
+      <link>https://pingcap.com/blog/chaos-mesh-your-chaos-engineering-solution-for-system-resiliency-on-kubernetes/</link>
+      <pubDate>Wed, 15 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/chaos-mesh-your-chaos-engineering-solution-for-system-resiliency-on-kubernetes/</guid>
+      <description>Recently, PingCAP open-sourced Chaos Mesh, a Chaos Engineering platform that features all-around fault injection methods for complex Kubernetes systems. Find out how this testing tool can make your applications more reliable.</description>
+    </item>
+    
+    <item>
+      <title>How TiKV Reads and Writes</title>
+      <link>https://pingcap.com/blog/how-tikv-reads-and-writes/</link>
+      <pubDate>Sat, 11 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/how-tikv-reads-and-writes/</guid>
+      <description>This post details how TiKV, as a distributed database, stores the data contained in a write request and how it retrieves the corresponding data with consistency guaranteed.</description>
+    </item>
+    
+    <item>
+      <title>AutoTiKV: TiKV Tuning Made Easy by Machine Learning</title>
+      <link>https://pingcap.com/blog/autotikv-tikv-tuning-made-easy-by-machine-learning/</link>
+      <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/autotikv-tikv-tuning-made-easy-by-machine-learning/</guid>
+      <description>AutoTiKV is a machine-learning-based tuning tool that helps decrease tuning costs and make life easier for DBAs. This post shows AutoTiKV&#39;s design, its machine learning model, and the automatic tuning workflow.</description>
+    </item>
+    
+    <item>
+      <title>Squashed Bugs, Served Hot and Fresh with Failure Rate Heatmaps</title>
+      <link>https://pingcap.com/blog/squashed-bugs-served-hot-and-fresh-with-failure-rate-heatmaps/</link>
+      <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/squashed-bugs-served-hot-and-fresh-with-failure-rate-heatmaps/</guid>
+      <description>At TiDB Hackathon 2019, a team won the third prize by building a bot that helps quickly locate bugs in the code. Read this post to get more details.</description>
+    </item>
+    
+    <item>
+      <title>How We Achieved 40 K QPS and 20&#43; Billion Rows of Data in a Single Scale-out Cluster</title>
+      <link>https://pingcap.com/success-stories/lesson-learned-from-40-k-qps-and-20-billion-rows-of-data-in-a-single-scale-out-cluster/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/lesson-learned-from-40-k-qps-and-20-billion-rows-of-data-in-a-single-scale-out-cluster/</guid>
+      <description>As the business developed, standalone MySQL couldn&#39;t meet JD Cloud &amp;amp; AI&#39;s OSS metadata storage requirements. This post introduces how TiKV empowered JD Cloud &amp;amp; AI to manage huge amounts of OSS metadata with a simple and horizontally scalable architecture.</description>
+    </item>
+    
+    <item>
+      <title>NetEase Games: Why We Chose TiDB over Other MySQL-based and NewSQL Storage Solutions</title>
+      <link>https://pingcap.com/success-stories/why-we-chose-tidb-over-other-mysql-based-and-newsql-storage-solutions/</link>
+      <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/why-we-chose-tidb-over-other-mysql-based-and-newsql-storage-solutions/</guid>
+      <description>As business boomed, NetEase Games met bottlenecks in database scalability and data isolation. This post introduces why they chose TiDB over other MySQL-based and NewSQL storage solutions to solve their pain points.</description>
+    </item>
+    
+    <item>
+      <title>New Structure, New Roles - TiDB Community Upgrade!</title>
+      <link>https://pingcap.com/blog/tidb-community-upgrade/</link>
+      <pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-community-upgrade/</guid>
+      <description>PingCAP has upgraded and adjusted the TiDB community organization structure, with more community roles and community organizations introduced to better stimulate the vitality of the community and maintain a positive and healthy community environment.</description>
+    </item>
+    
+    <item>
+      <title>10x Performance Improvement for Expression Evaluation Made Possible by Vectorized Execution and the Community</title>
+      <link>https://pingcap.com/blog/10x-performance-improvement-for-expression-evaluation-made-possible-by-vectorized-execution/</link>
+      <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/10x-performance-improvement-for-expression-evaluation-made-possible-by-vectorized-execution/</guid>
+      <description>We vectorized 360+ built-in functions along with the TiDB community. Vectorized execution has greatly improved the expression evaluation performance. Some functions even achieved 10x performance. Here is our vectorization story.</description>
+    </item>
+    
+    <item>
+      <title>Building a Large-scale Distributed Storage System Based on Raft</title>
+      <link>https://pingcap.com/blog/building-a-large-scale-distributed-storage-system-based-on-raft/</link>
+      <pubDate>Wed, 20 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/building-a-large-scale-distributed-storage-system-based-on-raft/</guid>
+      <description>This post introduces the PingCAP team&#39;s firsthand experience in designing a large-scale distributed storage system based on the Raft consensus algorithm.</description>
+    </item>
+    
+    <item>
+      <title>How We Compiled a Golang Database in the Browser Using WebAssembly</title>
+      <link>https://pingcap.com/blog/how-we-compiled-a-golang-database-in-the-browser-using-webassembly/</link>
+      <pubDate>Sat, 16 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/how-we-compiled-a-golang-database-in-the-browser-using-webassembly/</guid>
+      <description>We compiled a Golang database (TiDB) into an in-browser database using WebAssembly (Wasm). This post introduces why and how we built an in-browser database.</description>
+    </item>
+    
+    <item>
+      <title>TiDB in the Browser: Running a Golang Database on WebAssembly</title>
+      <link>https://pingcap.com/blog/tidb-in-the-browser-running-a-golang-database-on-webassembly/</link>
+      <pubDate>Wed, 06 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-in-the-browser-running-a-golang-database-on-webassembly/</guid>
+      <description>This post introduces how you can run TiDB directly in a web browser, how it is possible, and what the limitations are.</description>
+    </item>
+    
+    <item>
+      <title>Delivering Real-time Analytics and True HTAP by Combining Columnstore and Rowstore</title>
+      <link>https://pingcap.com/blog/delivering-real-time-analytics-and-true-htap-by-combining-columnstore-and-rowstore/</link>
+      <pubDate>Mon, 04 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/delivering-real-time-analytics-and-true-htap-by-combining-columnstore-and-rowstore/</guid>
+      <description>TiDB is an HTAP database that targets both OLTP and OLAP scenarios. TiFlash is its extended analytical engine. This post introduces how TiFlash fuels TiDB to become a true HTAP database that lets users perform real-time analytics.</description>
+    </item>
+    
+    <item>
+      <title>INSERT INTO tidb.hackathon_2019 VALUES (&#34;Hack&#34;, &#34;Fun&#34;, &#34;TiDB Ecosystem&#34;)</title>
+      <link>https://pingcap.com/blog/insert-into-tidb-hackathon-2019-values-hack-fun-tidb-ecosystem/</link>
+      <pubDate>Wed, 30 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/insert-into-tidb-hackathon-2019-values-hack-fun-tidb-ecosystem/</guid>
+      <description>This post introduces the top 3 winners at TiDB Hackathon 2019 and the cozy and friendly environment of this meeting.</description>
+    </item>
+    
+    <item>
+      <title>Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests</title>
+      <link>https://pingcap.com/blog/safety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/safety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests/</guid>
+      <description>This post introduces why Jepsen is important to the distributed database industry, how it works, common issues found, how we use Jepsen with TiDB, and a short summary of all problems Jepsen has found.</description>
+    </item>
+    
+    <item>
+      <title>How TSQ Becomes a Performance Bottleneck for TiKV in AWS ARM Environment</title>
+      <link>https://pingcap.com/blog/how-tsq-becomes-a-performance-bottleneck-for-tikv-in-aws-arm-environment/</link>
+      <pubDate>Mon, 26 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/how-tsq-becomes-a-performance-bottleneck-for-tikv-in-aws-arm-environment/</guid>
+      <description>Explore into Linux kernel to find out how TSQ becomes a performance bottleneck for TiKV in an AWS ARM environment.</description>
+    </item>
+    
+    <item>
+      <title>Lesson Learned from Queries over 1.3 Trillion Rows of Data Within Milliseconds of Response Time at Zhihu.com</title>
+      <link>https://pingcap.com/success-stories/lesson-learned-from-queries-over-1.3-trillion-rows-of-data-within-milliseconds-of-response-time-at-zhihu/</link>
+      <pubDate>Wed, 21 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/lesson-learned-from-queries-over-1.3-trillion-rows-of-data-within-milliseconds-of-response-time-at-zhihu/</guid>
+      <description>As the business boomed and massive data in applications accrued each month, Zhihu faced severe challenges in scaling the backend system. This post introduces how Zhihu managed to keep milliseconds of query response time over a large amount of data and how TiDB, an open source MySQL-compatible HTAP database, empowered Zhihu to get real-time insights into data.</description>
+    </item>
+    
+    <item>
+      <title>Porting TiDB to ARM64 for Greater Flexibility</title>
+      <link>https://pingcap.com/blog/porting-tidb-to-arm64-for-greater-flexibility/</link>
+      <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/porting-tidb-to-arm64-for-greater-flexibility/</guid>
+      <description>This article describes how PingCAP compiled and benchmarked TiDB on the Amazon Web Services (AWS) ARM64 platform.</description>
+    </item>
+    
+    <item>
+      <title>Migrating the TiKV Rust Client from Futures 0.1 to 0.3</title>
+      <link>https://pingcap.com/blog/migrating-the-tikv-rust-client-from-futures-0.1-to-0.3/</link>
+      <pubDate>Thu, 08 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/migrating-the-tikv-rust-client-from-futures-0.1-to-0.3/</guid>
+      <description>This post introduces Nick&#39;s experience in migrating the TiKV Rust client from Futures 0.1 to 0.3.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Operator 1.0 GA: Database Cluster Deployment and Management Made Easy with Kubernetes</title>
+      <link>https://pingcap.com/blog/database-cluster-deployment-and-management-made-easy-with-kubernetes/</link>
+      <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/database-cluster-deployment-and-management-made-easy-with-kubernetes/</guid>
+      <description>Deploying transactional databases like TiDB in Kubernetes for production has always been challenging. Now, with TiDB Operator 1.0, running TiDB database clusters has never been easier.</description>
+    </item>
+    
+    <item>
+      <title>Why Benchmarking Distributed Databases Is So Hard</title>
+      <link>https://pingcap.com/blog/why-benchmarking-distributed-databases-is-so-hard/</link>
+      <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/why-benchmarking-distributed-databases-is-so-hard/</guid>
+      <description>Benchmarks are hard to get right, and many articles touting benchmarks are actually benchmarketing, showcasing skewed outcomes to sell products. This post introduces some of the motivations for benchmarking and the common tools, and discusses a few things to keep in mind when benchmarking.</description>
+    </item>
+    
+    <item>
+      <title>The KOST Stack: An Open-Source Cloud-Native Hybrid Database Stack</title>
+      <link>https://pingcap.com/blog/kost-stack/</link>
+      <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/kost-stack/</guid>
+      <description>A new infrastructure pattern is emerging called the KOST stack (Kubernetes, Operator, Spark, TiDB). This blog post introduces each component of the KOST stack and cloud-native HTAP in the wild.</description>
+    </item>
+    
+    <item>
+      <title>TiDB 3.0 Reaches GA, Delivers Stability at Scale and Performance Boost</title>
+      <link>https://pingcap.com/blog/tidb-3.0-announcement/</link>
+      <pubDate>Mon, 01 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-3.0-announcement/</guid>
+      <description>TiDB 3.0 is released! This blog post introduces some highlights of TiDB 3.0, including major features focused on stability, significant performance improvements in Sysbench and TPC-C benchmarks, a newly introduced component, and important features and improvements.</description>
+    </item>
+    
+    <item>
+      <title>Distributed Systems Training in Go and Rust</title>
+      <link>https://pingcap.com/blog/distributed-systems-training-in-go-and-rust/</link>
+      <pubDate>Thu, 20 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/distributed-systems-training-in-go-and-rust/</guid>
+      <description>PingCAP has made a talent plan for training and/or evaluating students, new employees, and new contributors to TiDB and TiKV. This blog post gives a brief overview of training courses for this plan on writing distributed systems in Go and Rust.</description>
+    </item>
+    
+    <item>
+      <title>Best Practices for Developing Applications with TiDB</title>
+      <link>https://pingcap.com/blog/best-practices-for-developing-applications-with-tidb/</link>
+      <pubDate>Wed, 19 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/best-practices-for-developing-applications-with-tidb/</guid>
+      <description>This article shows how to efficiently develop high-quality applications with TiDB, an open-source NewSQL database that supports Hybrid Transactional and Analytical Processing (HTAP) workloads and can serve as a scale-out MySQL database without manual sharding.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Passes Jepsen Test for Snapshot Isolation and Single-Key Linearizability</title>
+      <link>https://pingcap.com/blog/tidb-passes-jepsen-test-for-snapshot-isolation-and-single-key-linearizability/</link>
+      <pubDate>Wed, 12 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-passes-jepsen-test-for-snapshot-isolation-and-single-key-linearizability/</guid>
+      <description>TiDB&#39;s first official Jepsen Test report is published. This post introduces some additional context to the test results and PingCAP&#39;s thoughts on what&#39;s next.</description>
+    </item>
+    
+    <item>
+      <title>Percona Live Austin -- Summary and Reflection</title>
+      <link>https://pingcap.com/blog/percona-live-austin-summary-and-reflection/</link>
+      <pubDate>Tue, 11 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/percona-live-austin-summary-and-reflection/</guid>
+      <description>In this post, Kevin Xu shares the PingCAP team&#39;s experience and activities at Percona Live in Austin, including several technical sharing sessions and boosting friendship with people inside and outside PingCAP.</description>
+    </item>
+    
+    <item>
+      <title>Tutorial: Use TiDB DM to Migrate and Replicate Data from MySQL, MariaDB &amp; Amazon Aurora</title>
+      <link>https://pingcap.com/blog/use-tidb-dm-to-migrate-and-replicate-data-from-mysqlmariadb-amazon-aurora/</link>
+      <pubDate>Thu, 23 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/use-tidb-dm-to-migrate-and-replicate-data-from-mysqlmariadb-amazon-aurora/</guid>
+      <description>Learn to migrate and replicate data from MySQL, MariaDB and Amazon Aurora using TiDB Data Migration.</description>
+    </item>
+    
+    <item>
+      <title>Design and Implementation of Golang Failpoints</title>
+      <link>https://pingcap.com/blog/design-and-implementation-of-golang-failpoints/</link>
+      <pubDate>Sat, 18 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/design-and-implementation-of-golang-failpoints/</guid>
+      <description>This post introduces design and implementation of Golang Failpoint.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Binlog Tutorial</title>
+      <link>https://pingcap.com/blog/tidb-binlog-tutorial/</link>
+      <pubDate>Wed, 08 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-binlog-tutorial/</guid>
+      <description>Learn to deploy TiDB Binlog with a simple TiDB cluster.</description>
+    </item>
+    
+    <item>
+      <title>PingCAP Open-Sources TiDB Binlog to Reduce Migration Cost</title>
+      <link>https://pingcap.com/blog/pingcap-open-sources-tidb-binlog-to-reduce-migration-cost/</link>
+      <pubDate>Mon, 06 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/pingcap-open-sources-tidb-binlog-to-reduce-migration-cost/</guid>
+      <description>Our team at PingCAP is excited to announce that we are open-sourcing our own binlog implementation, TiDB Binlog. TiDB Binlog is a tool we&#39;ve been developing in-house (until now) to collect binary log data from TiDB server and provide real-time data backup and replication.</description>
+    </item>
+    
+    <item>
+      <title>Try to Fix Two Linux Kernel Bugs While Testing TiDB Operator in K8s</title>
+      <link>https://pingcap.com/blog/try-to-fix-two-linux-kernel-bugs-while-testing-tidb-operator-in-k8s/</link>
+      <pubDate>Wed, 01 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/try-to-fix-two-linux-kernel-bugs-while-testing-tidb-operator-in-k8s/</guid>
+      <description>This post introduces how the EE team at PingCAP tackled two Linux kernel bugs while testing TiDB Operator in K8s. PingCAP engineers also hope the K8s community, RHEL and CentOS can help fix these bugs thoroughly in the near future.</description>
+    </item>
+    
+    <item>
+      <title>PingCAPers at the First RustCon Asia!</title>
+      <link>https://pingcap.com/blog/pingcapers-at-the-first-rustcon-asia/</link>
+      <pubDate>Mon, 29 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/pingcapers-at-the-first-rustcon-asia/</guid>
+      <description>PingCAP has been an active member in the Rust community and one of the first production users of Rust in building TiKV. As part of being a co-organizer for the first RustCon Asia, PingCAP also contributed several topics in both keynote sessions and workshops.</description>
+    </item>
+    
+    <item>
+      <title>Titan: A RocksDB Plugin to Reduce Write Amplification</title>
+      <link>https://pingcap.com/blog/titan-storage-engine-design-and-implementation/</link>
+      <pubDate>Thu, 25 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/titan-storage-engine-design-and-implementation/</guid>
+      <description>As a RocksDB plugin for key-value separation, inspired by WiscKey, Titan is available for preview in TiDB 3.0. This post introduces the design and implementation of Titan.</description>
+    </item>
+    
+    <item>
+      <title>Powering the Xiaomi Mobile Lifestyle with TiDB</title>
+      <link>https://pingcap.com/success-stories/tidb-in-xiaomi/</link>
+      <pubDate>Thu, 11 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-in-xiaomi/</guid>
+      <description>As sales of Xiaomi smartphones continue to climb and the MIUI user base continues to grow, the Database Administration team at Xiaomi was having an increasingly hard time managing their MySQL database infrastructure until they adopted TiDB, an open source distributed hybrid transactional and analytical processing database created and supported by PingCAP. Now they also have plans to migrate additional workloads to TiDB in the future.</description>
+    </item>
+    
+    <item>
+      <title>Introduction to Analytics Queries for the MySQL DBA</title>
+      <link>https://pingcap.com/blog/introduction-to-analytics-queries-for-the-mysql-dba/</link>
+      <pubDate>Thu, 28 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/introduction-to-analytics-queries-for-the-mysql-dba/</guid>
+      <description>This post introduces some simple use cases of analytics queries where a MySQL DBA can expand their repertoire and answer some basic business questions by writing SQL queries with window functions.</description>
+    </item>
+    
+    <item>
+      <title>BookMyShow.com: More Uptime, 30% Less Operational Cost with TiDB</title>
+      <link>https://pingcap.com/success-stories/tidb-in-bookmyshow/</link>
+      <pubDate>Fri, 15 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-in-bookmyshow/</guid>
+      <description>With TiDB, BookMyShow has experienced increased uptime and availability, since TiDB automatically partitions and distributes data across the cluster. Meanwhile, operational and maintenance cost has been reduced by 30%. No engineer needs to be fully dedicated to database operations anymore. This post will introduce why BookMyShow chose TiDB over Greenplum by illustrating how TiDB solved their pain points.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Certification (Beta) is Ready</title>
+      <link>https://pingcap.com/blog/tidb-certification-beta-is-ready/</link>
+      <pubDate>Tue, 12 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-certification-beta-is-ready/</guid>
+      <description>The official TiDB Certification is now available in beta and an online exam is ready for you to sign up.</description>
+    </item>
+    
+    <item>
+      <title>Shopping on Shopee, the TiDB Way</title>
+      <link>https://pingcap.com/success-stories/tidb-in-shopee/</link>
+      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-in-shopee/</guid>
+      <description>As our business boom, our team faced severe challenges in scaling our backend system to meet the demand until we found TiDB, a MySQL-compatible NewSQL hybrid transactional and analytical processing (HTAP) database, built and supported by PingCAP. Now we can provide better service and experience for our users without worrying about our database capacity.</description>
+    </item>
+    
+    <item>
+      <title>FOSDEM 2019 Recap: Global Technology, Local Community</title>
+      <link>https://pingcap.com/blog/fosdem-2019-recap-global-technology-local-community/</link>
+      <pubDate>Tue, 12 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/fosdem-2019-recap-global-technology-local-community/</guid>
+      <description>In this post, Kevin Xu shares the PingCAP team&#39;s experience and activities at FOSDEM 2019, including three talks they delivered at the conference &amp;ndash; the first one about TiDB and its architecture, horizontal scalability and MySQL compatibility, the second about improving development posture in Rust based on the work building TiKV, and the last about Rust implementation of Prometheus.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Tools (III): TiDB Data Migration Architecture Design and Implementation Principles</title>
+      <link>https://pingcap.com/blog/tidb-dm-architecture-design-and-implementation-principles/</link>
+      <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-dm-architecture-design-and-implementation-principles/</guid>
+      <description>TiDB Data Migration is an integrated data transfer and replication management platform that supports full data migration or incremental data replication from MySQL or MariaDB instances into a TiDB cluster. This post introduces its architecture design and implementation principles.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Tools (II): Introducing TiDB Lightning</title>
+      <link>https://pingcap.com/blog/introducing-tidb-lightning/</link>
+      <pubDate>Wed, 30 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/introducing-tidb-lightning/</guid>
+      <description>TiDB Lightning is an open source TiDB ecosystem tool that supports high speed full-import of a large SQL dump into a TiDB cluster. This post introduces its architecture and future improvements on the roadmap.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Tools (I): TiDB Binlog Architecture Evolution and Implementation Principles</title>
+      <link>https://pingcap.com/blog/tidb-binlog-architecture-evolution-and-implementation-principles/</link>
+      <pubDate>Tue, 29 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-binlog-architecture-evolution-and-implementation-principles/</guid>
+      <description>TiDB Binlog is a tool used to collect the logical changes made to a TiDB cluster and provide incremental backup and replication. This post introduces its architecture evolution and implementation principles.</description>
+    </item>
+    
+    <item>
+      <title>TiDB 3.0 Beta: Stability at Scale</title>
+      <link>https://pingcap.com/blog/tidb-3.0-beta-stability-at-scale/</link>
+      <pubDate>Thu, 24 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-3.0-beta-stability-at-scale/</guid>
+      <description>This post introduces the key new features of TiDB 3.0 Beta.</description>
+    </item>
+    
+    <item>
+      <title>PingCAP 2018 Year in Review</title>
+      <link>https://pingcap.com/blog/pingcap-2018-year-in-review/</link>
+      <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/pingcap-2018-year-in-review/</guid>
+      <description>Thank you for a great 2018!</description>
+    </item>
+    
+    <item>
+      <title>5 Key Differences Between MySQL and TiDB for Scaling in the Cloud</title>
+      <link>https://pingcap.com/blog/5-key-differences-between-mysql-and-tidb-for-scaling-in-the-cloud/</link>
+      <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/5-key-differences-between-mysql-and-tidb-for-scaling-in-the-cloud/</guid>
+      <description>This post introduces the top five key differences between TiDB and MySQL.</description>
+    </item>
+    
+    <item>
+      <title>TiDB, the Key to a Better Life for Meituan-Dianping&#39;s 290 Million Monthly Users</title>
+      <link>https://pingcap.com/success-stories/tidb-in-meituan-dianping/</link>
+      <pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-in-meituan-dianping/</guid>
+      <description>As our business grew quickly, we were overwhelmed trying to tackle the mounting data until we found TiDB, a MySQL-compatible NewSQL hybrid transactional and analytical processing (HTAP) database, built and supported by PingCAP. Now we can harness our data with more confidence than ever before and provide better services for our users to enjoy a better life.</description>
+    </item>
+    
+    <item>
+      <title>TiDB 2.1 GA: Battle-Tested to Handle an Unpredictable World</title>
+      <link>https://pingcap.com/blog/tidb-2.1-ga-Battle-tested-to-handle-an-unpredictable-world/</link>
+      <pubDate>Tue, 04 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-2.1-ga-Battle-tested-to-handle-an-unpredictable-world/</guid>
+      <description>PingCAP, a leading distributed database company that created the popular MySQL-compatible cloud-native NewSQL database TiDB, announces that TiDB 2.1 is ready for General Availability.</description>
+    </item>
+    
+    <item>
+      <title>How TiKV Uses &#34;Lease Read&#34; to Guarantee High Performances, Strong Consistency and Linearizability</title>
+      <link>https://pingcap.com/blog/lease-read/</link>
+      <pubDate>Wed, 14 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/lease-read/</guid>
+      <description>This post discusses Raft Log Read, &lt;code&gt;ReadIndex&lt;/code&gt; Read, and Lease Read, and why TiKV adopts the Lease Read approach.</description>
+    </item>
+    
+    <item>
+      <title>TiDB: Architecture and Use Cases of A Cloud-Native NewSQL Database</title>
+      <link>https://pingcap.com/blog/architecture-and-use-cases-of-a-cloud-native-newsql-database/</link>
+      <pubDate>Fri, 02 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/architecture-and-use-cases-of-a-cloud-native-newsql-database/</guid>
+      <description>This post provides a macro-level overview of TiDB and is the main reference content for readers to orient and dig deeper into other TiDB subjects.</description>
+    </item>
+    
+    <item>
+      <title>Announcing TiDB Cloud, Managed as a Service and in the Marketplace</title>
+      <link>https://pingcap.com/blog/announcing-tidb-cloud-managed-as-a-service-and-in-the-marketplace/</link>
+      <pubDate>Thu, 01 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/announcing-tidb-cloud-managed-as-a-service-and-in-the-marketplace/</guid>
+      <description>This post announces that TiDB Cloud is now available for public preview.</description>
+    </item>
+    
+    <item>
+      <title>Always Fun, Always On: How TiDB Helps iQiyi Deliver Streaming Videos</title>
+      <link>https://pingcap.com/success-stories/tidb-in-iqiyi/</link>
+      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-in-iqiyi/</guid>
+      <description>As our business grew exponentially, we were overwhelmed trying to handle the mounting data until we found TiDB, a MySQL-compatible NewSQL hybrid transactional and analytical processing (HTAP) database, built and supported by PingCAP. Now we no longer worry about data volume and can bring high-quality entertainment services to our users with more confidence than before.</description>
+    </item>
+    
+    <item>
+      <title>Launching TiDB Academy, First Course-“Distributed Database with TiDB for MySQL DBAs”</title>
+      <link>https://pingcap.com/blog/tidb-academy-announce/</link>
+      <pubDate>Tue, 16 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-academy-announce/</guid>
+      <description>Today, we are excited to launch TiDB Academy, a series of technical training courses and certifications on TiDB and distributed databases in general, taught by our senior technical team.</description>
+    </item>
+    
+    <item>
+      <title>PingCAP Raises $50 Million in Series C Round, Sets Eyes on Global Expansion, Cross-Cloud Offering, and More Core Technology Investment</title>
+      <link>https://pingcap.com/blog/series-c-announcement/</link>
+      <pubDate>Tue, 11 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/series-c-announcement/</guid>
+      <description>PingCAP, a leading distributed database company that created the popular cloud-native NewSQL database TiDB, announces a $50 million Series C funding round led by FOSUN and Morningside Venture Capital. All previous investors—China Growth Capital, Yunqi Partners, Matrix Partners China, and others—have also participated in this round. PingCAP plans to use this new capital to expand the TiDB ecosystem globally, build cross-cloud product offering, and invest in innovation of its core technology.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Reaches the 200 Contributors Milestone</title>
+      <link>https://pingcap.com/blog/tidb-community-200-contributors/</link>
+      <pubDate>Thu, 30 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-community-200-contributors/</guid>
+      <description>TiDB recently added its 200th contributor. As CEO and co-founder of PingCAP who began building TiDB three years ago, I would like to thank the entire TiDB community for helping us reach this important milestone!</description>
+    </item>
+    
+    <item>
+      <title>9 Why&#39;s to Ask When Evaluating a Distributed Database</title>
+      <link>https://pingcap.com/blog/9-whys-to-ask-when-evaluating-a-distributed-database/</link>
+      <pubDate>Fri, 17 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/9-whys-to-ask-when-evaluating-a-distributed-database/</guid>
+      <description>Since PingCAP started building TiDB, it has encountered countless challenges, pitfalls, and critical design choices. Over the past three years, the PingCAP team has answered many questions from the users. Ed Huang, the CTO of PingCAP, has summarized these questions into “9 why&#39;s” that every engineer may ask when looking at a distributed database and gives his answers to these questions in this post to help make decision-making of engineers a bit easier.</description>
+    </item>
+    
+    <item>
+      <title>Managing the Surging Data Volume of a Fast-Growing Marketplace with TiDB</title>
+      <link>https://pingcap.com/success-stories/tidb-in-zhuanzhuan/</link>
+      <pubDate>Tue, 07 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-in-zhuanzhuan/</guid>
+      <description>With our fast-growing business, the surging data volume posed a serious challenge to our backend system and put the operations team under great pressure. How to tackle these challenges became a thorny problem until we found TiDB, a MySQL compatible distributed hybrid transactional and analytical processing (HTAP) database, built and supported by PingCAP. Finally, we do not have to worry about scaling databases and can focus on building better applications for our users.</description>
+    </item>
+    
+    <item>
+      <title>Landing Your First Rust Pull Request in TiKV</title>
+      <link>https://pingcap.com/blog/adding-built-in-functions-to-tikv/</link>
+      <pubDate>Fri, 03 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/adding-built-in-functions-to-tikv/</guid>
+      <description>This guide is intended to show how you can land your first Pull Request (PR) in Rust to contribute to TiKV in less than 30 minutes. But before we do that, here&#39;s some helpful background.</description>
+    </item>
+    
+    <item>
+      <title>TiSpark: More Data Insights, Less ETL</title>
+      <link>https://pingcap.com/blog/tispark-more-data-insights-no-more-etl/</link>
+      <pubDate>Tue, 10 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tispark-more-data-insights-no-more-etl/</guid>
+      <description>The motivation behind building TiSpark was to enable real-time analytics on TiDB without the delay and challenges of ETL. Extract, transform, and load (ETL)&amp;ndash;a process to extract data from operational databases, transform that data, then load it into a database designed to supporting analytics&amp;ndash;has been one of the most complex, tedious, error-prone, and therefore disliked tasks for many data engineers. However, it was a necessary evil to make data useful, because there hasn&#39;t been good solutions on the market to render ETL obsolete&amp;ndash;until now.</description>
+    </item>
+    
+    <item>
+      <title>The Hybrid Database Capturing Perishable Insights at Yiguo</title>
+      <link>https://pingcap.com/success-stories/hybrid-database-capturing-perishable-insights-at-yiguo/</link>
+      <pubDate>Fri, 22 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/hybrid-database-capturing-perishable-insights-at-yiguo/</guid>
+      <description>As the largest B2C fresh produce online marketplace in China, serving close to 5 million users and 1,000+ enterprise customers, Yiguo.com uses TiDB to capture real-time insights from fresh transactional data to make timely and accurate business decisions.</description>
+    </item>
+    
+    <item>
+      <title>How To Spin Up an HTAP Database in 5 Minutes with TiDB &#43; TiSpark</title>
+      <link>https://pingcap.com/blog/how_to_spin_up_an_htap_database_in_5_minutes_with_tidb_tispark/</link>
+      <pubDate>Fri, 08 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/how_to_spin_up_an_htap_database_in_5_minutes_with_tidb_tispark/</guid>
+      <description>In this 5-minute tutorial for beginners, we will show you how to spin up a standard TiDB cluster using Docker Compose on your local computer, so you can get a taste of its hybrid power, before using it for work or your own project in production.</description>
+    </item>
+    
+    <item>
+      <title>Implement Raft in Rust</title>
+      <link>https://pingcap.com/blog/implement-raft-in-rust/</link>
+      <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/implement-raft-in-rust/</guid>
+      <description>As an open-source distributed scalable HTAP database, TiDB uses the Raft Consensus Algorithm in its distributed transactional key-value storage engine, TiKV, to ensure data consistency, auto-failover, and fault tolerance. TiDB has thus far been used by more than 200 companies in their production environments in a wide range of industries, from e-commerce and food delivery, to fintech, media, gaming, and travel.</description>
+    </item>
+    
+    <item>
+      <title>TiDB 2.0 is Ready - Faster, Smarter, and Battle-Tested</title>
+      <link>https://pingcap.com/blog/tidb-2-0-announcement/</link>
+      <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-2-0-announcement/</guid>
+      <description>TiDB 2.0 is released! We absorbed insights and feedbacks from our customers, listened to requests and issues from our community, and reflected internally on our ultimate vision of building a distributed hybrid transactional and analytical processing database that scales itself, heals itself, and lives in the cloud.</description>
+    </item>
+    
+    <item>
+      <title>From Chaos to Order -- Tools and Techniques for Testing TiDB, A Distributed NewSQL Database</title>
+      <link>https://pingcap.com/blog/chaos-practice-in-tidb/</link>
+      <pubDate>Sat, 14 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/chaos-practice-in-tidb/</guid>
+      <description>As an open source distributed NewSQL Hybrid Transactional/Analytical Processing (HTAP) database, TiDB contains the most important asset of our customers&amp;ndash;their data. One of the fundamental and foremost requirements of our system is to be fault-tolerant. But how do you ensure fault tolerance in a distributed database? This article covers the top fault injection tools and techniques in Chaos Engineering, as well as how to execute Chaos practices in TiDB.</description>
+    </item>
+    
+    <item>
+      <title>Blitzscaling the Largest Dockless Bikesharing Platform with TiDB&#39;s Help</title>
+      <link>https://pingcap.com/success-stories/tidb-in-mobike/</link>
+      <pubDate>Tue, 03 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-in-mobike/</guid>
+      <description>Mobike has been using the TiDB database in the production environment since early 2017. Now they have deployed TiDB in multiple clusters with close to 100 nodes, handling dozens of TBs of data for different application scenarios. This post will provide a deep dive on why Mobike chose TiDB over MySQL and its sharding solutions by illustrating how TiDB solves their pain points.</description>
+    </item>
+    
+    <item>
+      <title>How to do Performance Tuning on TiDB, A Distributed NewSQL Database</title>
+      <link>https://pingcap.com/blog/performance_tuning_on_a_distributed_newsql_database/</link>
+      <pubDate>Fri, 16 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/performance_tuning_on_a_distributed_newsql_database/</guid>
+      <description>Doing performance tuning on distributed systems is no joking matter. It&#39;s much more complicated than on a single node server, and bottlenecks can pop up anywhere, from system resources in a single node or subcomponent, to cooperation between nodes, to even network bandwidth. Performance tuning is a practice that aims to find these bottlenecks and address them, in order to reveal more bottlenecks and address them as well, until the system reaches an optimal performance level. In this article, I will share some best practices on how to tune &amp;ldquo;write&amp;rdquo; operations in TiDB to achieve maximum performance.</description>
+    </item>
+    
+    <item>
+      <title>Bringing TiKV to Rust Devroom at FOSDEM 2018</title>
+      <link>https://pingcap.com/blog/FOSDEM-2018-Rust-Devroom-reflection/</link>
+      <pubDate>Thu, 15 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/FOSDEM-2018-Rust-Devroom-reflection/</guid>
+      <description>At the crack of dawn on February 1, I landed in Brussels, Belgium, for the first time in my life. The goal of my trip wasn&#39;t to taste the local cuisine, tour world-famous museums, or grab a pint of the local brew. It was to deliver a talk three days later at FOSDEM 2018 Rust Devroom about our experience at PingCAP using Rust to build TiKV, a distributed transactional Key-Value storage engine.</description>
+    </item>
+    
+    <item>
+      <title>TiDB DevCon 2018 Recap - News, Latest Development, and Roadmap</title>
+      <link>https://pingcap.com/blog/tidb-devcon-2018-recap/</link>
+      <pubDate>Thu, 25 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/tidb-devcon-2018-recap/</guid>
+      <description>On January 20th, 2018, more than 200 coders, hackers, and techies streamed into Garage Café, a chic coffee shop in the heart of Beijing&#39;s techhub, Zhongguancun. They were there to be part of TiDB DevCon 2018, a technology party for the developers, by the developers!</description>
+    </item>
+    
+    <item>
+      <title>2017 Reflection and Gratitude</title>
+      <link>https://pingcap.com/blog/pingcap-reflection-and-gratitude/</link>
+      <pubDate>Sat, 30 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/pingcap-reflection-and-gratitude/</guid>
+      <description>Thank you all, our beloved contributors, customers, and partners, for an amazing 2017! Hello, 2018!</description>
+    </item>
+    
+    <item>
+      <title>Tick or Tock? Keeping Time and Order in Distributed Databases</title>
+      <link>https://pingcap.com/blog/Time-in-Distributed-Systems/</link>
+      <pubDate>Fri, 22 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/Time-in-Distributed-Systems/</guid>
+      <description>At re:Invent 2017, Amazon Web Services (AWS) announced Amazon Time Sync Service which is a highly accurate and reliable time reference that is natively accessible from Amazon EC2 instances. It is much like the Google TrueTime which was published in 2012. Why do Google and AWS both want to make efforts to provide global time service? Is there any inspiration for building distributed database? This topic is important to think about.</description>
+    </item>
+    
+    <item>
+      <title>PingCAP Plants its Seed in Silicon Valley</title>
+      <link>https://pingcap.com/blog/Silicon-Valley-Office-Announcement/</link>
+      <pubDate>Fri, 08 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/Silicon-Valley-Office-Announcement/</guid>
+      <description>PingCAP, a cutting-edge distributed Hybrid Transactional/Analytical Processing (HTAP) database company, is excited to announce the opening of its Silicon Valley office, located at the GSV Labs in Redwood City, California.</description>
+    </item>
+    
+    <item>
+      <title>A TiKV Source Code Walkthrough – Raft Optimization</title>
+      <link>https://pingcap.com/blog/optimizing-raft-in-tikv/</link>
+      <pubDate>Tue, 28 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/optimizing-raft-in-tikv/</guid>
+      <description>Paxos or Raft is frequently used to ensure data consistency in the distributed computing area. But Paxos is known for its complexity and is rather difficult to understand while Raft is very simple. Therefore, a lot of emerging databases tend to use Raft as the consensus algorithm at its bottom layer. TiKV is no exception.</description>
+    </item>
+    
+    <item>
+      <title>PingCAP Launches TiDB 1.0</title>
+      <link>https://pingcap.com/blog/2017-10-17-announcement/</link>
+      <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-10-17-announcement/</guid>
+      <description>TiDB is compatible with MySQL, strong consistent and highly available.</description>
+    </item>
+    
+    <item>
+      <title>Scale the Relational Database with NewSQL</title>
+      <link>https://pingcap.com/blog/2017-10-10-nextcon/</link>
+      <pubDate>Tue, 10 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-10-10-nextcon/</guid>
+      <description>This is the speech Li SHEN gave at the 3rd NEXTCON.</description>
+    </item>
+    
+    <item>
+      <title>Why did we choose Rust over Golang or C/C&#43;&#43; to develop TiKV?</title>
+      <link>https://pingcap.com/blog/2017-09-26-whyrust/</link>
+      <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-09-26-whyrust/</guid>
+      <description>Every developer has his/her favorite programming language. For the TiKV team members, it&#39;s Rust.</description>
+    </item>
+    
+    <item>
+      <title>RocksDB in TiKV</title>
+      <link>https://pingcap.com/blog/2017-09-15-rocksdbintikv/</link>
+      <pubDate>Fri, 15 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-09-15-rocksdbintikv/</guid>
+      <description>This is the speech Siddon Tang gave at the RocksDB meetup on August 28, 2017.</description>
+    </item>
+    
+    <item>
+      <title>Futures and gRPC in Rust</title>
+      <link>https://pingcap.com/blog/2017-09-12-futuresandgrpc/</link>
+      <pubDate>Tue, 12 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-09-12-futuresandgrpc/</guid>
+      <description>This is the speech Siddon Tang gave at Bay Area Rust Meetup August 2017.</description>
+    </item>
+    
+    <item>
+      <title>How We Found a Data Corruption Bug in RocksDB</title>
+      <link>https://pingcap.com/blog/2017-09-08-rocksdbbug/</link>
+      <pubDate>Fri, 08 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-09-08-rocksdbbug/</guid>
+      <description>Data was corrupted. A cluster panicked. The crime scene was compromised. What happened? Detective Huang went all lengths to locate the criminal and solved it once and for all.</description>
+    </item>
+    
+    <item>
+      <title>When TiDB Meets Jepsen</title>
+      <link>https://pingcap.com/blog/2017-09-01-tidbmeetsjepsen/</link>
+      <pubDate>Fri, 01 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-09-01-tidbmeetsjepsen/</guid>
+      <description>What happens when TiDB meets Jepsen?</description>
+    </item>
+    
+    <item>
+      <title>The Design and Implementation of Multi-raft</title>
+      <link>https://pingcap.com/blog/2017-08-15-multi-raft/</link>
+      <pubDate>Tue, 15 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-08-15-multi-raft/</guid>
+      <description>The goal of TiKV is to support 100 TB+ data and it is impossible for one Raft group to make it, we need to use multiple Raft groups, which is called Multi-raft.</description>
+    </item>
+    
+    <item>
+      <title>How TiDB tackles fast data growth and complex queries for yuanfudao.com</title>
+      <link>https://pingcap.com/success-stories/tidb-in-yuanfudao/</link>
+      <pubDate>Tue, 08 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/success-stories/tidb-in-yuanfudao/</guid>
+      <description>This document is a case study that details the reasons why yuanfudao.com chose TiDB as its backend database solution to tackle their fast data growth and complex queries.</description>
+    </item>
+    
+    <item>
+      <title>A TiKV Source Code Walkthrough - Raft in TiKV</title>
+      <link>https://pingcap.com/blog/2017-07-28-raftintikv/</link>
+      <pubDate>Fri, 28 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-07-28-raftintikv/</guid>
+      <description>TiKV uses the Raft algorithm to implement the strong consistency of data in a distributed environment. This blog introduces the details how Raft is implemented.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Best Practices</title>
+      <link>https://pingcap.com/blog/2017-07-24-tidbbestpractice/</link>
+      <pubDate>Mon, 24 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-07-24-tidbbestpractice/</guid>
+      <description>This article summarizes some best practices in using TiDB, mainly including SQL usage, OLAP/OLTP optimization techniques and especially TiDB&#39;s exclusive optimization switches.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Internal (III) - Scheduling</title>
+      <link>https://pingcap.com/blog/2017-07-20-tidbinternal3/</link>
+      <pubDate>Thu, 20 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-07-20-tidbinternal3/</guid>
+      <description>This is the third one of three blogs to introduce TiDB internal.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Internal (I) - Data Storage</title>
+      <link>https://pingcap.com/blog/2017-07-11-tidbinternal1/</link>
+      <pubDate>Tue, 11 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-07-11-tidbinternal1/</guid>
+      <description>This is the first one of three blogs to introduce TiDB internal.</description>
+    </item>
+    
+    <item>
+      <title>TiDB Internal (II) - Computing</title>
+      <link>https://pingcap.com/blog/2017-07-11-tidbinternal2/</link>
+      <pubDate>Tue, 11 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-07-11-tidbinternal2/</guid>
+      <description>This is the second one of three blogs to introduce TiDB internal.</description>
+    </item>
+    
+    <item>
+      <title>Refactoring the Built-in Functions in TiDB</title>
+      <link>https://pingcap.com/blog/2017-06-27-refactor-builtin/</link>
+      <pubDate>Tue, 27 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-06-27-refactor-builtin/</guid>
+      <description>In order to accelerate expression evaluation, we recently refactored its framework. This tutorial will show you how to use the new computational framework to rewrite or add a built-in function in TiDB.</description>
+    </item>
+    
+    <item>
+      <title>Rust in TiKV</title>
+      <link>https://pingcap.com/blog/2017-05-27-rust-in-tikv/</link>
+      <pubDate>Sat, 27 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-05-27-rust-in-tikv/</guid>
+      <description>This is the speech Siddon Tang gave at the 1st Rust Meetup in Beijing on April 16, 2017.</description>
+    </item>
+    
+    <item>
+      <title>A Brief Introduction of TiDB</title>
+      <link>https://pingcap.com/blog/2017-05-23-perconalive17/</link>
+      <pubDate>Tue, 23 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-05-23-perconalive17/</guid>
+      <description>This is the speech Edward Huang gave at Percona Live Open Source Database Conference 2017.</description>
+    </item>
+    
+    <item>
+      <title>Migration from MySQL to TiDB to handle tens of millions of rows of data per day</title>
+      <link>https://pingcap.com/blog/2017-05-22-Comparison-between-MySQL-and-TiDB-with-tens-of-millions-of-data-per-day/</link>
+      <pubDate>Mon, 22 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-05-22-Comparison-between-MySQL-and-TiDB-with-tens-of-millions-of-data-per-day/</guid>
+      <description>This document is a use case that details the performance of MySQL and TiDB with tens of millions of rows of data per day.</description>
+    </item>
+    
+    <item>
+      <title>About the TiDB Source Code</title>
+      <link>https://pingcap.com/blog/2017-01-06-about-the-tidb-source-code/</link>
+      <pubDate>Fri, 06 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2017-01-06-about-the-tidb-source-code/</guid>
+      <description>The target audience of this document is the contributors in the TiDB community. The document aims to help them understand the TiDB project. It covers the system architecture, the code structure, and the execution process.</description>
+    </item>
+    
+    <item>
+      <title>Adding Built-in Functions</title>
+      <link>https://pingcap.com/blog/2016-12-19-adding-built-in-function/</link>
+      <pubDate>Mon, 19 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2016-12-19-adding-built-in-function/</guid>
+      <description>TiDB code is updated and the procedure of adding built-in functions is greatly simplified. This document describes how to add built-in functions to TiDB.</description>
+    </item>
+    
+    <item>
+      <title>Subquery Optimization in TiDB</title>
+      <link>https://pingcap.com/blog/2016-12-07-Subquery-Optimization-in-TiDB/</link>
+      <pubDate>Wed, 07 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2016-12-07-Subquery-Optimization-in-TiDB/</guid>
+      <description>Subquery optimization, especially rewriting the correlated subquery, is a very difficult part in SQL query optimization. To be compatible with MySQL, TiDB enables users to write subqueries anywhere they want. For those subqueries that are not correlated, which are also called uncorrelated subqueries, TiDB evaluates in advance; for those correlated subqueries, TiDB removes the correlations as much as possible. For example, TiDB can rewrite a correlated subquery to &lt;code&gt;SemiJoin&lt;/code&gt;. This article is focused on introducing the correlated subquery optimization methods in TiDB.</description>
+    </item>
+    
+    <item>
+      <title>MVCC in TiKV</title>
+      <link>https://pingcap.com/blog/2016-11-17-mvcc-in-tikv/</link>
+      <pubDate>Thu, 17 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2016-11-17-mvcc-in-tikv/</guid>
+      <description>This document gives an overview of MVCC implementation in TiKV.</description>
+    </item>
+    
+    <item>
+      <title>Travelling Back in Time and Reclaiming the Lost Treasures</title>
+      <link>https://pingcap.com/blog/2016-11-15-Travelling-Back-in-Time-and-Reclaiming-the-Lost-Treasures/</link>
+      <pubDate>Tue, 15 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2016-11-15-Travelling-Back-in-Time-and-Reclaiming-the-Lost-Treasures/</guid>
+      <description>This document introduces the History Read feature in TiDB.</description>
+    </item>
+    
+    <item>
+      <title>A Deep Dive into TiKV</title>
+      <link>https://pingcap.com/blog/2016-11-09-Deep-Dive-into-TiKV/</link>
+      <pubDate>Wed, 09 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2016-11-09-Deep-Dive-into-TiKV/</guid>
+      <description>This document introduces how TiKV works as a Key-Value database.</description>
+    </item>
+    
+    <item>
+      <title>How we build TiDB</title>
+      <link>https://pingcap.com/blog/2016-10-17-how-we-build-tidb/</link>
+      <pubDate>Mon, 17 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/2016-10-17-how-we-build-tidb/</guid>
+      <description>This is the speech Max Liu gave at Percona Live Open Source Database Conference 2016.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pingcap.com/blog/README/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pingcap.com/blog/README/</guid>
+      <description>PingCAP Blog Front Matter Example --- title: Blog Title author: [&amp;#39;Author&amp;#39;] date: yyyy-mm-dd summary: Blog Summary tags: [&amp;#39;tag1&amp;#39;, &amp;#39;tag2&amp;#39;] categories: [&amp;#39;category&amp;#39;] image: /images/blog/... --- Metadata  title author  format: list(array) [&amp;lsquo;author-1&amp;rsquo;, &amp;lsquo;author-2&amp;rsquo;]   date:  format: yyyy-mm-dd   summary tags -  format: list(array) [&amp;lsquo;tag-1&amp;rsquo;, &amp;lsquo;tag-2&amp;rsquo;]   categories  format: list(array) [&amp;lsquo;category&amp;rsquo;] category values: Engineering, HTAP, MySQL Scalability, Open Source Community    For SEO and social media share  image: /images/blogs/&amp;hellip;   This is used to show the thumbnail shown in the social media platform.</description>
+    </item>
+    
+  </channel>
+</rss>

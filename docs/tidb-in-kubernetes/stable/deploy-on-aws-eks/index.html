@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"/><meta content="IE=edge" http-equiv="X-UA-Compatible"/><meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport"/>
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async="" src="https://download.pingcap.com/js/ga-analytics.js"></script>
+<style media="screen" type="text/css">
+    .st_tree {
+        display: none;
+    }
+</style>
+<link href="https://download.pingcap.com/style/github-markdown.css" rel="stylesheet"/>
+<link href="/css/doc.css" rel="stylesheet"/>
+<title>Deploy TiDB on AWS EKS | TiDB Documentation</title><link href="/images/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<link href="/images/apple-touch-icon.png" rel="apple-touch-icon"/>
+<meta content="Learn how to deploy a TiDB cluster on AWS EKS." name="description"/>
+<meta content="noodp" name="robots"/>
+<meta content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative" name="keywords"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="Deploy TiDB on AWS EKS | TiDB Documentation" property="og:title"/>
+<meta content="Learn how to deploy a TiDB cluster on AWS EKS." property="og:description"/>
+<meta content="https://pingcap.com/docs/tidb-in-kubernetes/stable/deploy-on-aws-eks/" property="og:url"/>
+<meta content="MySQL at Scale. No more manual sharding" property="og:site_name"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image"/>
+<meta content="/images/pingcap-opengraph.jpg" property="og:image:secure_url"/><meta content="summary" name="twitter:card"/><meta content="Learn how to deploy a TiDB cluster on AWS EKS." name="twitter:description"/>
+<meta content="Deploy TiDB on AWS EKS | TiDB Documentation" name="twitter:title"/>
+<meta content="@pingcap" name="twitter:site"/><meta content="https://pingcap.com/images/pingcap-opengraph.jpg" name="twitter:image"/><meta content="@pingcap" name="twitter:creator"/>
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+<script async="" src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js" type="text/javascript"></script>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" rel="preload" type="font/woff"/>
+<link as="font" crossorigin="anonymous" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" rel="preload" type="font/ttf"/>
+<link as="script" href="https://download.pingcap.com/js/jquery.min.js" rel="preload"/>
+<link href="/css/main.css" rel="stylesheet"/>
+<link href="https://download.pingcap.com/style/docsearch.min.css" rel="stylesheet"/>
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head> <body data-lang="en"><div id="page-content">
+<header class="fixed-top" role="navigation">
+<div class="container">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+<div class="nav-wrapper">
+<div class="navigation">
+<ul>
+<li><a class="a-en" href="/tidb-cloud/">Cloud</a></li>
+<li><a class="a-en" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<a class="header-doc-nav" href="#">Docs</a>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a class="a-en" href="/success-stories">Success
+                    Stories</a></li>
+<li><a class="a-en" href="/blog">Blog</a></li>
+<li><a class="link-download link-download-en" href="/download">Free Download</a></li>
+</ul>
+</div>
+<div class="global-search">
+<form action="/search/docs/tidb-in-kubernetes/stable/" class="search-wrapper">
+<span class="icon-search"><svg fill="#fff" height="18" viewbox="0 0 67.125 67.125" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"></path><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"></path></svg></span>
+<input data-lang="en" data-type="/tidb-in-kubernetes/" id="search-input" name="q" placeholder="Search TiDB Docs" type="search"/>
+</form>
+</div>
+</div>
+<div class="nav-btn nav-slider">
+<i class="material-icons"><svg height="16" viewbox="0 0 459 459" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"></path></svg></i>
+</div>
+</div>
+</header>
+<nav class="mobile-sidebar">
+<div class="nav-header">
+<div class="logo-wrap">
+<a class="nav-brand" href="/en"><img alt="PingCAP" src="/images/pingcap-logo.png"/></a>
+</div>
+</div>
+<ul class="ul-base">
+<li><a href="/tidb-cloud/">Cloud</a></li>
+<li><a class="tidb-academy" href="/tidb-academy">TiDB Academy</a></li>
+<li class="docs-type-selector sel" id="docsTypeSelector">
+<p class="header-doc-nav">Docs</p>
+<div class="header-dropdown-menu" id="docsTypeSelectorItem">
+<a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+<a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+<a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+</div>
+</li>
+<li><a href="/success-stories">Success Stories</a></li>
+<li><a href="/blog">Blog</a></li>
+<li><a class="link-download" href="/download">Free Download</a></li>
+</ul>
+<div class="nav-footer">
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Contact</strong></h4>
+<ul class="social ul-base">
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="18" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg></a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="18" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg></a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg></a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="18" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg></a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="18" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg></a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc" style="margin-left: 0.75rem;">Subscribe to Blog</button></a>
+</div>
+</div>
+<div class="container">
+<a class="btn-lang" href="/docs-cn/" id="lang">中文</a>
+</div>
+</div>
+</nav>
+<div class="doc">
+<div class="container">
+<div class="sidebar">
+<div class="sticky-sidebar docs-sticky-sidebar">
+<div class="title"> TiDB in Kubernetes Documentation </div>
+<div class="version-switcher">
+<button id="dropdownMenuButton" type="button">v1.1</button>
+<div class="dropdown-menu visibility-hide" id="dropdown-menu-items">
+<a class="dropdown-item " href="
+                /docs/tidb-in-kubernetes/stable/deploy-on-aws-eks/">v1.1 (stable)</a>
+<a class="dropdown-item " href="
+                /docs/tidb-in-kubernetes/v1.0/deploy-on-aws-eks/">v1.0</a>
+<a class="dropdown-item " href="
+                /docs/tidb-in-kubernetes/dev/deploy-on-aws-eks/">dev</a></div>
+</div>
+<div class="st_tree nav-toc docs-nav-toc"><ul><li class="has-child"><a href="#">
+<span>Introduction</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/tidb-operator-overview/">
+<span>Overview</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/notes-tidb-operator-v1.1/">
+<span>TiDB Operator v1.1 Notice</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Get Started</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-from-kubernetes-kind/">
+<span>kind</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-from-kubernetes-gke/">
+<span>GKE</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-from-kubernetes-minikube/">
+<span>Minikube</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Deploy</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>Deploy TiDB Cluster</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-on-aws-eks/">
+<span>On AWS EKS</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-on-gcp-gke/">
+<span>On GCP GKE</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-on-alibaba-cloud/">
+<span>On Alibaba Cloud ACK</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>On Self-managed Kubernetes</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/prerequisites/">
+<span>Prerequisites</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-storage-class/">
+<span>Configure Storage Class</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-operator/">
+<span>Deploy TiDB Operator</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-a-tidb-cluster/">
+<span>Configure Resource and Disaster Recovery</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-cluster-using-tidbcluster/">
+<span>Configure TiDB Cluster Using TidbCluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-on-general-kubernetes/">
+<span>Deploy TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/initialize-a-cluster/">
+<span>Initialize TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/access-tidb/">
+<span>Access TiDB Cluster</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tiflash/">
+<span>Deploy TiFlash</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-ticdc/">
+<span>Deploy TiCDC</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-binlog/">
+<span>Deploy TiDB Binlog</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Deploy Monitoring</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/monitor-a-tidb-cluster/">
+<span>Monitor Kubernetes and TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/monitor-using-tidbmonitor/">
+<span>Monitor TiDB Cluster Using TidbMonitor</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/access-dashboard/">
+<span>Access TiDB Dashboard</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Secure</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/enable-tls-for-mysql-client/">
+<span>Enable TLS for the MySQL Client</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/enable-tls-between-components/">
+<span>Enable TLS between TiDB Components</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Operate</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/upgrade-a-tidb-cluster/">
+<span>Upgrade TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/upgrade-tidb-operator/">
+<span>Upgrade TiDB Operator</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Scale TiDB Cluster</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/scale-a-tidb-cluster/">
+<span>Manually Scale</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/enable-tidb-cluster-auto-scaling/">
+<span>Automatically Scale</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Backup and Restore</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/backup-and-restore-using-helm-charts/">
+<span>Use Helm Charts</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Use CRDs</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/backup-to-gcs/">
+<span>Back up Data to GCS Using Mydumper</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restore-from-gcs/">
+<span>Restore Data from GCS Using TiDB Lightning</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/backup-to-s3/">
+<span>Back up Data to S3-Compatible Storage Using Mydumper</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restore-from-s3/">
+<span>Restore Data from S3-Compatible Storage Using TiDB Lightning</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/backup-to-aws-s3-using-br/">
+<span>Back up Data to S3-Compatible Storage Using BR</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restore-from-aws-s3-using-br/">
+<span>Restore Data from S3-Compatible Storage Using BR</span>
+</a>
+</li></ul>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restart-a-tidb-cluster/">
+<span>Restart a TiDB Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/maintain-a-kubernetes-node/">
+<span>Maintain a Kubernetes Node</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/collect-tidb-logs/">
+<span>Collect TiDB Logs</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/use-auto-failover/">
+<span>Enable Automatic Failover</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/pd-recover/">
+<span>Recover the PD Cluster</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/destroy-a-tidb-cluster/">
+<span>Destroy a TiDB Cluster</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/restore-data-using-tidb-lightning/">
+<span>Import Data</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/troubleshoot/">
+<span>Troubleshoot</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/faq/">
+<span>FAQs</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Reference</span>
+<i class="icon-arrow"></i></a><ul><li class="has-child"><a href="#">
+<span>Architecture</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/tidb-scheduler/">
+<span>TiDB Scheduler</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/advanced-statefulset/">
+<span>Advanced StatefulSet Controller</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/enable-admission-webhook/">
+<span>Admission Controller</span>
+</a>
+</li></ul>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/benchmark-sysbench/">
+<span>Sysbench Performance Test</span>
+</a>
+</li><li class="leaf-child">
+<a href="https://github.com/pingcap/docs-tidb-operator/blob/master/en/api-references.md">
+<span>API References</span>
+</a>
+</li><li class="has-child"><a href="#">
+<span>Tools</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/use-tkctl/">
+<span>tkctl</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/tidb-toolkit/">
+<span>TiDB Toolkit</span>
+</a>
+</li></ul>
+</li><li class="has-child"><a href="#">
+<span>Configure</span>
+<i class="icon-arrow"></i></a><ul><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-tidb-binlog-drainer/">
+<span>Configure tidb-drainer Chart</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/tidb-cluster-chart-config/">
+<span>Configure tidb-cluster Chart</span>
+</a>
+</li><li class="leaf-child">
+<a href="/docs/tidb-in-kubernetes/stable/configure-backup/">
+<span>Configure tidb-backup Chart</span>
+</a>
+</li></ul>
+</li></ul>
+</li></ul>
+</div>
+</div>
+</div>
+<div class="archive">
+<div class="content markdown-body">
+<h1 id="deploy-tidb-on-aws-eks">Deploy TiDB on AWS EKS</h1>
+<p>This document describes how to deploy a TiDB cluster on AWS EKS with your laptop (Linux or macOS) for development or testing.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Before deploying a TiDB cluster on AWS EKS, make sure the following requirements are satisfied:</p>
+<ul>
+<li>
+<p><a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html">awscli</a> &gt;= 1.16.73, to control AWS resources</p>
+<p>You must <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html">configure</a> <code>awscli</code> before it can interact with AWS. The fastest way is using the <code>aws configure</code> command:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws configure
+</code></pre></div><p>Replace AWS Access Key ID and AWS Secret Access Key with your own keys:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name [None]: us-west-2
+Default output format [None]: json
+</code></pre></div><blockquote>
+<p><strong>Note:</strong></p>
+<p>The access key must have at least permissions to: create VPC, create EBS, create EC2 and create role.</p>
+</blockquote>
+</li>
+<li>
+<p><a href="https://learn.hashicorp.com/terraform/getting-started/install.html">terraform</a> &gt;= 0.12</p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl</a> &gt;= 1.12</p>
+</li>
+<li>
+<p><a href="https://helm.sh/docs/using_helm/#installing-the-helm-client">helm</a> &gt;= 2.11.0 &amp;&amp; &lt; 3.0.0 &amp;&amp; != <a href="https://github.com/helm/helm/issues/7797">2.16.4</a></p>
+</li>
+<li>
+<p><a href="https://stedolan.github.io/jq/download/">jq</a></p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html">aws-iam-authenticator</a> installed in <code>PATH</code>, to authenticate with AWS</p>
+<p>The easiest way to install <code>aws-iam-authenticator</code> is to download the prebuilt binary as shown below:</p>
+<p>Download the binary for Linux:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/linux/amd64/aws-iam-authenticator
+</code></pre></div><p>Or, download binary for macOS:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/darwin/amd64/aws-iam-authenticator
+</code></pre></div><p>Then execute the following commands:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">chmod +x ./aws-iam-authenticator <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+</code></pre></div></li>
+</ul>
+<h2 id="deploy">Deploy</h2>
+<p>This section describes how to deploy EKS, TiDB operator, TiDB cluster and monitor.</p>
+<h3 id="deploy-eks-tidb-operator-and-tidb-cluster-node-pool">Deploy EKS, TiDB Operator, and TiDB cluster node pool</h3>
+<p>Use the following commands to deploy EKS, TiDB Operator, and the TiDB cluster node pool.</p>
+<p>Get the code from Github:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">git clone --depth<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> https://github.com/pingcap/tidb-operator <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>cd tidb-operator/deploy/aws
+</code></pre></div><p>The default setup creates a new VPC and a <code>t2.micro</code> instance as the bastion machine, and an EKS cluster with following Amazon EC2 instances as worker nodes:</p>
+<ul>
+<li>3 m5.xlarge instances for PD</li>
+<li>3 c5d.4xlarge instances for TiKV</li>
+<li>2 c5.4xlarge instances for TiDB</li>
+<li>1 c5.2xlarge instance for monitor</li>
+</ul>
+<p>You can create or modify <code>terraform.tfvars</code> to set the value of variables and configure the cluster as needed. See the variables that can be set and their descriptions in <code>variables.tf</code>.</p>
+<p>The following is an example of how to configure the EKS cluster name, the TiDB cluster name, the TiDB Operator version, and the number of PD, TiKV and TiDB nodes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">default_cluster_pd_count   = 3
+default_cluster_tikv_count = 3
+default_cluster_tidb_count = 2
+default_cluster_name = "tidb"
+eks_name = "my-cluster"
+operator_version = "v1.1.0-rc.1"
+</code></pre></div><p>If you need to deploy TiFlash in the cluster, set <code>create_tiflash_node_pool = true</code> in <code>terraform.tfvars</code>. You can also configure the node count and instance type of the TiFlash node pool by modifying <code>cluster_tiflash_count</code> and <code>cluster_tiflash_instance_type</code>. By default, the value of <code>cluster_tiflash_count</code> is <code>2</code>, and the value of <code>cluster_tiflash_instance_type</code> is <code>i3.4xlarge</code>.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>Check the <code>operator_version</code> in the <code>variables.tf</code> file for the default TiDB Operator version of the current scripts. If the default version is not your desired one, configure <code>operator_version</code> in <code>terraform.tfvars</code>.</p>
+</blockquote>
+<p>After configuration, execute the <code>terraform</code> command to initialize and deploy the cluster:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">terraform init
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">terraform apply
+</code></pre></div><p>It might take 10 minutes or more to finish the process. After <code>terraform apply</code> is executed successfully, some useful information is printed to the console.</p>
+<p>A successful deployment will give the output like:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Apply complete! Resources: 67 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+bastion_ip = [
+  "34.219.204.217",
+]
+default-cluster_monitor-dns = not_created
+default-cluster_tidb-dns = not_created
+eks_endpoint = https://9A9A5ABB8303DDD35C0C2835A1801723.yl4.us-west-2.eks.amazonaws.com
+eks_version = 1.12
+kubeconfig_filename = credentials/kubeconfig_my-cluster
+region = us-west-2
+</code></pre></div><p>You can use the <code>terraform output</code> command to get the output again.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>EKS versions earlier than 1.14 do not support auto enabling cross-zone load balancing via Network Load Balancer (NLB). Therefore, unbalanced pressure distributed among TiDB instances can be expected in default settings. It is strongly recommended that you refer to <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-disable-crosszone-lb.html#enable-cross-zone">AWS Documentation</a> to manually enable cross-zone load balancing for a production environment.</p>
+</blockquote>
+<h3 id="deploy-tidb-cluster-and-monitor">Deploy TiDB cluster and monitor</h3>
+<ol>
+<li>
+<p>Prepare the TidbCluster and TidbMonitor CR files:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cp manifests/db.yaml.example db.yaml <span style="color:#f92672">&amp;&amp;</span> cp manifests/db-monitor.yaml.example db-monitor.yaml
+</code></pre></div><p>To complete the CR file configuration, refer to <a href="/docs/tidb-in-kubernetes/stable/api-references">API documentation</a> and <a href="/docs/tidb-in-kubernetes/stable/configure-cluster-using-tidbcluster">Configure a TiDB Cluster Using TidbCluster</a>.</p>
+<p>To deploy TiFlash, configure <code>spec.tiflash</code> in <code>db.yaml</code> as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">spec:
+  ...
+  tiflash:
+    baseImage: pingcap/tiflash
+    maxFailoverCount: <span style="color:#ae81ff">3</span>
+    nodeSelector:
+      dedicated: CLUSTER_NAME-tiflash
+    replicas: <span style="color:#ae81ff">1</span>
+    storageClaims:
+    - resources:
+        requests:
+          storage: 100Gi
+      storageClassName: local-storage
+    tolerations:
+    - effect: NoSchedule
+      key: dedicated
+      operator: Equal
+      value: CLUSTER_NAME-tiflash
+</code></pre></div><p>Modify <code>replicas</code>, <code>storageClaims[].resources.requests.storage</code>, and <code>storageClassName</code> according to your needs.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>Replace all <code>CLUSTER_NAME</code> in <code>db.yaml</code> and <code>db-monitor.yaml</code> files with <code>default_cluster_name</code> configured during EKS deployment.</li>
+<li>Make sure that during EKS deployment, the number of PD, TiKV, TiFlash, or TiDB nodes is &gt;= the value of the <code>replicas</code> field of the corresponding component in <code>db.yaml</code>.</li>
+<li>Make sure that <code>spec.initializer.version</code> in <code>db-monitor.yaml</code> and <code>spec.version</code> in <code>db.yaml</code> are the same to ensure normal monitor display.</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>Create <code>Namespace</code>:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> create namespace <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div><blockquote>
+<p><strong>Note:</strong></p>
+<p>A <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/"><code>namespace</code></a> is a virtual cluster backed by the same physical cluster. You can give it a name that is easy to memorize, such as the same name as <code>default_cluster_name</code>.</p>
+</blockquote>
+</li>
+<li>
+<p>Deploy the TiDB cluster:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> create -f db.yaml -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span> <span style="color:#f92672">&amp;&amp;</span>
+kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> create -f db-monitor.yaml -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div></li>
+</ol>
+<h3 id="enable-cross-zone-load-balancing-for-the-loadbalancer-of-the-tidb-service">Enable cross-zone load balancing for the LoadBalancer of the TiDB service</h3>
+<p>Due to an <a href="https://github.com/kubernetes/kubernetes/issues/82595">issue</a> of AWS Network Load Balancer (NLB), the NLB created for the TiDB service cannot automatically enable cross-zone load balancing. You can manually enable it by taking the following steps:</p>
+<ol>
+<li>
+<p>Get the name of the NLB created for the TiDB service:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> get svc <span style="color:#e6db74">${</span>default_cluster_name<span style="color:#e6db74">}</span>-tidb -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div><p>This is an example of the output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kubectl --kubeconfig credentials/kubeconfig_test get svc test-tidb -n test
+NAME        TYPE           CLUSTER-IP      EXTERNAL-IP                                                                     PORT(S)                          AGE
+tidb-tidb   LoadBalancer   172.20.39.180   a7aa544c49f914930b3b0532022e7d3c-83c0c97d8b659075.elb.us-west-2.amazonaws.com   4000:32387/TCP,10080:31486/TCP   3m46s
+</code></pre></div><p>In the value of the <code>EXTERNAL-IP</code> field, the first field that is separated by <code>-</code> is the name of NLB. In the example above, the NLB name is <code>a7aa544c49f914930b3b0532022e7d3c</code>.</p>
+</li>
+<li>
+<p>Get the LoadBalancerArn for the NLB:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws elbv2 describe-load-balancers | grep <span style="color:#e6db74">${</span>LoadBalancerName<span style="color:#e6db74">}</span>
+</code></pre></div><p><code>${LoadBalancerName}</code> is the NLB name obtained in Step 1.</p>
+<p>This is an example of the output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">aws elbv2 describe-load-balancers | grep a7aa544c49f914930b3b0532022e7d3c
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:687123456789:loadbalancer/net/a7aa544c49f914930b3b0532022e7d3c/83c0c97d8b659075",
+          "DNSName": "a7aa544c49f914930b3b0532022e7d3c-83c0c97d8b659075.elb.us-west-2.amazonaws.com",
+          "LoadBalancerName": "a7aa544c49f914930b3b0532022e7d3c",
+</code></pre></div><p>The value of the <code>LoadBalancerArn</code> field is the NLB LoadBalancerArn.</p>
+</li>
+<li>
+<p>View the NLB attributes:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws elbv2 describe-load-balancer-attributes --load-balancer-arn <span style="color:#e6db74">${</span>LoadBalancerArn<span style="color:#e6db74">}</span>
+</code></pre></div><p><code>${LoadBalancerArn}</code> is the NLB LoadBalancerArn obtained in Step 2.</p>
+<p>This is an example of the output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">aws elbv2 describe-load-balancer-attributes --load-balancer-arn "arn:aws:elasticloadbalancing:us-west-2:687123456789:loadbalancer/net/a7aa544c49f914930b3b0532022e7d3c/83c0c97d8b659075"
+{
+  "Attributes": [
+      {
+          "Key": "access_logs.s3.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "load_balancing.cross_zone.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.prefix",
+          "Value": ""
+      },
+      {
+          "Key": "deletion_protection.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.bucket",
+          "Value": ""
+      }
+  ]
+}
+</code></pre></div><p>If the value of <code>load_balancing.cross_zone.enabled</code> is <code>false</code>, continue the next step to enable cross-zone load balancing.</p>
+</li>
+<li>
+<p>Enable cross-zone load balancing for NLB:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws elbv2 modify-load-balancer-attributes --load-balancer-arn <span style="color:#e6db74">${</span>LoadBalancerArn<span style="color:#e6db74">}</span> --attributes Key<span style="color:#f92672">=</span>load_balancing.cross_zone.enabled,Value<span style="color:#f92672">=</span>true
+</code></pre></div><p><code>${LoadBalancerArn}</code> is the NLB LoadBalancerArn obtained in Step 2.</p>
+<p>This is an example of the output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">aws elbv2 modify-load-balancer-attributes --load-balancer-arn "arn:aws:elasticloadbalancing:us-west-2:687123456789:loadbalancer/net/a7aa544c49f914930b3b0532022e7d3c/83c0c97d8b659075" --attributes Key=load_balancing.cross_zone.enabled,Value=true
+{
+  "Attributes": [
+      {
+          "Key": "load_balancing.cross_zone.enabled",
+          "Value": "true"
+      },
+      {
+          "Key": "access_logs.s3.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.prefix",
+          "Value": ""
+      },
+      {
+          "Key": "deletion_protection.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.bucket",
+          "Value": ""
+      }
+  ]
+}
+</code></pre></div></li>
+<li>
+<p>Confirm that the NLB cross-zone load balancing attribute is enabled:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">aws elbv2 describe-load-balancer-attributes --load-balancer-arn <span style="color:#e6db74">${</span>LoadBalancerArn<span style="color:#e6db74">}</span>
+</code></pre></div><p><code>${LoadBalancerArn}</code> is the NLB LoadBalancerArn obtained in Step 2.</p>
+<p>This is an example of the output:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">aws elbv2 describe-load-balancer-attributes --load-balancer-arn "arn:aws:elasticloadbalancing:us-west-2:687123456789:loadbalancer/net/a7aa544c49f914930b3b0532022e7d3c/83c0c97d8b659075"
+{
+  "Attributes": [
+      {
+          "Key": "access_logs.s3.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "load_balancing.cross_zone.enabled",
+          "Value": "true"
+      },
+      {
+          "Key": "access_logs.s3.prefix",
+          "Value": ""
+      },
+      {
+          "Key": "deletion_protection.enabled",
+          "Value": "false"
+      },
+      {
+          "Key": "access_logs.s3.bucket",
+          "Value": ""
+      }
+  ]
+}
+</code></pre></div><p>Confirm that the value of <code>load_balancing.cross_zone.enabled</code> is <code>true</code>.</p>
+</li>
+</ol>
+<h2 id="access-the-database">Access the database</h2>
+<p>After deploying the cluster, to access the deployed TiDB cluster, use the following commands to first <code>ssh</code> into the bastion machine, and then connect it via MySQL client (replace the <code>${}</code> parts with values from the output):</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">ssh -i credentials/<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span>.pem centos@<span style="color:#e6db74">${</span>bastion_ip<span style="color:#e6db74">}</span>
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">mysql -h <span style="color:#e6db74">${</span>tidb_lb<span style="color:#e6db74">}</span> -P <span style="color:#ae81ff">4000</span> -u root
+</code></pre></div><p>The default value of <code>eks_name</code> is <code>my-cluster</code>. If the DNS name is not resolvable, be patient and wait a few minutes.</p>
+<p><code>tidb_lb</code> is the LoadBalancer of TiDB Service. To check this value, run <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} get svc ${default_cluster_name}-tidb -n ${namespace}</code> and view the <code>EXTERNAL-IP</code> field in the output information.</p>
+<p>You can interact with the EKS cluster using <code>kubectl</code> and <code>helm</code> with the kubeconfig file <code>credentials/kubeconfig_${eks_name}</code> in the following two ways.</p>
+<ul>
+<li>
+<p>By specifying <code>--kubeconfig</code> argument:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> get po -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">helm --kubeconfig credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span> ls
+</code></pre></div></li>
+<li>
+<p>Or by setting the <code>KUBECONFIG</code> environment variable:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">export KUBECONFIG<span style="color:#f92672">=</span>$PWD/credentials/kubeconfig_<span style="color:#e6db74">${</span>eks_name<span style="color:#e6db74">}</span>
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl get po -n <span style="color:#e6db74">${</span>namespace<span style="color:#e6db74">}</span>
+</code></pre></div><div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">helm ls
+</code></pre></div></li>
+</ul>
+<h2 id="monitor">Monitor</h2>
+<p>You can access the <code>&lt;monitor-lb&gt;:3000</code> address (printed in outputs) using your web browser to view monitoring metrics.</p>
+<p><code>monitor-lb</code> is the LoadBalancer of the cluster Monitor Service. To check this value, run <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} get svc ${default_cluster_name}-grafana -n ${namespace}</code> and view the <code>EXTERNAL-IP</code> field in the output information.</p>
+<p>The initial Grafana login credentials are:</p>
+<ul>
+<li>User: admin</li>
+<li>Password: admin</li>
+</ul>
+<h2 id="upgrade">Upgrade</h2>
+<p>To upgrade the TiDB cluster, edit the <code>spec.version</code> by <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} edit tc ${default_cluster_name} -n ${namespace}</code>.</p>
+<p>The upgrading doesn't finish immediately. You can watch the upgrading progress by <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} get po -n ${namespace} --watch</code>.</p>
+<h2 id="scale">Scale</h2>
+<p>To scale out the TiDB cluster, modify the <code>default_cluster_tikv_count</code>, <code>cluster_tiflash_count</code>, or <code>default_cluster_tidb_count</code> variable in the <code>terraform.tfvars</code> file to your desired count, and then run <code>terraform apply</code> to scale out the number of the corresponding component nodes.</p>
+<p>After the scaling, modify the <code>replicas</code> of the corresponding component by the following command:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kubectl --kubeconfig credentials/kubeconfig_${eks_name} edit tc ${default_cluster_name} -n ${namespace}
+</code></pre></div><p>For example, to scale out the TiDB nodes, you can modify the number of TiDB instances from 2 to 4:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hcl" data-lang="hcl">default_cluster_tidb_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>
+</code></pre></div><p>After the nodes scale out, modify the <code>spec.tidb.replicas</code> in <code>TidbCluster</code> to scale out the Pod.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>Currently, scaling in is NOT supported because we cannot determine which node to scale in.
+Scaling out needs a few minutes to complete, you can watch the scaling out progress by <code>kubectl --kubeconfig credentials/kubeconfig_${eks_name} get po -n ${namespace} --watch</code>.</p>
+</blockquote>
+<h2 id="customize">Customize</h2>
+<p>This section describes how to customize the AWS related resources and TiDB Operator.</p>
+<h3 id="customize-aws-related-resources">Customize AWS related resources</h3>
+<p>An Amazon EC2 instance is also created by default as the bastion machine to connect to the created TiDB cluster. This is because the TiDB service is exposed as an <a href="https://aws.amazon.com/blogs/aws/internal-elastic-load-balancers/">Internal Elastic Load Balancer</a>. The EC2 instance has MySQL and Sysbench pre-installed, so you can use SSH to log into the EC2 instance and connect to TiDB using the ELB endpoint. You can disable the bastion instance creation by setting <code>create_bastion</code> to <code>false</code> if you already have an EC2 instance in the VPC.</p>
+<h3 id="customize-tidb-operator">Customize TiDB Operator</h3>
+<p>To customize the TiDB Operator, modify the <code>operator_values</code> parameter in <code>terraform.tfvars</code> to pass the customized contents of <code>values.yaml</code>. For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hcl" data-lang="hcl">operator_values <span style="color:#f92672">=</span> <span style="color:#e6db74">"./operator_values.yaml"</span>
+</code></pre></div><h2 id="manage-multiple-tidb-clusters">Manage multiple TiDB clusters</h2>
+<p>An instance of <code>tidb-cluster</code> module corresponds to a TiDB cluster in the EKS cluster. If you want to create a node pool for a new TiDB cluster, edit <code>./cluster.tf</code> and add a new instance of <code>tidb-cluster</code> module:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hcl" data-lang="hcl"><span style="color:#66d9ef">module</span> <span style="color:#66d9ef">example</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">cluster</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/tidb-cluster"</span>
+  eks <span style="color:#f92672">=</span> <span style="color:#66d9ef">local</span>.<span style="color:#66d9ef">eks</span>
+  subnets <span style="color:#f92672">=</span> <span style="color:#66d9ef">local</span>.<span style="color:#66d9ef">subnets</span>
+  region <span style="color:#f92672">=</span> <span style="color:#66d9ef">var</span>.<span style="color:#66d9ef">region</span>
+  cluster_name    <span style="color:#f92672">=</span> <span style="color:#e6db74">"example"</span>
+  ssh_key_name                  <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+  pd_count                      <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  pd_instance_type              <span style="color:#f92672">=</span> <span style="color:#e6db74">"c5.large"</span>
+  tikv_count                    <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  tikv_instance_type            <span style="color:#f92672">=</span> <span style="color:#e6db74">"c5d.large"</span>
+  tidb_count                    <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+  tidb_instance_type            <span style="color:#f92672">=</span> <span style="color:#e6db74">"c4.large"</span>
+  monitor_instance_type         <span style="color:#f92672">=</span> <span style="color:#e6db74">"c5.large"</span>
+  create_tidb_cluster_release   <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+}
+</code></pre></div><blockquote>
+<p><strong>Note:</strong></p>
+<p>The <code>cluster_name</code> of each cluster must be unique.</p>
+</blockquote>
+<p>When you finish the modification, execute <code>terraform init</code> and <code>terraform apply</code> to create the nodes pool for the TiDB cluster.</p>
+<p>Finally, <a href="#deploy-tidb-cluster-and-monitor">deploy TiDB cluster and monitor</a>.</p>
+<h2 id="destroy-clusters">Destroy clusters</h2>
+<ol>
+<li>
+<p><a href="/docs/tidb-in-kubernetes/stable/destroy-a-tidb-cluster">Destroy the TiDB clusters</a>.</p>
+</li>
+<li>
+<p>Destroy the EKS cluster by the following command:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">terraform destroy
+</code></pre></div><p>If the following error occurs during <code>terraform destroy</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Error: Get http://localhost/apis/apps/v1/namespaces/kube-system/deployments/tiller-deploy: dial tcp [::1]:80: connect: connection refused
+</code></pre></div><p>Run the following command:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">terraform state rm module.tidb-operator.helm_release.tidb-operator
+</code></pre></div><p>And then run <code>terraform destroy</code> again.</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>This will destroy your EKS cluster.</li>
+<li>If you do not need the data on the volumes anymore, you have to manually delete the EBS volumes in AWS console after running <code>terraform destroy</code>.</li>
+</ul>
+</blockquote>
+<h2 id="manage-multiple-kubernetes-clusters">Manage multiple Kubernetes clusters</h2>
+<p>This section describes the best practice to manage multiple Kubernetes clusters, each with one or more TiDB clusters installed.</p>
+<p>The Terraform module in our case typically combines several sub-modules:</p>
+<ul>
+<li>A <code>tidb-operator</code> module, which creates the EKS cluster and <a href="/docs/tidb-in-kubernetes/stable/deploy-tidb-operator">deploy TiDB Operator</a> on the EKS cluster</li>
+<li>A <code>tidb-cluster</code> module, which creates the resource pool required by the TiDB cluster</li>
+<li>A <code>VPC</code> module, a <code>bastion</code> module and a <code>key-pair</code> module that are dedicated to TiDB on AWS</li>
+</ul>
+<p>The best practice for managing multiple Kubernetes clusters is creating a new directory for each of your Kubernetes clusters, and combine the above modules according to your needs via Terraform scripts, so that the Terraform states among clusters do not interfere with each other, and it is convenient to expand. Here's an example:</p>
+<div class="copyable-code-block shell-regular">
+</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># assume we are in the project root</span>
+mkdir -p deploy/aws-staging
+vim deploy/aws-staging/main.tf
+</code></pre></div><p>The content of <code>deploy/aws-staging/main.tf</code> could be:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hcl" data-lang="hcl"><span style="color:#66d9ef">provider</span> <span style="color:#e6db74">"aws"</span> {
+  region <span style="color:#f92672">=</span> <span style="color:#e6db74">"us-west-1"</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># Creates an SSH key to log in the bastion and the Kubernetes node
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"key-pair"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/key-pair"</span>
+
+  name <span style="color:#f92672">=</span> <span style="color:#e6db74">"another-eks-cluster"</span>
+  path <span style="color:#f92672">=</span> <span style="color:#e6db74">"${path.cwd}/credentials/"</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># Provisions a VPC
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"vpc"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/vpc"</span>
+
+  vpc_name <span style="color:#f92672">=</span> <span style="color:#e6db74">"another-eks-cluster"</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># Provisions an EKS control plane with TiDB Operator installed
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"tidb-operator"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/tidb-operator"</span>
+
+  eks_name           <span style="color:#f92672">=</span> <span style="color:#e6db74">"another-eks-cluster"</span>
+  config_output_path <span style="color:#f92672">=</span> <span style="color:#e6db74">"credentials/"</span>
+  subnets            <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">private_subnets</span>
+  vpc_id             <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">vpc_id</span>
+  ssh_key_name       <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># HACK: enforces Helm to depend on the EKS
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">resource</span> <span style="color:#e6db74">"local_file" "kubeconfig"</span> {
+  depends_on        <span style="color:#f92672">=</span> [<span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>]
+  sensitive_content <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>.<span style="color:#66d9ef">kubeconfig</span>
+  filename          <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>.<span style="color:#66d9ef">kubeconfig_filename</span>
+}
+<span style="color:#66d9ef">provider</span> <span style="color:#e6db74">"helm"</span> {
+  alias    <span style="color:#f92672">=</span> <span style="color:#e6db74">"eks"</span>
+  insecure <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
+  install_tiller <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+  <span style="color:#66d9ef">kubernetes</span> {
+    config_path <span style="color:#f92672">=</span> <span style="color:#66d9ef">local_file</span>.<span style="color:#66d9ef">kubeconfig</span>.<span style="color:#66d9ef">filename</span>
+  }
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># Provisions a node pool for the TiDB cluster in the EKS cluster
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"tidb-cluster-a"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/tidb-cluster"</span>
+  providers <span style="color:#f92672">=</span> {
+    helm <span style="color:#f92672">=</span> <span style="color:#e6db74">"helm.eks"</span>
+  }
+
+  cluster_name <span style="color:#f92672">=</span> <span style="color:#e6db74">"tidb-cluster-a"</span>
+  eks          <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>
+  ssh_key_name <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+  subnets      <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">private_subnets</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># Provisions a node pool for another TiDB cluster in the EKS cluster
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"tidb-cluster-b"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/tidb-cluster"</span>
+  providers <span style="color:#f92672">=</span> {
+    helm <span style="color:#f92672">=</span> <span style="color:#e6db74">"helm.eks"</span>
+  }
+
+  cluster_name <span style="color:#f92672">=</span> <span style="color:#e6db74">"tidb-cluster-b"</span>
+  eks          <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>
+  ssh_key_name <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+  subnets      <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">private_subnets</span>
+}<span style="color:#75715e">
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># Provisions a bastion machine to access the TiDB service and worker nodes
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">module</span> <span style="color:#e6db74">"bastion"</span> {
+  source <span style="color:#f92672">=</span> <span style="color:#e6db74">"../modules/aws/bastion"</span>
+
+  bastion_name             <span style="color:#f92672">=</span> <span style="color:#e6db74">"another-eks-cluster-bastion"</span>
+  key_name                 <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">key</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">pair</span>.<span style="color:#66d9ef">key_name</span>
+  public_subnets           <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">public_subnets</span>
+  vpc_id                   <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">vpc</span>.<span style="color:#66d9ef">vpc_id</span>
+  target_security_group_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">tidb</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#66d9ef">operator</span>.<span style="color:#66d9ef">eks</span>.<span style="color:#66d9ef">worker_security_group_id</span>
+  enable_ssh_to_workers    <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
+}
+
+<span style="color:#66d9ef">output</span> <span style="color:#e6db74">"bastion_ip"</span> {
+  description <span style="color:#f92672">=</span> <span style="color:#e6db74">"Bastion IP address"</span>
+  value       <span style="color:#f92672">=</span> <span style="color:#66d9ef">module</span>.<span style="color:#66d9ef">bastion</span>.<span style="color:#66d9ef">bastion_ip</span>
+}
+</code></pre></div><p>As shown in the code above, you can omit most of the parameters in each of the module calls because there are reasonable defaults, and it is easy to customize the configuration. For example, just delete the bastion module call if you do not need it.</p>
+<p>To customize each field, you can refer to the default Terraform module. Also, you can always refer to the <code>variables.tf</code> file of each module to learn about all the available parameters.</p>
+<p>In addition, you can easily integrate these modules into your own Terraform workflow. If you are familiar with Terraform, this is our recommended way of use.</p>
+<blockquote>
+<p><strong>Note:</strong></p>
+<ul>
+<li>When creating a new directory, please pay attention to its relative path to Terraform modules, which affects the <code>source</code> parameter during module calls.</li>
+<li>If you want to use these modules outside the tidb-operator project, make sure you copy the whole <code>modules</code> directory and keep the relative path of each module inside the directory unchanged.</li>
+<li>Due to limitation <a href="https://github.com/hashicorp/terraform/issues/2430#issuecomment-370685911">hashicorp/terraform#2430</a> of Terraform, the hack processing of Helm provider is necessary in the above example. It is recommended that you keep it in your own Terraform scripts.</li>
+</ul>
+</blockquote>
+<p>If you are unwilling to write Terraform code, you can also copy the <code>deploy/aws</code> directory to create new Kubernetes clusters. But note that you cannot copy a directory that you have already run <code>terraform apply</code> against, when the Terraform state already exists in local. In this case, it is recommended to clone a new repository before copying the directory.</p>
+</div>
+<div class="article-toc"></div>
+<div class="git-info">
+<a class="link" href="https://github.com/pingcap/docs-tidb-operator/blob/release-1.1/en/deploy-on-aws-eks.md">"Deploy TiDB on AWS EKS"</a>
+    was last updated
+    <span>May 28 2020</span>:
+    <a class="link" href="https://github.com/pingcap/docs-tidb-operator/commit/d545dfe1f1f2b0f386cda9360d4f223787f8350a">
+        cherry pick #304 to release-1.1 (#332) <span class="hash">(d545dfe)</span>
+</a>
+</div></div>
+<div class="sidebar-page">
+<div class="sticky-sidebar">
+<a class="improve-doc" href="https://github.com/pingcap/docs-tidb-operator/edit/release-1.1/en/deploy-on-aws-eks.md" target="_blank">
+<svg fill="#142848" height="14" viewbox="0 0 275.836 275.836" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M191.344 20.922l-95.155 95.155a5.99 5.99 0 0 0-1.565 2.734l-8.167 31.454a6.003 6.003 0 0 0 7.315 7.316l31.454-8.168a6.003 6.003 0 0 0 2.734-1.565l95.153-95.153.005-.004.004-.005 19.156-19.156a5.998 5.998 0 0 0 .001-8.484L218.994 1.758a5.998 5.998 0 0 0-8.485 0l-19.155 19.155-.005.004-.005.005zm-70.713 117.286l-19.993 5.192 5.191-19.993 89.762-89.762 14.801 14.802-89.761 89.761zm94.12-123.723l14.801 14.802-10.675 10.675-14.801-14.802 10.675-10.675z"></path><path d="M238.037 65.022a6 6 0 0 0-6 6v192.813H43.799V34.417h111.063a6 6 0 0 0 0-12H37.799a6 6 0 0 0-6 6v241.419a6 6 0 0 0 6 6h200.238a6 6 0 0 0 6-6V71.022a6 6 0 0 0-6-6z"></path></svg>
+    Edit this page
+</a>
+<a class="request-docs-changes" href="https://github.com/pingcap/docs-tidb-operator/issues/new?body=File:%20[%2fen%2fdeploy-on-aws-eks.md](https%3a%2f%2fpingcap.com%2fdocs%2ftidb-in-kubernetes%2fv1.1%2fdeploy-on-aws-eks%2f)" target="_blank">
+<svg height="14px" version="1.1" viewbox="0 0 192 192" width="14px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none" fill-rule="nonzero" font-family="none" font-size="none" font-weight="none" stroke="none" stroke-dasharray="" stroke-dashoffset="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-width="1" style="mix-blend-mode: normal" text-anchor="none"><path d="M0,192v-192h192v192z" fill="none"></path><g fill="#142848"><path d="M162.34375,42.34375l-90.34375,90.34375l-34.34375,-34.34375l-11.3125,11.3125l45.65625,45.65625l101.65625,-101.65625z"></path></g></g></svg>
+
+    Request docs changes
+</a>
+<p class="toc-title">What’s on this page</p>
+<div id="smart_toc_wrapper"></div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="container">
+<div class="flex-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Product</strong></h4>
+<ul>
+<li><a href="/docs/v3.0/">TiDB</a></li>
+<li><a href="/docs/v3.0/reference/tispark/">TiSpark</a></li>
+<li><a href="/docs/v3.0/roadmap/">Roadmap</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Docs</strong></h4>
+<ul>
+<li><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">Quick Start</a></li>
+<li><a href="/blog/2017-07-24-tidbbestpractice/">Best Practices</a></li>
+<li><a href="/docs/stable/faq/tidb/">FAQ</a></li>
+<li><a href="/docs/stable/reference/tools/user-guide/">TiDB Tools</a></li>
+<li><a href="/docs/dev/releases/rn/">Release Notes</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Resources</strong></h4>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/weekly/">Monthly</a></li>
+<li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+<li><a href="/community">TiDB Community</a></li>
+</ul>
+</div>
+<div class="flex-list">
+<h4 class="list-title"><strong>Company</strong></h4>
+<ul>
+<li><a href="/about/">About</a></li>
+<li><a href="https://angel.co/pingcap-1/jobs" target="_blank">Careers</a></li>
+<li><a href="/news/">News</a></li>
+<li><a href="/contact-us/">Contact Us</a></li>
+<li><a href="/en/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/terms-of-service/">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="contact-list-wrap">
+<div class="flex-list">
+<h4 class="list-title"><strong>Connect</strong></h4>
+<ul>
+<li><a class="twitter" href="https://twitter.com/PingCAP" target="_blank"><svg height="19" viewbox="0 0 612 612" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"></path></svg> Twitter</a></li>
+<li><a class="linkedin" href="https://www.linkedin.com/company/pingcap/" target="_blank"><svg height="16" viewbox="0 0 438.536 438.535" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"></path></svg> LinkedIn</a></li>
+<li><a class="reddit" href="https://www.reddit.com/r/TiDB/" target="_blank"><svg height="18" viewbox="0 0 279.748 279.748" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"></path></svg>Reddit</a></li>
+<li><a class="google-plus" href="https://groups.google.com/forum/#!forum/tidb-user" target="_blank"><svg height="20" viewbox="0 0 491.858 491.858" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"></path></svg>Google Group</a></li>
+<li><a class="stack-overflow" href="https://stackoverflow.com/questions/tagged/tidb" target="_blank"><svg height="17" viewbox="0 0 547.597 547.597" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"></path><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"></path><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"></path></svg>Stack Overflow</a></li>
+</ul>
+</div>
+<div class="subscribe">
+<a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc">Subscribe to Blog</button></a>
+</div>
+</div>
+</div>
+<div class="container copyright-container">
+<p class="copyright">© 2020 PingCAP. All Rights Reserved.</p>
+<a class="copyright-btn-lang" href="/docs-cn/tidb-in-kubernetes/stable" id="lang">中文</a>
+</div>
+</footer>
+<button class="back-to-top" type="button"><svg height="512" viewbox="0 0 284.929 284.929" width="512" xmlns="http://www.w3.org/2000/svg"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"></path></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script src="/js/vendor/lazyload.min.js" type="text/javascript"></script>
+<script src="/js/doc.js" type="text/javascript"></script>
+<script src="/js/anchor.js" type="text/javascript"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script crossorigin="anonymous" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>

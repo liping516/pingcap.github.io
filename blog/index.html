@@ -1,0 +1,1788 @@
+<!doctype html><html lang="en"><head>
+<meta name="robots" content="noindex"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<script>
+window.ga =
+    window.ga ||
+    function() {
+        ;(ga.q = ga.q || []).push(arguments)
+    }
+ga.l = +new Date()
+ga('create', 'UA-99991864-4', 'auto')
+ga('send', 'pageview')
+</script>
+<script async src="https://download.pingcap.com/js/ga-analytics.js"></script>
+
+
+    
+
+<link rel="stylesheet" href="/css/list.css">
+
+
+<link rel="stylesheet" href="/css/blog.css">
+<title>TiDB engineering blog and updates |&nbsp;TiDB</title><link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<meta name="description" content="Amazon Aurora alternative without vendor lock-in. TiDB is an open source MySQL-compatible distributed database that handles hybrid transactional and analytical processing (HTAP) workloads and can empower Amazon Aurora users with an HTAP database.">
+<meta name="robots" content="noodp">
+<meta name="keywords" content="TiDB, MySQL, HTAP, Open Source, Cloud-Native, NewSQL, Aurora Alternative">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Blogs | TiDB">
+<meta property="og:description" content="Amazon Aurora alternative without vendor lock-in. TiDB is an open source MySQL-compatible distributed database that handles hybrid transactional and analytical processing (HTAP) workloads and can empower Amazon Aurora users with an HTAP database.">
+<meta property="og:url" content="https://pingcap.com/blog/">
+<meta property="og:site_name" content="MySQL at Scale. No more manual sharding">
+<meta property="og:image" content="/images/pingcap-opengraph.jpg">
+<meta property="og:image:secure_url" content="/images/pingcap-opengraph.jpg"><meta name="twitter:card" content="summary"><meta name="twitter:description" content="Amazon Aurora alternative without vendor lock-in. TiDB is an open source MySQL-compatible distributed database that handles hybrid transactional and analytical processing (HTAP) workloads and can empower Amazon Aurora users with an HTAP database.">
+<meta name="twitter:title" content="Blogs | TiDB">
+<meta name="twitter:site" content="@pingcap">
+<meta name="twitter:image" content="https://download.pingcap.com/images/pingcap-opengraph.jpg"><meta name="twitter:creator" content="@pingcap">
+
+
+
+
+
+<script type="application/ld+json">
+{
+    "@context": "http:\/\/schema.org",
+    "@type": "WebSite",
+    "url": "https:\/\/pingcap.com\/",
+    "name": "PingCAP",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https:\/\/pingcap.com\/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+<script type="text/javascript" async src="https://accounts.pingcap.com/static/pingcap_sso/js/track.beta.js"></script>
+    
+<link rel="preload" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.woff" as="font" type="font/woff" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/lato/lato-regular-webfont.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.woff" as="font" type="font/woff" crossorigin="anonymous">
+<link rel="preload" href="https://download.pingcap.com/fonts/titilliumweb/titilliumweb-regular-webfont.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+<link rel="preload" href="https://download.pingcap.com/js/jquery.min.js" as="script">
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="https://download.pingcap.com/style/docsearch.min.css">
+<script type="text/javascript">
+var trackOutboundLink = function(url) {
+  var redirectTriggered = false
+  ga('send', 'event', 'outbound', 'click', url, {
+    hitCallback: function() {
+      redirectTriggered = true
+      document.location = url
+    }
+  })
+  setTimeout(function() {
+    if (!redirectTriggered) {
+      document.location = url
+    }
+  }, 1500)
+}
+
+var trackViews = function(btn_type, event_category) {
+  var event_label = btn_type
+  var eventCategory = event_category
+  ga('send', 'event', {
+    'eventCategory': eventCategory,
+    'eventAction': 'click',
+    'eventLabel': event_label,
+    'transport': 'beacon'
+  });
+}
+</script>
+<script>if (location.pathname === '/') {
+        if (location.hostname === 'pingcap.github.io') {
+            location.href = '/en/'
+        }
+    }</script></head>       <body data-lang="en" ><div id="page-content">
+
+<header role="navigation" class="fixed-top">
+    <div class="container">
+        <a class="nav-brand" href="/en"><img src="/images/pingcap-logo.png" alt="PingCAP"></a>
+        <div class="nav-wrapper">
+            <div class="navigation">
+                <ul>
+                <li ><a class="a-en" href="/tidb-cloud/">Cloud</a></li>
+                <li ><a class="a-en" class="tidb-academy"
+                    href="/tidb-academy">TiDB Academy</a></li>
+                <li class="docs-type-selector " id="docsTypeSelector">
+                    <a class="header-doc-nav" href="#">Docs</a>
+                    <div class="header-dropdown-menu" id="docsTypeSelectorItem">
+                        <a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+                        <a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+                        <a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+                    </div>
+                </li>
+                
+                <li ><a class="a-en" href="/success-stories">Success
+                    Stories</a></li>
+                <li class="sel" ><a class="a-en" href="/blog">Blog</a></li>
+                <li ><a class="link-download link-download-en" href="/download">Free Download</a></li>
+                </ul>
+            </div>
+            <div class="global-search">
+                
+                
+                
+                <form class="search-wrapper"  action="/search/docs/stable/">
+    <span class="icon-search"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff" viewBox="0 0 67.125 67.125"><path d="M23.902 0C11.01 0 .523 10.488.523 23.38c0 12.891 10.487 23.379 23.379 23.379a23.258 23.258 0 0 0 14.471-5.037l24.816 24.817c.391.391.902.586 1.414.586s1.023-.195 1.414-.586a2 2 0 0 0 0-2.828L41.293 38.985c3.721-4.142 5.989-9.613 5.989-15.605C47.282 10.488 36.794 0 23.902 0zM4.523 23.38C4.523 12.694 13.216 4 23.902 4c10.687 0 19.38 8.694 19.38 19.38 0 5.396-2.221 10.279-5.791 13.795a1.959 1.959 0 0 0-.488.349 2.003 2.003 0 0 0-.271.343C33.31 40.9 28.825 42.76 23.903 42.76c-10.686-.001-19.38-8.695-19.38-19.38z"/><path d="M24.075 8.591c-8.25 0-14.962 6.712-14.962 14.962a2 2 0 0 0 4 0c0-6.044 4.918-10.962 10.962-10.962a2 2 0 0 0 0-4z"/></svg></span>
+    <input data-lang="en" data-type="" type="search" id="search-input" name="q" 
+    placeholder="Search TiDB Docs">
+</form>
+
+            </div>
+        </div>
+        <div class="nav-btn nav-slider">
+            <i class="material-icons"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 459 459"><path d="M0 382.5h459v-51H0v51zM0 255h459v-51H0v51zM0 76.5v51h459v-51H0z" fill="#FFF"/></svg></i>
+        </div>
+    </div>
+</header>
+
+
+
+<nav class="mobile-sidebar">
+    <div class="nav-header">
+        <div class="logo-wrap">
+        <a class="nav-brand" href="/en"><img src="/images/pingcap-logo.png" alt="PingCAP"></a>
+        </div>
+    </div>
+    <ul class="ul-base">
+        <li ><a href="/tidb-cloud/">Cloud</a></li>
+        <li ><a class="tidb-academy" href="/tidb-academy">TiDB Academy</a></li>
+        <li class="docs-type-selector " id="docsTypeSelector">
+            <p class="header-doc-nav">Docs</p>
+            <div class="header-dropdown-menu" id="docsTypeSelectorItem">
+                <a class="header-dropdown-item" href="/docs/stable/">TiDB</a>
+                <a class="header-dropdown-item" href="/docs/tidb-in-kubernetes/stable/">TiDB in Kubernetes</a>
+                <a class="header-dropdown-item" href="/docs/tidb-data-migration/stable/">TiDB Data Migration (DM)</a>
+            </div>
+        </li>
+        <li ><a href="/success-stories">Success Stories</a></li>
+        <li class="sel"><a href="/blog">Blog</a></li>
+        <li><a class="link-download" href="/download">Free Download</a></li>
+    </ul>
+    <div class="nav-footer">
+        <div class="contact-list-wrap">
+        <div class="flex-list">
+            <h4 class="list-title"><strong>Contact</strong></h4>
+            <ul class="social ul-base">
+            <li><a href="https://twitter.com/PingCAP" class="twitter" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 612" width="18" height="18"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"/></svg></a></li>
+            <li><a href="https://www.linkedin.com/company/pingcap/" class="linkedin" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 438.536 438.535"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"/></svg></a></li>
+            <li><a href="https://www.reddit.com/r/TiDB/" class="reddit" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 279.748 279.748" width="18" height="18"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"/></svg></a></li>
+            <li><a href="https://groups.google.com/forum/#!forum/tidb-user" class="google-plus" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 491.858 491.858" width="18" height="18"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"/></svg></a></li>
+            <li><a href="https://stackoverflow.com/questions/tagged/tidb" class="stack-overflow" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 547.597 547.597"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"/><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"/><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"/></svg></a></li>
+            </ul>
+        </div>
+        <div class="subscribe">
+            <a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc" style="margin-left: 0.75rem;">Subscribe to Blog</button></a>
+        </div>
+        </div>
+        <div class="container">
+        <a href="/blog-cn" class="btn-lang" id="lang">中文</a>
+        </div>
+    </div>
+</nav>
+
+<div class="blog">
+      <div class="blog__hugeTitle">
+        <h1>TiDB and TiKV Blog
+            <a class="rss" href="/blog/index.xml" title="RSS Feed"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="17" viewBox="0 0 402.041 402.04"><g fill="#3A59F0"><path d="M54.816 292.382c-15.229 0-28.169 5.331-38.831 15.988C5.33 319.026 0 331.969 0 347.197c0 15.232 5.325 28.172 15.985 38.828 10.662 10.657 23.606 15.988 38.831 15.988 15.227 0 28.168-5.331 38.828-15.988 10.656-10.656 15.986-23.596 15.986-38.828 0-15.229-5.33-28.171-15.986-38.827-10.657-10.657-23.598-15.988-38.828-15.988zM181.01 221.002c-21.51-21.698-46.158-38.97-73.948-51.816-27.79-12.85-56.914-20.511-87.366-22.985h-1.425c-4.949 0-9.042 1.619-12.275 4.854C1.997 154.477 0 158.953 0 164.472v38.543c0 4.757 1.569 8.85 4.708 12.279 3.14 3.429 7.089 5.332 11.848 5.708 43.586 4.189 80.845 21.752 111.773 52.678 30.93 30.926 48.49 68.187 52.677 111.771.382 4.764 2.284 8.712 5.712 11.847 3.427 3.148 7.517 4.72 12.275 4.72h38.545c5.517 0 9.989-1.995 13.415-5.996 3.621-3.812 5.236-8.381 4.863-13.709-2.478-30.447-10.14-59.573-22.987-87.361-12.846-27.792-30.121-52.438-51.819-73.95z"/><path d="M367.728 239.701c-20.365-45.585-48.345-86.078-83.936-121.482-35.405-35.594-75.896-63.572-121.485-83.939C116.723 13.917 68.996 2.494 19.126.02h-.855c-4.949 0-9.136 1.713-12.563 5.14C1.903 8.583 0 12.964 0 18.294v40.825c0 4.76 1.667 8.897 4.996 12.419 3.33 3.523 7.373 5.376 12.132 5.57 40.924 2.478 79.799 12.188 116.63 29.127 36.83 16.94 68.806 38.972 95.93 66.09 27.118 27.123 49.149 59.101 66.089 95.931 16.94 36.836 26.557 75.705 28.839 116.627.195 4.764 2.046 8.809 5.564 12.139 3.524 3.329 7.762 4.999 12.71 4.999h40.823c5.331 0 9.701-1.902 13.134-5.715 3.809-3.806 5.517-8.274 5.144-13.415-2.471-49.874-13.898-97.6-34.263-143.19z"/></g></svg></a>
+        </h1>
+        <div class="guide">See TiDB Deployment Tutorials for: </div>
+        <div class="tutorial-platform">
+            <div class="PLogo"><a href="/docs/v3.0/tidb-in-kubernetes/get-started/deploy-tidb-from-kubernetes-gke/"><img src="/images/svgs/google-cloud.svg" alt="Goole cloud logo"/></a> </div>
+            <div class="PLogo"><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/"><img src="/images/svgs/docker.svg" alt="Docker logo"/> </a> </div>  
+            <div class="PLogo"><a href="/docs/v3.0/tidb-in-kubernetes/tidb-operator-overview/"><img src="/images/svgs/kubernetes.svg" alt="Kubernetes logo"/></a> </div> 
+            <div class="PLogo"><a href="/docs/v3.0/tidb-in-kubernetes/deploy/aws-eks/"><img src="/images/aws.png" alt="AWS logo"/></a></div>  
+            <div class="PLogo"><a href="/docs/v3.0/how-to/deploy/orchestrated/ansible/"><img src="/images/svgs/ansible.svg" alt="Ansible logo"/></a> </div>
+        </div>
+      </div>
+      <div class="blog__container">
+          <div class="nav-tags" data-type="blog-list"><div class="category" data-tag="Engineering">
+            <a href="#Engineering" class="tag" data-tag="Engineering">
+                <div class="category__icon"><img src="/images/svgs/engineering-icon.svg" alt="Engineering icon" /></div>
+                <div class="category__content">
+                    <div class="title">Engineering</div><div class="summary">
+                            Deep dive blog posts on TiDB’s design, inner workings, testing framework, and technical innovation.
+                        </div></div>
+            </a>
+        </div>
+    <div class="category" data-tag="HTAP">
+            <a href="#HTAP" class="tag" data-tag="HTAP">
+                <div class="category__icon"><img src="/images/svgs/htap-icon.svg" alt="HTAP icon" /></div>
+                <div class="category__content">
+                    <div class="title">HTAP</div><div class="summary">
+                            How TiDB’s modular design enables a Hybrid Transactional and Analytical Processing (HTAP) architecture.
+                        </div></div>
+            </a>
+        </div>
+    <div class="category" data-tag="MySQL-Scalability">
+            <a href="#MySQL-Scalability" class="tag" data-tag="MySQL-Scalability">
+                <div class="category__icon"><img src="/images/svgs/scalability-icon.svg" alt="Scalability icon" /></div>
+                <div class="category__content">
+                    <div class="title">MySQL Scalability</div><div class="summary">
+                            Sharing our experience building TiDB’s MySQL compatible layer from scratch and its ongoing evolution.
+                        </div></div>
+            </a>
+        </div>
+    <div class="category" data-tag="Open-Source-Community">
+            <a href="#Open-Source-Community" class="tag" data-tag="Open-Source-Community">
+                <div class="category__icon"><img src="/images/svgs/open-source-icon.svg" alt="Open Source icon" /></div>
+                <div class="category__content">
+                    <div class="title">Open Source Community</div><div class="summary">
+                            Activities, events, and stories about the TiDB open source community.
+                        </div></div>
+            </a>
+        </div>
+    
+</div>
+<div class="blog__list">
+
+
+
+<div class="list article-list"><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/easier-troubleshooting-for-distributed-databases/">TiDB Dashboard: Easier Troubleshooting for Distributed Databases</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-05-28</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Wenxuan Shi,&nbsp;Ming Zhang,&nbsp;Shuang Chen</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/easier-troubleshooting-for-distributed-databases/">
+                    <div class="brief">
+                        <p>TiDB 4.0 introduces TiDB Dashboard, which provides various built-in widgets in a graphical interface that let you easily diagnose, monitor, and manage your clusters in one place. Now you can troubleshoot TiDB clusters more easily.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/pessimistic-locking-better-mysql-compatibility-fewer-rollbacks-under-high-load/">Pessimistic Locking: Better MySQL Compatibility, Fewer Rollbacks Under High Load</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-05-22</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Transaction team</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/pessimistic-locking-better-mysql-compatibility-fewer-rollbacks-under-high-load/">
+                    <div class="brief">
+                        <p>With improvements in stability and functionality in TiDB 4.0, we finally remove the experimental label for pessimistic locking, making it a generally available feature. See how pessimistic locking behaves in TiDB.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/replication-latency-in-milliseconds-for-100-tb-clusters/">TiCDC: Replication Latency in Milliseconds for 100&#43; TB Clusters</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-05-20</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Fei Yang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/replication-latency-in-milliseconds-for-100-tb-clusters/">
+                    <div class="brief">
+                        <p>TiDB 4.0 introduces TiCDC, an open-source feature that replicates TiDB&#39;s incremental changes to downstream platforms. It shows only millisecond replication latency for 100&#43; TB clusters.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/large-transactions-in-tidb/">Large Transactions in TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-05-15</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Nick Cameron</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/large-transactions-in-tidb/">
+                    <div class="brief">
+                        <p>This post describes how we implemented support for large transactions in TiDB 4.0.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/tidb-at-zalopay-infrastructure-lesson-learned/">TiDB at ZaloPay Infrastructure &amp; Lesson Learned</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-05-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Tan To Nguyen Duy</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/tidb-at-zalopay-infrastructure-lesson-learned/">
+                    <div class="brief">
+                        <p>As VNG&#39;s business developed, their infrastructure became an obstacle to their growth. Then they chose TiDB as the core database for their ZaloPay app and used it to store their critical data. Now, VNG has 20&#43; TiDB nodes in their production environment.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/sql-plan-management-never-worry-about-slow-queries-again/">SQL Plan Management: Never Worry About Slow Queries Again</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-05-06</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Kenan Yao,&nbsp;Ed Huang,&nbsp;Haibin Xie</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/sql-plan-management-never-worry-about-slow-queries-again/">
+                    <div class="brief">
+                        <p>This post introduces how SQL Plan Management helps the optimizer automatically select efficient execution plans to prevent performance regressions caused by unexpected plan changes.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/building-running-and-benchmarking-tikv-and-tidb/">Building, Running, and Benchmarking TiKV and TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-05-04</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Nick Cameron</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/building-running-and-benchmarking-tikv-and-tidb/">
+                    <div class="brief">
+                        <p>This post introduces how to build and run your own TiDB or TiKV, and how to run some benchmarks on those databases.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/get-tidb-cluster-up-in-only-one-minute/">Get a TiDB Cluster Up in Only One Minute</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-04-29</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Heng Long</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/get-tidb-cluster-up-in-only-one-minute/">
+                    <div class="brief">
+                        <p>TiUP is a component manager that streamlines installing and configuring a TiDB cluster into a few easy commands. It helps get your cluster up and running quickly with a minimal learning curve.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/observe-distributed-databases-to-discover-unknowns/">Key Visualizer: Observe Distributed Databases to Discover the Unknowns</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-04-22</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Xiangsheng Zheng,&nbsp;Di&#39;an Luo,&nbsp;Wenxuan Shi,&nbsp;Ed Huang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/observe-distributed-databases-to-discover-unknowns/">
+                    <div class="brief">
+                        <p>Key Visualizer is a visual diagnostic tool that makes it easier to troubleshoot distributed SQL databases. Users can observe system health, quickly find hotspots in the cluster, and gain deep insights into applications.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/simulating-clock-skew-in-k8s-without-affecting-other-containers-on-node/">Simulating Clock Skew in K8s Without Affecting Other Containers on the Node</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-04-20</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Chengwen Yin</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/simulating-clock-skew-in-k8s-without-affecting-other-containers-on-node/">
+                    <div class="brief">
+                        <p>As a cloud-native chaos engineering platform, Chaos Mesh supports TimeChaos, which simulates clock skew in containers or K8s for distributed systems to test system robustness, without affecting other containers on the node.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/back-up-and-restore-a-10-tb-cluster-at-1-gb-per-second/">How to Back Up and Restore a 10-TB Cluster at 1&#43; GB/s</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-04-13</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Taining Shen</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/back-up-and-restore-a-10-tb-cluster-at-1-gb-per-second/">
+                    <div class="brief">
+                        <p>Backing up or restoring a large-scale distributed SQL database is a time-consuming task. Our upcoming TiDB 4.0 release will support Backup &amp; Restore (BR), a distributed backup and restore tool, which lets you back up and restore data at 1&#43; GB/s for 10-TB data.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/tidb-4.0-preview-easier-to-use-production-ready-htap-database/">TiDB 4.0 Preview: An Easier-to-Use, Production-Ready HTAP Database</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-04-10</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/tidb-4.0-preview-easier-to-use-production-ready-htap-database/">
+                    <div class="brief">
+                        <p>Get a preview of TiDB 4.0. Our landmark release has production-ready HTAP capabilities, continues to solve issues for large-scale, distributed SQL databases, and is easier to use than ever.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/future-of-database-unified-infrastructure-to-adapt-intelligently/">A Peek into the Future of Database: A Unified Infrastructure to Adapt Intelligently</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-04-08</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ed Huang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/future-of-database-unified-infrastructure-to-adapt-intelligently/">
+                    <div class="brief">
+                        <p>Today is PingCAP&#39;s 5-year birthday. In this post, Ed Huang, PingCAP&#39;s CTO, discusses about what he thinks the future holds for databases. The future of the database is about unification, adaptiveness, and intelligence.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/quickly-find-rust-program-bottlenecks-online-using-a-go-tool/">Quickly Find Rust Program Bottlenecks Online Using a Go Tool</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-03-25</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ke&#39;ao Yang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/quickly-find-rust-program-bottlenecks-online-using-a-go-tool/">
+                    <div class="brief">
+                        <p>It can be hard to find Rust programs&#39; performance bottlenecks online. By integrating pprof-rs in TiKV, we can use the Go tool pprof to visualize TiKV&#39;s profiling data. This helps analyze the program&#39;s performance online.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/run-first-chaos-experiment-in-ten-minutes/">Run Your First Chaos Experiment in 10 Minutes</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-03-18</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Chengwen Yin</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/run-first-chaos-experiment-in-ten-minutes/">
+                    <div class="brief">
+                        <p>In this 10-minute tutorial, we will help you to quickly get started with Chaos Engineering and run your first chaos experiment with Chaos Mesh.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/choosing-right-database-for-your-applications/">Choosing the Right Database for Your Applications</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-03-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Chunhui Liu,&nbsp;Chao Hong</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/choosing-right-database-for-your-applications/">
+                    <div class="brief">
+                        <p>With so many databases on the market, choosing the right fit for your app is not an easy task. As a leading e-commerce platform in Southeast Asia and Taiwan, Shopee has an effective strategy for database selection. Learn from their experience.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/tidb-usability-challenge-dare-to-dream-bigger/">TiDB Usability Challenge - Dare to Dream Bigger</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-03-06</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/tidb-usability-challenge-dare-to-dream-bigger/">
+                    <div class="brief">
+                        <p>TiDB Challenge Program is a series community program to bring TiDB to a new level in terms of stability, performance, and usability. With amazing improvements in performance in season 1 last year, we are now pleased to announce that season 2 is ready for you.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/tidb-celebrates-400-contributors/">TiDB Celebrates 400 Contributors</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-03-05</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Edward Huang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/tidb-celebrates-400-contributors/">
+                    <div class="brief">
+                        <p>The TiDB repository reaches the 400th contributor milestone. All our honors and achievements belong to the TiDB community, our beloved contributors, and distinguished committers.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/early-impressions-of-go-from-a-rust-programmer/">Early Impressions of Go from a Rust Programmer</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-02-26</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Nick Cameron</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/early-impressions-of-go-from-a-rust-programmer/">
+                    <div class="brief">
+                        <p>Nick Cameron is a long-time Rust programmer who has recently started using Go. In this post, he talks about his early impressions of Go. Read this post to learn more.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/how-we-reduced-multi-region-read-latency-and-network-traffic-by-50/">How We Reduced Multi-region Read Latency and Network Traffic by 50%</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-02-19</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Tianyi Zhuang,&nbsp;Hetian Zhu,&nbsp;Peng Qu,&nbsp;Haoxiang Lin</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/how-we-reduced-multi-region-read-latency-and-network-traffic-by-50/">
+                    <div class="brief">
+                        <p>High read latency and network traffic are common issues for a multi-region architecture. At TiDB Hackathon 2019, a team won 2nd place by reducing multi-region read latency and network traffic by 50%. Read this post to learn how they did it.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/remote-work-part-3/">Remote Work - Part 3</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-02-17</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Nick Cameron</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/remote-work-part-3/">
+                    <div class="brief">
+                        <p>It&#39;s the third post in a series on remote work. In this post, Nick Cameron talks a bit about some of the practicalities, specifically around work and life balance.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/remote-work-part-2/">Remote Work - Part 2</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-02-14</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Nick Cameron</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/remote-work-part-2/">
+                    <div class="brief">
+                        <p>Nick Cameron has nearly ten-year experience of remote work. In this post, he discusses communication in remote work.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/remote-work-part-1/">Remote Work - Part 1</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-02-12</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Nick Cameron</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/remote-work-part-1/">
+                    <div class="brief">
+                        <p>Nick has been working remotely for nearly ten years. In this post, he introduces why you might benefit from remote work and some of the things that make remote work successful.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/doubling-system-read-throughput-with-only-26-lines-of-code/">Doubling System Read Throughput with Only 26 Lines of Code</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-02-05</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Edward Huang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/doubling-system-read-throughput-with-only-26-lines-of-code/">
+                    <div class="brief">
+                        <p>The Follower Read feature lets any follower replica in a Region serve a read request under the premise of strongly consistent reads. It reduces the load on the Raft leader and improves the read throughput of the TiDB cluster. Read this post to learn more.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/rust-compilation-model-calamity/">The Rust Compilation Model Calamity</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-01-30</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Brian Anderson</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/rust-compilation-model-calamity/">
+                    <div class="brief">
+                        <p>In this first episode of the Rust Compile time series, Brian Anderson, one of Rust&#39;s original authors, shares with you his researches and experiences with Rust compile times, using the TiKV project as a case study.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/chaos-mesh-your-chaos-engineering-solution-for-system-resiliency-on-kubernetes/">Chaos Mesh - Your Chaos Engineering Solution for System Resiliency on Kubernetes</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-01-15</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Chengwen Yin</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/chaos-mesh-your-chaos-engineering-solution-for-system-resiliency-on-kubernetes/">
+                    <div class="brief">
+                        <p>Recently, PingCAP open-sourced Chaos Mesh, a Chaos Engineering platform that features all-around fault injection methods for complex Kubernetes systems. Find out how this testing tool can make your applications more reliable.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/how-tikv-reads-and-writes/">How TiKV Reads and Writes</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2020-01-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/how-tikv-reads-and-writes/">
+                    <div class="brief">
+                        <p>This post details how TiKV, as a distributed database, stores the data contained in a write request and how it retrieves the corresponding data with consistency guaranteed.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/autotikv-tikv-tuning-made-easy-by-machine-learning/">AutoTiKV: TiKV Tuning Made Easy by Machine Learning</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-12-27</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Yuanli Wang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/autotikv-tikv-tuning-made-easy-by-machine-learning/">
+                    <div class="brief">
+                        <p>AutoTiKV is a machine-learning-based tuning tool that helps decrease tuning costs and make life easier for DBAs. This post shows AutoTiKV&#39;s design, its machine learning model, and the automatic tuning workflow.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/squashed-bugs-served-hot-and-fresh-with-failure-rate-heatmaps/">Squashed Bugs, Served Hot and Fresh with Failure Rate Heatmaps</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-12-18</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Qinyuan Du</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/squashed-bugs-served-hot-and-fresh-with-failure-rate-heatmaps/">
+                    <div class="brief">
+                        <p>At TiDB Hackathon 2019, a team won the third prize by building a bot that helps quickly locate bugs in the code. Read this post to get more details.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/lesson-learned-from-40-k-qps-and-20-billion-rows-of-data-in-a-single-scale-out-cluster/">How We Achieved 40 K QPS and 20&#43; Billion Rows of Data in a Single Scale-out Cluster</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-12-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Can Cui</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/lesson-learned-from-40-k-qps-and-20-billion-rows-of-data-in-a-single-scale-out-cluster/">
+                    <div class="brief">
+                        <p>As the business developed, standalone MySQL couldn&#39;t meet JD Cloud &amp; AI&#39;s OSS metadata storage requirements. This post introduces how TiKV empowered JD Cloud &amp; AI to manage huge amounts of OSS metadata with a simple and horizontally scalable architecture.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/why-we-chose-tidb-over-other-mysql-based-and-newsql-storage-solutions/">NetEase Games: Why We Chose TiDB over Other MySQL-based and NewSQL Storage Solutions</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-12-04</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Wenjie Li</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/why-we-chose-tidb-over-other-mysql-based-and-newsql-storage-solutions/">
+                    <div class="brief">
+                        <p>As business boomed, NetEase Games met bottlenecks in database scalability and data isolation. This post introduces why they chose TiDB over other MySQL-based and NewSQL storage solutions to solve their pain points.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/tidb-community-upgrade/">New Structure, New Roles - TiDB Community Upgrade!</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-12-02</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Jian Zhang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/tidb-community-upgrade/">
+                    <div class="brief">
+                        <p>PingCAP has upgraded and adjusted the TiDB community organization structure, with more community roles and community organizations introduced to better stimulate the vitality of the community and maintain a positive and healthy community environment.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/10x-performance-improvement-for-expression-evaluation-made-possible-by-vectorized-execution/">10x Performance Improvement for Expression Evaluation Made Possible by Vectorized Execution and the Community</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-11-29</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Yuanjia Zhang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/10x-performance-improvement-for-expression-evaluation-made-possible-by-vectorized-execution/">
+                    <div class="brief">
+                        <p>We vectorized 360&#43; built-in functions along with the TiDB community. Vectorized execution has greatly improved the expression evaluation performance. Some functions even achieved 10x performance. Here is our vectorization story.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/building-a-large-scale-distributed-storage-system-based-on-raft/">Building a Large-scale Distributed Storage System Based on Raft</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-11-20</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Edward Huang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/building-a-large-scale-distributed-storage-system-based-on-raft/">
+                    <div class="brief">
+                        <p>This post introduces the PingCAP team&#39;s firsthand experience in designing a large-scale distributed storage system based on the Raft consensus algorithm.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/how-we-compiled-a-golang-database-in-the-browser-using-webassembly/">How We Compiled a Golang Database in the Browser Using WebAssembly</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-11-16</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Joshua Zhou</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/how-we-compiled-a-golang-database-in-the-browser-using-webassembly/">
+                    <div class="brief">
+                        <p>We compiled a Golang database (TiDB) into an in-browser database using WebAssembly (Wasm). This post introduces why and how we built an in-browser database.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/tidb-in-the-browser-running-a-golang-database-on-webassembly/">TiDB in the Browser: Running a Golang Database on WebAssembly</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-11-06</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Queeny Jin</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/tidb-in-the-browser-running-a-golang-database-on-webassembly/">
+                    <div class="brief">
+                        <p>This post introduces how you can run TiDB directly in a web browser, how it is possible, and what the limitations are.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/delivering-real-time-analytics-and-true-htap-by-combining-columnstore-and-rowstore/">Delivering Real-time Analytics and True HTAP by Combining Columnstore and Rowstore</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-11-04</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Wan Wei</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/delivering-real-time-analytics-and-true-htap-by-combining-columnstore-and-rowstore/">
+                    <div class="brief">
+                        <p>TiDB is an HTAP database that targets both OLTP and OLAP scenarios. TiFlash is its extended analytical engine. This post introduces how TiFlash fuels TiDB to become a true HTAP database that lets users perform real-time analytics.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/insert-into-tidb-hackathon-2019-values-hack-fun-tidb-ecosystem/">INSERT INTO tidb.hackathon_2019 VALUES (&#34;Hack&#34;, &#34;Fun&#34;, &#34;TiDB Ecosystem&#34;)</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-10-30</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/insert-into-tidb-hackathon-2019-values-hack-fun-tidb-ecosystem/">
+                    <div class="brief">
+                        <p>This post introduces the top 3 winners at TiDB Hackathon 2019 and the cozy and friendly environment of this meeting.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/safety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests/">Safety First! Common Safety Pitfalls in Distributed Databases Found by Jepsen Tests</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-09-18</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ana Hobden</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/safety-first-common-safety-pitfalls-in-distributed-databases-found-by-jepsen-tests/">
+                    <div class="brief">
+                        <p>This post introduces why Jepsen is important to the distributed database industry, how it works, common issues found, how we use Jepsen with TiDB, and a short summary of all problems Jepsen has found.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/how-tsq-becomes-a-performance-bottleneck-for-tikv-in-aws-arm-environment/">How TSQ Becomes a Performance Bottleneck for TiKV in AWS ARM Environment</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-08-26</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Wenbo Zhang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/how-tsq-becomes-a-performance-bottleneck-for-tikv-in-aws-arm-environment/">
+                    <div class="brief">
+                        <p>Explore into Linux kernel to find out how TSQ becomes a performance bottleneck for TiKV in an AWS ARM environment.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/lesson-learned-from-queries-over-1.3-trillion-rows-of-data-within-milliseconds-of-response-time-at-zhihu/">Lesson Learned from Queries over 1.3 Trillion Rows of Data Within Milliseconds of Response Time at Zhihu.com</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-08-21</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Xiaoguang Sun</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/lesson-learned-from-queries-over-1.3-trillion-rows-of-data-within-milliseconds-of-response-time-at-zhihu/">
+                    <div class="brief">
+                        <p>As the business boomed and massive data in applications accrued each month, Zhihu faced severe challenges in scaling the backend system. This post introduces how Zhihu managed to keep milliseconds of query response time over a large amount of data and how TiDB, an open source MySQL-compatible HTAP database, empowered Zhihu to get real-time insights into data.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/porting-tidb-to-arm64-for-greater-flexibility/">Porting TiDB to ARM64 for Greater Flexibility</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-08-16</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/porting-tidb-to-arm64-for-greater-flexibility/">
+                    <div class="brief">
+                        <p>This article describes how PingCAP compiled and benchmarked TiDB on the Amazon Web Services (AWS) ARM64 platform.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/migrating-the-tikv-rust-client-from-futures-0.1-to-0.3/">Migrating the TiKV Rust Client from Futures 0.1 to 0.3</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-08-08</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Nick Cameron</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/migrating-the-tikv-rust-client-from-futures-0.1-to-0.3/">
+                    <div class="brief">
+                        <p>This post introduces Nick&#39;s experience in migrating the TiKV Rust client from Futures 0.1 to 0.3.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/database-cluster-deployment-and-management-made-easy-with-kubernetes/">TiDB Operator 1.0 GA: Database Cluster Deployment and Management Made Easy with Kubernetes</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-07-30</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ken Liu</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/database-cluster-deployment-and-management-made-easy-with-kubernetes/">
+                    <div class="brief">
+                        <p>Deploying transactional databases like TiDB in Kubernetes for production has always been challenging. Now, with TiDB Operator 1.0, running TiDB database clusters has never been easier.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/why-benchmarking-distributed-databases-is-so-hard/">Why Benchmarking Distributed Databases Is So Hard</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-07-08</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ana Hobden</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/why-benchmarking-distributed-databases-is-so-hard/">
+                    <div class="brief">
+                        <p>Benchmarks are hard to get right, and many articles touting benchmarks are actually benchmarketing, showcasing skewed outcomes to sell products. This post introduces some of the motivations for benchmarking and the common tools, and discusses a few things to keep in mind when benchmarking.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="HTAP "><h1 class="title"><a href="/blog/kost-stack/">The KOST Stack: An Open-Source Cloud-Native Hybrid Database Stack</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-07-04</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Kevin Xu</li>
+                <li class="meta-item"><div class="meta-category">
+                        HTAP</div></li>
+                </ul><a href="/blog/kost-stack/">
+                    <div class="brief">
+                        <p>A new infrastructure pattern is emerging called the KOST stack (Kubernetes, Operator, Spark, TiDB). This blog post introduces each component of the KOST stack and cloud-native HTAP in the wild.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/tidb-3.0-announcement/">TiDB 3.0 Reaches GA, Delivers Stability at Scale and Performance Boost</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-07-01</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Li Shen</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/tidb-3.0-announcement/">
+                    <div class="brief">
+                        <p>TiDB 3.0 is released! This blog post introduces some highlights of TiDB 3.0, including major features focused on stability, significant performance improvements in Sysbench and TPC-C benchmarks, a newly introduced component, and important features and improvements.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/distributed-systems-training-in-go-and-rust/">Distributed Systems Training in Go and Rust</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-06-20</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Brian Anderson</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/distributed-systems-training-in-go-and-rust/">
+                    <div class="brief">
+                        <p>PingCAP has made a talent plan for training and/or evaluating students, new employees, and new contributors to TiDB and TiKV. This blog post gives a brief overview of training courses for this plan on writing distributed systems in Go and Rust.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/best-practices-for-developing-applications-with-tidb/">Best Practices for Developing Applications with TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-06-19</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Tianshuang Qin</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/best-practices-for-developing-applications-with-tidb/">
+                    <div class="brief">
+                        <p>This article shows how to efficiently develop high-quality applications with TiDB, an open-source NewSQL database that supports Hybrid Transactional and Analytical Processing (HTAP) workloads and can serve as a scale-out MySQL database without manual sharding.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/tidb-passes-jepsen-test-for-snapshot-isolation-and-single-key-linearizability/">TiDB Passes Jepsen Test for Snapshot Isolation and Single-Key Linearizability</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-06-12</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/tidb-passes-jepsen-test-for-snapshot-isolation-and-single-key-linearizability/">
+                    <div class="brief">
+                        <p>TiDB&#39;s first official Jepsen Test report is published. This post introduces some additional context to the test results and PingCAP&#39;s thoughts on what&#39;s next.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/percona-live-austin-summary-and-reflection/">Percona Live Austin -- Summary and Reflection</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-06-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Kevin Xu</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/percona-live-austin-summary-and-reflection/">
+                    <div class="brief">
+                        <p>In this post, Kevin Xu shares the PingCAP team&#39;s experience and activities at Percona Live in Austin, including several technical sharing sessions and boosting friendship with people inside and outside PingCAP.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/use-tidb-dm-to-migrate-and-replicate-data-from-mysqlmariadb-amazon-aurora/">Tutorial: Use TiDB DM to Migrate and Replicate Data from MySQL, MariaDB &amp; Amazon Aurora</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-05-23</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Kolbe Kegel</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/use-tidb-dm-to-migrate-and-replicate-data-from-mysqlmariadb-amazon-aurora/">
+                    <div class="brief">
+                        <p>Learn to migrate and replicate data from MySQL, MariaDB and Amazon Aurora using TiDB Data Migration.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/design-and-implementation-of-golang-failpoints/">Design and Implementation of Golang Failpoints</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-05-18</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Heng Long</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/design-and-implementation-of-golang-failpoints/">
+                    <div class="brief">
+                        <p>This post introduces design and implementation of Golang Failpoint.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/tidb-binlog-tutorial/">TiDB Binlog Tutorial</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-05-08</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Kolbe Kegel</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/tidb-binlog-tutorial/">
+                    <div class="brief">
+                        <p>Learn to deploy TiDB Binlog with a simple TiDB cluster.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/pingcap-open-sources-tidb-binlog-to-reduce-migration-cost/">PingCAP Open-Sources TiDB Binlog to Reduce Migration Cost</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-05-06</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/pingcap-open-sources-tidb-binlog-to-reduce-migration-cost/">
+                    <div class="brief">
+                        <p>Our team at PingCAP is excited to announce that we are open-sourcing our own binlog implementation, TiDB Binlog. TiDB Binlog is a tool we&#39;ve been developing in-house (until now) to collect binary log data from TiDB server and provide real-time data backup and replication.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/try-to-fix-two-linux-kernel-bugs-while-testing-tidb-operator-in-k8s/">Try to Fix Two Linux Kernel Bugs While Testing TiDB Operator in K8s</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-05-01</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Wenbo Zhang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/try-to-fix-two-linux-kernel-bugs-while-testing-tidb-operator-in-k8s/">
+                    <div class="brief">
+                        <p>This post introduces how the EE team at PingCAP tackled two Linux kernel bugs while testing TiDB Operator in K8s. PingCAP engineers also hope the K8s community, RHEL and CentOS can help fix these bugs thoroughly in the near future.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/pingcapers-at-the-first-rustcon-asia/">PingCAPers at the First RustCon Asia!</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-04-29</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/pingcapers-at-the-first-rustcon-asia/">
+                    <div class="brief">
+                        <p>PingCAP has been an active member in the Rust community and one of the first production users of Rust in building TiKV. As part of being a co-organizer for the first RustCon Asia, PingCAP also contributed several topics in both keynote sessions and workshops.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/titan-storage-engine-design-and-implementation/">Titan: A RocksDB Plugin to Reduce Write Amplification</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-04-25</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Zhiquan Zheng</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/titan-storage-engine-design-and-implementation/">
+                    <div class="brief">
+                        <p>As a RocksDB plugin for key-value separation, inspired by WiscKey, Titan is available for preview in TiDB 3.0. This post introduces the design and implementation of Titan.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/tidb-in-xiaomi/">Powering the Xiaomi Mobile Lifestyle with TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-04-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Liang Zhang,&nbsp;Youfei Pan,&nbsp;Biwen Wang</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/tidb-in-xiaomi/">
+                    <div class="brief">
+                        <p>As sales of Xiaomi smartphones continue to climb and the MIUI user base continues to grow, the Database Administration team at Xiaomi was having an increasingly hard time managing their MySQL database infrastructure until they adopted TiDB, an open source distributed hybrid transactional and analytical processing database created and supported by PingCAP. Now they also have plans to migrate additional workloads to TiDB in the future.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="HTAP "><h1 class="title"><a href="/blog/introduction-to-analytics-queries-for-the-mysql-dba/">Introduction to Analytics Queries for the MySQL DBA</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-03-28</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Morgan Tocker</li>
+                <li class="meta-item"><div class="meta-category">
+                        HTAP</div></li>
+                </ul><a href="/blog/introduction-to-analytics-queries-for-the-mysql-dba/">
+                    <div class="brief">
+                        <p>This post introduces some simple use cases of analytics queries where a MySQL DBA can expand their repertoire and answer some basic business questions by writing SQL queries with window functions.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/tidb-in-bookmyshow/">BookMyShow.com: More Uptime, 30% Less Operational Cost with TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-03-15</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/tidb-in-bookmyshow/">
+                    <div class="brief">
+                        <p>With TiDB, BookMyShow has experienced increased uptime and availability, since TiDB automatically partitions and distributes data across the cluster. Meanwhile, operational and maintenance cost has been reduced by 30%. No engineer needs to be fully dedicated to database operations anymore. This post will introduce why BookMyShow chose TiDB over Greenplum by illustrating how TiDB solved their pain points.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/tidb-certification-beta-is-ready/">TiDB Certification (Beta) is Ready</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-03-12</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Morgan Tocker</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/tidb-certification-beta-is-ready/">
+                    <div class="brief">
+                        <p>The official TiDB Certification is now available in beta and an online exam is ready for you to sign up.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/tidb-in-shopee/">Shopping on Shopee, the TiDB Way</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-02-14</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Chunhui Liu,&nbsp;Chao Hong</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/tidb-in-shopee/">
+                    <div class="brief">
+                        <p>As our business boom, our team faced severe challenges in scaling our backend system to meet the demand until we found TiDB, a MySQL-compatible NewSQL hybrid transactional and analytical processing (HTAP) database, built and supported by PingCAP. Now we can provide better service and experience for our users without worrying about our database capacity.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/fosdem-2019-recap-global-technology-local-community/">FOSDEM 2019 Recap: Global Technology, Local Community</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-02-12</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Kevin Xu</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/fosdem-2019-recap-global-technology-local-community/">
+                    <div class="brief">
+                        <p>In this post, Kevin Xu shares the PingCAP team&#39;s experience and activities at FOSDEM 2019, including three talks they delivered at the conference -- the first one about TiDB and its architecture, horizontal scalability and MySQL compatibility, the second about improving development posture in Rust based on the work building TiKV, and the last about Rust implementation of Prometheus.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/tidb-dm-architecture-design-and-implementation-principles/">TiDB Tools (III): TiDB Data Migration Architecture Design and Implementation Principles</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-02-01</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Xuecheng Zhang</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/tidb-dm-architecture-design-and-implementation-principles/">
+                    <div class="brief">
+                        <p>TiDB Data Migration is an integrated data transfer and replication management platform that supports full data migration or incremental data replication from MySQL or MariaDB instances into a TiDB cluster. This post introduces its architecture design and implementation principles.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/introducing-tidb-lightning/">TiDB Tools (II): Introducing TiDB Lightning</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-01-30</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Kenny Chan</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/introducing-tidb-lightning/">
+                    <div class="brief">
+                        <p>TiDB Lightning is an open source TiDB ecosystem tool that supports high speed full-import of a large SQL dump into a TiDB cluster. This post introduces its architecture and future improvements on the roadmap.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/tidb-binlog-architecture-evolution-and-implementation-principles/">TiDB Tools (I): TiDB Binlog Architecture Evolution and Implementation Principles</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-01-29</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Xiang Wang</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/tidb-binlog-architecture-evolution-and-implementation-principles/">
+                    <div class="brief">
+                        <p>TiDB Binlog is a tool used to collect the logical changes made to a TiDB cluster and provide incremental backup and replication. This post introduces its architecture evolution and implementation principles.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/tidb-3.0-beta-stability-at-scale/">TiDB 3.0 Beta: Stability at Scale</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2019-01-24</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Li Shen</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/tidb-3.0-beta-stability-at-scale/">
+                    <div class="brief">
+                        <p>This post introduces the key new features of TiDB 3.0 Beta.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/pingcap-2018-year-in-review/">PingCAP 2018 Year in Review</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-12-24</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/pingcap-2018-year-in-review/">
+                    <div class="brief">
+                        <p>Thank you for a great 2018!</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/5-key-differences-between-mysql-and-tidb-for-scaling-in-the-cloud/">5 Key Differences Between MySQL and TiDB for Scaling in the Cloud</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-12-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Morgan Tocker</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/5-key-differences-between-mysql-and-tidb-for-scaling-in-the-cloud/">
+                    <div class="brief">
+                        <p>This post introduces the top five key differences between TiDB and MySQL.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/tidb-in-meituan-dianping/">TiDB, the Key to a Better Life for Meituan-Dianping&#39;s 290 Million Monthly Users</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-12-06</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Yinggang Zhao,&nbsp;Kun Li,&nbsp;Changjun Piao</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/tidb-in-meituan-dianping/">
+                    <div class="brief">
+                        <p>As our business grew quickly, we were overwhelmed trying to tackle the mounting data until we found TiDB, a MySQL-compatible NewSQL hybrid transactional and analytical processing (HTAP) database, built and supported by PingCAP. Now we can harness our data with more confidence than ever before and provide better services for our users to enjoy a better life.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/tidb-2.1-ga-Battle-tested-to-handle-an-unpredictable-world/">TiDB 2.1 GA: Battle-Tested to Handle an Unpredictable World</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-12-04</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Li Shen</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/tidb-2.1-ga-Battle-tested-to-handle-an-unpredictable-world/">
+                    <div class="brief">
+                        <p>PingCAP, a leading distributed database company that created the popular MySQL-compatible cloud-native NewSQL database TiDB, announces that TiDB 2.1 is ready for General Availability.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/lease-read/">How TiKV Uses &#34;Lease Read&#34; to Guarantee High Performances, Strong Consistency and Linearizability</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-11-14</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/lease-read/">
+                    <div class="brief">
+                        <p>This post discusses Raft Log Read, `ReadIndex` Read, and Lease Read, and why TiKV adopts the Lease Read approach.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="HTAP "><h1 class="title"><a href="/blog/architecture-and-use-cases-of-a-cloud-native-newsql-database/">TiDB: Architecture and Use Cases of A Cloud-Native NewSQL Database</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-11-02</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Kevin Xu</li>
+                <li class="meta-item"><div class="meta-category">
+                        HTAP</div></li>
+                </ul><a href="/blog/architecture-and-use-cases-of-a-cloud-native-newsql-database/">
+                    <div class="brief">
+                        <p>This post provides a macro-level overview of TiDB and is the main reference content for readers to orient and dig deeper into other TiDB subjects.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category=""><h1 class="title"><a href="/blog/announcing-tidb-cloud-managed-as-a-service-and-in-the-marketplace/">Announcing TiDB Cloud, Managed as a Service and in the Marketplace</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-11-01</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category"></div></li>
+                </ul><a href="/blog/announcing-tidb-cloud-managed-as-a-service-and-in-the-marketplace/">
+                    <div class="brief">
+                        <p>This post announces that TiDB Cloud is now available for public preview.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/tidb-in-iqiyi/">Always Fun, Always On: How TiDB Helps iQiyi Deliver Streaming Videos</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-10-18</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Boshuai Zhu</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/tidb-in-iqiyi/">
+                    <div class="brief">
+                        <p>As our business grew exponentially, we were overwhelmed trying to handle the mounting data until we found TiDB, a MySQL-compatible NewSQL hybrid transactional and analytical processing (HTAP) database, built and supported by PingCAP. Now we no longer worry about data volume and can bring high-quality entertainment services to our users with more confidence than before.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/tidb-academy-announce/">Launching TiDB Academy, First Course-“Distributed Database with TiDB for MySQL DBAs”</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-10-16</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Morgan Tocker</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/tidb-academy-announce/">
+                    <div class="brief">
+                        <p>Today, we are excited to launch TiDB Academy, a series of technical training courses and certifications on TiDB and distributed databases in general, taught by our senior technical team.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category=""><h1 class="title"><a href="/blog/series-c-announcement/">PingCAP Raises $50 Million in Series C Round, Sets Eyes on Global Expansion, Cross-Cloud Offering, and More Core Technology Investment</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-09-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category"></div></li>
+                </ul><a href="/blog/series-c-announcement/">
+                    <div class="brief">
+                        <p>PingCAP, a leading distributed database company that created the popular cloud-native NewSQL database TiDB, announces a $50 million Series C funding round led by FOSUN and Morningside Venture Capital. All previous investors—China Growth Capital, Yunqi Partners, Matrix Partners China, and others—have also participated in this round. PingCAP plans to use this new capital to expand the TiDB ecosystem globally, build cross-cloud product offering, and invest in innovation of its core technology.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/tidb-community-200-contributors/">TiDB Reaches the 200 Contributors Milestone</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-08-30</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Max Liu</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/tidb-community-200-contributors/">
+                    <div class="brief">
+                        <p>TiDB recently added its 200th contributor. As CEO and co-founder of PingCAP who began building TiDB three years ago, I would like to thank the entire TiDB community for helping us reach this important milestone!</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/9-whys-to-ask-when-evaluating-a-distributed-database/">9 Why&#39;s to Ask When Evaluating a Distributed Database</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-08-17</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ed Huang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/9-whys-to-ask-when-evaluating-a-distributed-database/">
+                    <div class="brief">
+                        <p>Since PingCAP started building TiDB, it has encountered countless challenges, pitfalls, and critical design choices. Over the past three years, the PingCAP team has answered many questions from the users. Ed Huang, the CTO of PingCAP, has summarized these questions into “9 why&#39;s” that every engineer may ask when looking at a distributed database and gives his answers to these questions in this post to help make decision-making of engineers a bit easier.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/tidb-in-zhuanzhuan/">Managing the Surging Data Volume of a Fast-Growing Marketplace with TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-08-07</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Xuan Sun,&nbsp;Dong Chen,&nbsp;Haodong Ji</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/tidb-in-zhuanzhuan/">
+                    <div class="brief">
+                        <p>With our fast-growing business, the surging data volume posed a serious challenge to our backend system and put the operations team under great pressure. How to tackle these challenges became a thorny problem until we found TiDB, a MySQL compatible distributed hybrid transactional and analytical processing (HTAP) database, built and supported by PingCAP. Finally, we do not have to worry about scaling databases and can focus on building better applications for our users.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/adding-built-in-functions-to-tikv/">Landing Your First Rust Pull Request in TiKV</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-08-03</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/adding-built-in-functions-to-tikv/">
+                    <div class="brief">
+                        <p>This guide is intended to show how you can land your first Pull Request (PR) in Rust to contribute to TiKV in less than 30 minutes. But before we do that, here&#39;s some helpful background.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="HTAP "><h1 class="title"><a href="/blog/tispark-more-data-insights-no-more-etl/">TiSpark: More Data Insights, Less ETL</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-07-10</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Shawn Ma</li>
+                <li class="meta-item"><div class="meta-category">
+                        HTAP</div></li>
+                </ul><a href="/blog/tispark-more-data-insights-no-more-etl/">
+                    <div class="brief">
+                        <p>The motivation behind building TiSpark was to enable real-time analytics on TiDB without the delay and challenges of ETL. Extract, transform, and load (ETL)--a process to extract data from operational databases, transform that data, then load it into a database designed to supporting analytics--has been one of the most complex, tedious, error-prone, and therefore disliked tasks for many data engineers. However, it was a necessary evil to make data useful, because there hasn&#39;t been good solutions on the market to render ETL obsolete--until now.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/hybrid-database-capturing-perishable-insights-at-yiguo/">The Hybrid Database Capturing Perishable Insights at Yiguo</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-06-22</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ruixing Luo</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/hybrid-database-capturing-perishable-insights-at-yiguo/">
+                    <div class="brief">
+                        <p>As the largest B2C fresh produce online marketplace in China, serving close to 5 million users and 1,000&#43; enterprise customers, Yiguo.com uses TiDB to capture real-time insights from fresh transactional data to make timely and accurate business decisions.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="HTAP "><h1 class="title"><a href="/blog/how_to_spin_up_an_htap_database_in_5_minutes_with_tidb_tispark/">How To Spin Up an HTAP Database in 5 Minutes with TiDB &#43; TiSpark</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-06-08</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Queeny Jin</li>
+                <li class="meta-item"><div class="meta-category">
+                        HTAP</div></li>
+                </ul><a href="/blog/how_to_spin_up_an_htap_database_in_5_minutes_with_tidb_tispark/">
+                    <div class="brief">
+                        <p>In this 5-minute tutorial for beginners, we will show you how to spin up a standard TiDB cluster using Docker Compose on your local computer, so you can get a taste of its hybrid power, before using it for work or your own project in production.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/implement-raft-in-rust/">Implement Raft in Rust</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-05-22</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/implement-raft-in-rust/">
+                    <div class="brief">
+                        <p>As an open-source distributed scalable HTAP database, TiDB uses the Raft Consensus Algorithm in its distributed transactional key-value storage engine, TiKV, to ensure data consistency, auto-failover, and fault tolerance. TiDB has thus far been used by more than 200 companies in their production environments in a wide range of industries, from e-commerce and food delivery, to fintech, media, gaming, and travel.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/tidb-2-0-announcement/">TiDB 2.0 is Ready - Faster, Smarter, and Battle-Tested</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-04-29</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Shen Li</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/tidb-2-0-announcement/">
+                    <div class="brief">
+                        <p>TiDB 2.0 is released! We absorbed insights and feedbacks from our customers, listened to requests and issues from our community, and reflected internally on our ultimate vision of building a distributed hybrid transactional and analytical processing database that scales itself, heals itself, and lives in the cloud.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/chaos-practice-in-tidb/">From Chaos to Order -- Tools and Techniques for Testing TiDB, A Distributed NewSQL Database</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-04-14</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/chaos-practice-in-tidb/">
+                    <div class="brief">
+                        <p>As an open source distributed NewSQL Hybrid Transactional/Analytical Processing (HTAP) database, TiDB contains the most important asset of our customers--their data. One of the fundamental and foremost requirements of our system is to be fault-tolerant. But how do you ensure fault tolerance in a distributed database? This article covers the top fault injection tools and techniques in Chaos Engineering, as well as how to execute Chaos practices in TiDB.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/success-stories/tidb-in-mobike/">Blitzscaling the Largest Dockless Bikesharing Platform with TiDB&#39;s Help</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-04-03</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Chengjie Ding,&nbsp;Ming Hu</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/success-stories/tidb-in-mobike/">
+                    <div class="brief">
+                        <p>Mobike has been using the TiDB database in the production environment since early 2017. Now they have deployed TiDB in multiple clusters with close to 100 nodes, handling dozens of TBs of data for different application scenarios. This post will provide a deep dive on why Mobike chose TiDB over MySQL and its sharding solutions by illustrating how TiDB solves their pain points.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/performance_tuning_on_a_distributed_newsql_database/">How to do Performance Tuning on TiDB, A Distributed NewSQL Database</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-03-16</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Jinpeng Zhang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/performance_tuning_on_a_distributed_newsql_database/">
+                    <div class="brief">
+                        <p>Doing performance tuning on distributed systems is no joking matter. It&#39;s much more complicated than on a single node server, and bottlenecks can pop up anywhere, from system resources in a single node or subcomponent, to cooperation between nodes, to even network bandwidth. Performance tuning is a practice that aims to find these bottlenecks and address them, in order to reveal more bottlenecks and address them as well, until the system reaches an optimal performance level. In this article, I will share some best practices on how to tune &#34;write&#34; operations in TiDB to achieve maximum performance.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/FOSDEM-2018-Rust-Devroom-reflection/">Bringing TiKV to Rust Devroom at FOSDEM 2018</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-02-15</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Tang Liu</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/FOSDEM-2018-Rust-Devroom-reflection/">
+                    <div class="brief">
+                        <p>At the crack of dawn on February 1, I landed in Brussels, Belgium, for the first time in my life. The goal of my trip wasn&#39;t to taste the local cuisine, tour world-famous museums, or grab a pint of the local brew. It was to deliver a talk three days later at FOSDEM 2018 Rust Devroom about our experience at PingCAP using Rust to build TiKV, a distributed transactional Key-Value storage engine.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/tidb-devcon-2018-recap/">TiDB DevCon 2018 Recap - News, Latest Development, and Roadmap</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2018-01-25</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/tidb-devcon-2018-recap/">
+                    <div class="brief">
+                        <p>On January 20th, 2018, more than 200 coders, hackers, and techies streamed into Garage Café, a chic coffee shop in the heart of Beijing&#39;s techhub, Zhongguancun. They were there to be part of TiDB DevCon 2018, a technology party for the developers, by the developers!</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/pingcap-reflection-and-gratitude/">2017 Reflection and Gratitude</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-12-30</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/pingcap-reflection-and-gratitude/">
+                    <div class="brief">
+                        <p>Thank you all, our beloved contributors, customers, and partners, for an amazing 2017! Hello, 2018!</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/Time-in-Distributed-Systems/">Tick or Tock? Keeping Time and Order in Distributed Databases</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-12-22</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/Time-in-Distributed-Systems/">
+                    <div class="brief">
+                        <p>At re:Invent 2017, Amazon Web Services (AWS) announced Amazon Time Sync Service which is a highly accurate and reliable time reference that is natively accessible from Amazon EC2 instances. It is much like the Google TrueTime which was published in 2012. Why do Google and AWS both want to make efforts to provide global time service? Is there any inspiration for building distributed database? This topic is important to think about.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Open-Source-Community "><h1 class="title"><a href="/blog/Silicon-Valley-Office-Announcement/">PingCAP Plants its Seed in Silicon Valley</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-12-08</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Open Source Community</div></li>
+                </ul><a href="/blog/Silicon-Valley-Office-Announcement/">
+                    <div class="brief">
+                        <p>PingCAP, a cutting-edge distributed Hybrid Transactional/Analytical Processing (HTAP) database company, is excited to announce the opening of its Silicon Valley office, located at the GSV Labs in Redwood City, California.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/optimizing-raft-in-tikv/">A TiKV Source Code Walkthrough – Raft Optimization</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-11-28</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/optimizing-raft-in-tikv/">
+                    <div class="brief">
+                        <p>Paxos or Raft is frequently used to ensure data consistency in the distributed computing area. But Paxos is known for its complexity and is rather difficult to understand while Raft is very simple. Therefore, a lot of emerging databases tend to use Raft as the consensus algorithm at its bottom layer. TiKV is no exception.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/2017-10-17-announcement/">PingCAP Launches TiDB 1.0</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-10-17</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/2017-10-17-announcement/">
+                    <div class="brief">
+                        <p>TiDB is compatible with MySQL, strong consistent and highly available.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="HTAP "><h1 class="title"><a href="/blog/2017-10-10-nextcon/">Scale the Relational Database with NewSQL</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-10-10</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Li SHEN</li>
+                <li class="meta-item"><div class="meta-category">
+                        HTAP</div></li>
+                </ul><a href="/blog/2017-10-10-nextcon/">
+                    <div class="brief">
+                        <p>This is the speech Li SHEN gave at the 3rd NEXTCON.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-09-26-whyrust/">Why did we choose Rust over Golang or C/C&#43;&#43; to develop TiKV?</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-09-26</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-09-26-whyrust/">
+                    <div class="brief">
+                        <p>Every developer has his/her favorite programming language. For the TiKV team members, it&#39;s Rust.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-09-15-rocksdbintikv/">RocksDB in TiKV</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-09-15</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-09-15-rocksdbintikv/">
+                    <div class="brief">
+                        <p>This is the speech Siddon Tang gave at the RocksDB meetup on August 28, 2017.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-09-12-futuresandgrpc/">Futures and gRPC in Rust</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-09-12</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-09-12-futuresandgrpc/">
+                    <div class="brief">
+                        <p>This is the speech Siddon Tang gave at Bay Area Rust Meetup August 2017.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-09-08-rocksdbbug/">How We Found a Data Corruption Bug in RocksDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-09-08</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Huachao HUANG</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-09-08-rocksdbbug/">
+                    <div class="brief">
+                        <p>Data was corrupted. A cluster panicked. The crime scene was compromised. What happened? Detective Huang went all lengths to locate the criminal and solved it once and for all.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-09-01-tidbmeetsjepsen/">When TiDB Meets Jepsen</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-09-01</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Peng XU</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-09-01-tidbmeetsjepsen/">
+                    <div class="brief">
+                        <p>What happens when TiDB meets Jepsen?</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-08-15-multi-raft/">The Design and Implementation of Multi-raft</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-08-15</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-08-15-multi-raft/">
+                    <div class="brief">
+                        <p>The goal of TiKV is to support 100 TB&#43; data and it is impossible for one Raft group to make it, we need to use multiple Raft groups, which is called Multi-raft.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category=""><h1 class="title"><a href="/success-stories/tidb-in-yuanfudao/">How TiDB tackles fast data growth and complex queries for yuanfudao.com</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-08-08</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category"></div></li>
+                </ul><a href="/success-stories/tidb-in-yuanfudao/">
+                    <div class="brief">
+                        <p>This document is a case study that details the reasons why yuanfudao.com chose TiDB as its backend database solution to tackle their fast data growth and complex queries.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-07-28-raftintikv/">A TiKV Source Code Walkthrough - Raft in TiKV</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-07-28</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-07-28-raftintikv/">
+                    <div class="brief">
+                        <p>TiKV uses the Raft algorithm to implement the strong consistency of data in a distributed environment. This blog introduces the details how Raft is implemented.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-07-24-tidbbestpractice/">TiDB Best Practices</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-07-24</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Li Shen</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-07-24-tidbbestpractice/">
+                    <div class="brief">
+                        <p>This article summarizes some best practices in using TiDB, mainly including SQL usage, OLAP/OLTP optimization techniques and especially TiDB&#39;s exclusive optimization switches.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-07-20-tidbinternal3/">TiDB Internal (III) - Scheduling</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-07-20</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Li Shen</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-07-20-tidbinternal3/">
+                    <div class="brief">
+                        <p>This is the third one of three blogs to introduce TiDB internal.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-07-11-tidbinternal2/">TiDB Internal (II) - Computing</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-07-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Li SHEN</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-07-11-tidbinternal2/">
+                    <div class="brief">
+                        <p>This is the second one of three blogs to introduce TiDB internal.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-07-11-tidbinternal1/">TiDB Internal (I) - Data Storage</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-07-11</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Li SHEN</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-07-11-tidbinternal1/">
+                    <div class="brief">
+                        <p>This is the first one of three blogs to introduce TiDB internal.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-06-27-refactor-builtin/">Refactoring the Built-in Functions in TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-06-27</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Huaiyu XU</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-06-27-refactor-builtin/">
+                    <div class="brief">
+                        <p>In order to accelerate expression evaluation, we recently refactored its framework. This tutorial will show you how to use the new computational framework to rewrite or add a built-in function in TiDB.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2017-05-27-rust-in-tikv/">Rust in TiKV</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-05-27</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Siddon Tang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2017-05-27-rust-in-tikv/">
+                    <div class="brief">
+                        <p>This is the speech Siddon Tang gave at the 1st Rust Meetup in Beijing on April 16, 2017.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/2017-05-23-perconalive17/">A Brief Introduction of TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-05-23</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ed Huang</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/2017-05-23-perconalive17/">
+                    <div class="brief">
+                        <p>This is the speech Edward Huang gave at Percona Live Open Source Database Conference 2017.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/2017-05-22-Comparison-between-MySQL-and-TiDB-with-tens-of-millions-of-data-per-day/">Migration from MySQL to TiDB to handle tens of millions of rows of data per day</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-05-22</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/2017-05-22-Comparison-between-MySQL-and-TiDB-with-tens-of-millions-of-data-per-day/">
+                    <div class="brief">
+                        <p>This document is a use case that details the performance of MySQL and TiDB with tens of millions of rows of data per day.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="MySQL-Scalability "><h1 class="title"><a href="/blog/2017-01-06-about-the-tidb-source-code/">About the TiDB Source Code</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2017-01-06</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        MySQL Scalability</div></li>
+                </ul><a href="/blog/2017-01-06-about-the-tidb-source-code/">
+                    <div class="brief">
+                        <p>The target audience of this document is the contributors in the TiDB community. The document aims to help them understand the TiDB project. It covers the system architecture, the code structure, and the execution process.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2016-12-19-adding-built-in-function/">Adding Built-in Functions</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2016-12-19</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2016-12-19-adding-built-in-function/">
+                    <div class="brief">
+                        <p>TiDB code is updated and the procedure of adding built-in functions is greatly simplified. This document describes how to add built-in functions to TiDB.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2016-12-07-Subquery-Optimization-in-TiDB/">Subquery Optimization in TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2016-12-07</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Fei HAN</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2016-12-07-Subquery-Optimization-in-TiDB/">
+                    <div class="brief">
+                        <p>Subquery optimization, especially rewriting the correlated subquery, is a very difficult part in SQL query optimization. To be compatible with MySQL, TiDB enables users to write subqueries anywhere they want. For those subqueries that are not correlated, which are also called uncorrelated subqueries, TiDB evaluates in advance; for those correlated subqueries, TiDB removes the correlations as much as possible. For example, TiDB can rewrite a correlated subquery to `SemiJoin`. This article is focused on introducing the correlated subquery optimization methods in TiDB.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2016-11-17-mvcc-in-tikv/">MVCC in TiKV</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2016-11-17</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ivan Yang</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2016-11-17-mvcc-in-tikv/">
+                    <div class="brief">
+                        <p>This document gives an overview of MVCC implementation in TiKV.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2016-11-15-Travelling-Back-in-Time-and-Reclaiming-the-Lost-Treasures/">Travelling Back in Time and Reclaiming the Lost Treasures</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2016-11-15</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Ewan Chou</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2016-11-15-Travelling-Back-in-Time-and-Reclaiming-the-Lost-Treasures/">
+                    <div class="brief">
+                        <p>This document introduces the History Read feature in TiDB.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2016-11-09-Deep-Dive-into-TiKV/">A Deep Dive into TiKV</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2016-11-09</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />PingCAP</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2016-11-09-Deep-Dive-into-TiKV/">
+                    <div class="brief">
+                        <p>This document introduces how TiKV works as a Key-Value database.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div><div class="article" data-category="Engineering "><h1 class="title"><a href="/blog/2016-10-17-how-we-build-tidb/">How we build TiDB</a></h1><ul class="blog-post-meta">
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-date.svg" alt="Date icon" />2016-10-17</li>
+                <li class="meta-item">
+                    <img src="/images/svgs/icon-writer.svg" alt="Pen icon" />Max Liu</li>
+                <li class="meta-item"><div class="meta-category">
+                        Engineering</div></li>
+                </ul><a href="/blog/2016-10-17-how-we-build-tidb/">
+                    <div class="brief">
+                        <p>This is the speech Max Liu gave at Percona Live Open Source Database Conference 2016.</p>
+                    </div>
+                </a><div class="article_divider"></div>
+        </div></div>
+</div>
+          <div id="showMore">
+              <p>- Show More Articles -</p>
+          </div>
+        
+      </div>
+    </div>
+<footer>
+    <div class="container">
+        <div class="flex-list-wrap">
+            <div class="flex-list">
+                <h4 class="list-title"><strong>Product</strong></h4>
+                <ul>
+                <li><a href="/docs/v3.0/">TiDB</a></li>
+                <li><a href="/docs/v3.0/reference/tispark/">TiSpark</a></li>
+                <li><a href="/docs/v3.0/roadmap/">Roadmap</a></li>
+                </ul>
+            </div>
+            <div class="flex-list">
+                <h4 class="list-title"><strong>Docs</strong></h4>
+                <ul>
+                <li><a href="/docs/dev/how-to/get-started/deploy-tidb-from-docker-compose/">Quick Start</a></li>
+                <li><a href="/blog/2017-07-24-tidbbestpractice/">Best Practices</a></li>
+                <li><a href="/docs/stable/faq/tidb/">FAQ</a></li>
+                <li><a href="/docs/stable/reference/tools/user-guide/">TiDB Tools</a></li>
+                <li><a href="/docs/dev/releases/rn/">Release Notes</a></li>
+                </ul>
+            </div>
+            <div class="flex-list">
+                <h4 class="list-title"><strong>Resources</strong></h4>
+                <ul>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="/weekly/">Monthly</a></li>
+                <li><a href="https://github.com/pingcap" target="_blank">GitHub</a></li>
+                <li><a href="/community">TiDB Community</a></li>
+                </ul>
+            </div>
+            <div class="flex-list">
+                <h4 class="list-title"><strong>Company</strong></h4>
+                <ul>
+                <li><a href="/about/">About</a></li>
+                <li><a href="https://angel.co/pingcap-1/jobs" target="_blank">Careers</a></li>
+                <li><a href="/news/">News</a></li>
+                <li><a href="/contact-us/">Contact Us</a></li>
+                <li><a href="/en/privacy-policy/">Privacy Policy</a></li>
+                <li><a href="/terms-of-service/">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="contact-list-wrap">
+            <div class="flex-list">
+                <h4 class="list-title"><strong>Connect</strong></h4>
+                <ul>
+                <li><a href="https://twitter.com/PingCAP" class="twitter" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 612" width="18" height="19"><path d="M612 116.258a250.714 250.714 0 0 1-72.088 19.772c25.929-15.527 45.777-40.155 55.184-69.411-24.322 14.379-51.169 24.82-79.775 30.48-22.907-24.437-55.49-39.658-91.63-39.658-69.334 0-125.551 56.217-125.551 125.513 0 9.828 1.109 19.427 3.251 28.606-104.326-5.24-196.835-55.223-258.75-131.174-10.823 18.51-16.98 40.078-16.98 63.101 0 43.559 22.181 81.993 55.835 104.479a125.556 125.556 0 0 1-56.867-15.756v1.568c0 60.806 43.291 111.554 100.693 123.104-10.517 2.83-21.607 4.398-33.08 4.398-8.107 0-15.947-.803-23.634-2.333 15.985 49.907 62.336 86.199 117.253 87.194-42.947 33.654-97.099 53.655-155.916 53.655-10.134 0-20.116-.612-29.944-1.721 55.567 35.681 121.536 56.485 192.438 56.485 230.948 0 357.188-191.291 357.188-357.188l-.421-16.253c24.666-17.593 46.005-39.697 62.794-64.861z"/></svg> Twitter</a></li>
+                <li><a href="https://www.linkedin.com/company/pingcap/" class="linkedin" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" viewBox="0 0 438.536 438.535"><path d="M5.424 145.895H99.64v282.932H5.424zM408.842 171.739c-19.791-21.604-45.967-32.408-78.512-32.408-11.991 0-22.891 1.475-32.695 4.427-9.801 2.95-18.079 7.089-24.838 12.419-6.755 5.33-12.135 10.278-16.129 14.844-3.798 4.337-7.512 9.389-11.136 15.104v-40.232h-93.935l.288 13.706c.193 9.139.288 37.307.288 84.508 0 47.205-.19 108.777-.572 184.722h93.931V270.942c0-9.705 1.041-17.412 3.139-23.127 4-9.712 10.037-17.843 18.131-24.407 8.093-6.572 18.13-9.855 30.125-9.855 16.364 0 28.407 5.662 36.117 16.987 7.707 11.324 11.561 26.98 11.561 46.966V428.82h93.931V266.664c-.007-41.688-9.897-73.328-29.694-94.925zM53.103 9.708c-15.796 0-28.595 4.619-38.4 13.848C4.899 32.787 0 44.441 0 58.529 0 72.42 4.758 84.034 14.275 93.358c9.514 9.325 22.078 13.99 37.685 13.99h.571c15.99 0 28.887-4.661 38.688-13.99 9.801-9.324 14.606-20.934 14.417-34.829-.19-14.087-5.047-25.742-14.561-34.973C81.562 14.323 68.9 9.708 53.103 9.708z"/></svg> LinkedIn</a></li>
+                <li><a href="https://www.reddit.com/r/TiDB/" class="reddit" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 279.748 279.748" width="18" height="18"><path d="M279.748 133.142c0-19.299-15.701-35-35-35-10.768 0-20.674 4.812-27.279 13.064-18.532-8.431-39.663-13.626-62.015-15.271l19.206-60.692 42.895 9.294c3.285 12.782 14.901 22.258 28.693 22.258 16.336 0 29.627-13.29 29.627-29.626 0-16.336-13.291-29.627-29.627-29.627-11.801 0-21.999 6.941-26.759 16.95l-49.497-10.725a10.002 10.002 0 0 0-11.651 6.756L134.636 95.43c-26.164.638-50.988 6.053-72.356 15.775-6.606-8.251-16.512-13.063-27.28-13.063-19.299 0-35 15.701-35 35 0 9.373 3.683 18.173 10.222 24.709-3.9 8.37-5.875 17.076-5.875 25.936 0 24.048 14.396 46.492 40.538 63.199 25.447 16.264 59.183 25.221 94.989 25.221 35.808 0 69.542-8.957 94.989-25.221 26.142-16.707 40.538-39.151 40.538-63.199 0-8.859-1.975-17.565-5.875-25.936 6.539-6.537 10.222-15.336 10.222-24.709zM15.369 145.139c-2.212-3.59-3.369-7.688-3.369-11.997 0-12.682 10.317-23 23-23 5.444 0 10.558 1.851 14.649 5.258-14.622 8.302-26.132 18.289-34.28 29.739zm52.671 20.266c0-13.785 11.215-25 25-25s25 11.215 25 25-11.215 25-25 25-25-11.215-25-25zm123.119 57.054c-9.745 10.637-29.396 17.244-51.285 17.244-21.888 0-41.539-6.607-51.284-17.244a9.937 9.937 0 0 1-2.617-7.192 9.933 9.933 0 0 1 3.235-6.937 9.974 9.974 0 0 1 6.754-2.627c2.797 0 5.484 1.183 7.373 3.244 5.803 6.333 20.827 10.756 36.539 10.756s30.737-4.423 36.539-10.756a10.022 10.022 0 0 1 7.374-3.244c2.508 0 4.906.933 6.755 2.627a9.928 9.928 0 0 1 3.234 6.937 9.933 9.933 0 0 1-2.617 7.192zm-4.451-32.054c-13.785 0-25-11.215-25-25s11.215-25 25-25 25 11.215 25 25-11.215 25-25 25zm77.671-45.266c-8.147-11.45-19.657-21.436-34.28-29.739 4.092-3.408 9.205-5.258 14.649-5.258 12.683 0 23 10.318 23 23 0 4.309-1.157 8.407-3.369 11.997z"/></svg>Reddit</a></li>
+                <li><a href="https://groups.google.com/forum/#!forum/tidb-user" class="google-plus" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 491.858 491.858" width="18" height="20"><path d="M377.472 224.957H201.319v58.718H308.79c-16.032 51.048-63.714 88.077-120.055 88.077-69.492 0-125.823-56.335-125.823-125.824 0-69.492 56.333-125.823 125.823-125.823 34.994 0 66.645 14.289 89.452 37.346l42.622-46.328c-34.04-33.355-80.65-53.929-132.074-53.929C84.5 57.193 0 141.693 0 245.928s84.5 188.737 188.736 188.737c91.307 0 171.248-64.844 188.737-150.989v-58.718l-.001-.001zM491.858 224.857h-36.031v-36.031h-30.886v36.031H388.91v30.883h36.031v36.032h30.886V255.74h36.031z"/></svg>Google Group</a></li>
+                <li><a href="https://stackoverflow.com/questions/tagged/tidb" class="stack-overflow" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 547.597 547.597"><path d="M140.81 475.111h.024l189.91-.269c8.434-.013 15.3-6.886 15.3-15.318v-21.298c0-8.428-6.854-15.288-15.3-15.288l-189.91.264c-8.433.012-15.3 6.885-15.3 15.318v21.31c.001 8.427 6.855 15.281 15.276 15.281z"/><path d="M58.667 517.854c.073 29.26.073 29.449 3.072 29.449h.055l10.612.294h.086s85.814 0 171.629-.036c42.914-.019 85.821-.05 118-.092 16.09-.019 29.505-.043 38.887-.074 17.803-.055 17.803-.055 17.803-3.072l.3-10.697V333.299c0-8.434-6.866-15.3-15.3-15.3h-11.909c-8.434 0-15.3 6.866-15.3 15.3V496.22c0 5.062-4.119 9.18-9.181 9.18H110.51c-5.061 0-9.18-4.118-9.18-9.18V333.299c0-8.434-6.867-15.3-15.3-15.3H73.82c-8.433 0-15.3 6.86-15.3 15.3 0 23.342.012 76.084.055 122.981.019 23.447.05 45.442.092 61.574z"/><path d="M142.322 397.399l189.402 17.467c.478.043.948.062 1.413.062 7.956 0 14.468-5.985 15.159-13.917l1.83-21.096c.729-8.396-5.508-15.851-13.898-16.628l-189.102-17.461c-8.593-.795-15.869 5.441-16.653 13.825l-1.97 21.108a15.172 15.172 0 0 0 3.452 11.181 15.19 15.19 0 0 0 10.367 5.459zM437.636 208.849a15.253 15.253 0 0 0 17.694 12.443l21.065-3.678c8.311-1.451 13.898-9.395 12.454-17.706l-32.504-187.23c-1.42-8.207-9.21-13.917-17.692-12.448l-21.065 3.678c-8.311 1.451-13.898 9.395-12.454 17.705l32.502 187.236zM190.333 194.375l163.6 96.708a15.28 15.28 0 0 0 7.778 2.136c5.393 0 10.447-2.876 13.183-7.509l10.876-18.36c2.08-3.519 2.674-7.631 1.658-11.591a15.18 15.18 0 0 0-7.032-9.358l-163.6-96.714c-7.014-4.149-16.836-1.597-20.967 5.374l-10.869 18.36a15.2 15.2 0 0 0-1.658 11.591 15.21 15.21 0 0 0 7.031 9.363zM387.525 240.501a15.276 15.276 0 0 0 12.626 6.659c3.091 0 6.077-.924 8.635-2.681l17.405-11.934c6.953-4.768 8.752-14.314 4.015-21.292L323.29 54.104c-4.584-6.732-14.498-8.623-21.236-3.984l-17.737 12.21c-6.945 4.779-8.727 14.327-3.971 21.291l107.179 156.88zM154.482 302.319l183.465 49.156c1.298.349 2.632.526 3.966.526 6.903 0 12.98-4.67 14.762-11.347l5.508-20.624c2.179-8.152-2.681-16.555-10.826-18.74l-183.465-49.162c-8.017-2.148-16.604 2.852-18.728 10.826l-5.508 20.63c-2.179 8.142 2.68 16.551 10.826 18.735z"/></svg>Stack Overflow</a></li>
+                </ul>
+            </div>
+            <div class="subscribe">
+                <a href="https://share.hsforms.com/1e2W03wLJQQKPd1d9rCbj_Q2npzm"><button class="btn btn-subscribe f-tc">Subscribe to Blog</button></a>
+            </div>
+        </div>
+    </div>
+    <div class="container copyright-container">
+        <p class="copyright">&copy; 2020 PingCAP. All Rights Reserved.</p>
+        <a href="/blog-cn" class="copyright-btn-lang" id="lang">中文</a>
+    </div>
+</footer>
+<button class="back-to-top" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 284.929 284.929"><path d="M282.082 195.285L149.028 62.24c-1.901-1.903-4.088-2.856-6.562-2.856s-4.665.953-6.567 2.856L2.856 195.285C.95 197.191 0 199.378 0 201.853c0 2.474.953 4.664 2.856 6.566l14.272 14.271c1.903 1.903 4.093 2.854 6.567 2.854s4.664-.951 6.567-2.854l112.204-112.202 112.208 112.209c1.902 1.903 4.093 2.848 6.563 2.848 2.478 0 4.668-.951 6.57-2.848l14.274-14.277c1.902-1.902 2.847-4.093 2.847-6.566.001-2.476-.944-4.666-2.846-6.569z" fill="#FFF"/></svg>
+</button>
+</div><div class="overlay"></div><script src="https://download.pingcap.com/js/jquery.min.js"></script><script type="text/javascript" src="/js/vendor/lazyload.min.js"></script>
+    <script type="text/javascript" src="/js/doc.js"></script>
+    <script type="text/javascript" src="/js/anchor.js"></script><script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script><script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js" integrity="sha384-jbFinqIbKkHNg+QL+yxB4VrBC0EAPTuaLGeRT0T+NfEV89YC6u1bKxHLwoo+/xxY" crossorigin="anonymous"></script><script>Sentry.init({ 
+            dsn: 'https://3f28ed393c5545daa74496b3cdb2e9ba@sentry.io/1887163' 
+        });</script><script src="/js/app.js"></script></body></html>
