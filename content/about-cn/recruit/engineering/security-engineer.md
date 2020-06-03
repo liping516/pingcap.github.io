@@ -1,8 +1,8 @@
 ---
-title: 职位名称
+title: 资深安全工程师
 tags:
   - Engineering
-location: 北京，上海，广州，杭州，成都
+location: 北京
 avatar: database
 position: true
 ---
