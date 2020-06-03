@@ -14,6 +14,8 @@
   - [QA 研发工程师](engineering/qa-engineer.md)
   - [工程效率研发工程师](engineering/engineering-efficiency-engineer.md)
   - [运维工程师](engineering/sa-engineer.md)
+  - [资深安全工程师](engineering/security-engineer.md)
+  
 - Business
   - [高级行业方案架构师](business/senior-solution-architect.md)
   - [资深商务经理](business/senior-business-manager.md)
